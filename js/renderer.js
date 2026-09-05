@@ -189,6 +189,18 @@ class Renderer {
                         case TILES.ROAD:
                             r = 148 - varOffset; g = 163 - varOffset; b = 184 - varOffset;
                             break;
+                        case TILES.NEBULA:
+                            // Deep cosmic magenta/purple interstellar gas
+                            r = 175 + Math.sin(this.animTime * 2 + x * 0.15) * 25;
+                            g = 30 + Math.cos(this.animTime * 1.8 + y * 0.15) * 20;
+                            b = 205 + Math.sin(this.animTime * 2.5) * 30;
+                            break;
+                        case TILES.STARDUST:
+                            // Bright cyan & sparkling starlight powder
+                            r = 50 + Math.sin(this.animTime * 4 + (x + y) * 0.3) * 30;
+                            g = 190 + Math.cos(this.animTime * 3 + x * 0.2) * 25;
+                            b = 250;
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
@@ -388,6 +400,227 @@ class Renderer {
                 ctx.fillRect(px - 2, py - s * 0.6, 1.5, 1.5);
                 ctx.fillRect(px + 1, py - s * 0.6, 1.5, 1.5);
             }
+            // Galaxy Guardian rendering
+            else if (ent.type === 'galaxy_guardian') {
+                const s = size * 0.7;
+                // Orbiting planetary cosmic rings
+                ctx.strokeStyle = '#c084fc';
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.ellipse(px, py, s * 1.5, s * 0.55, Math.PI / 6 + Math.sin(this.animTime) * 0.1, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.ellipse(px, py, s * 1.5, s * 0.55, -Math.PI / 6, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Orbiting celestial stardust satellites
+                for (let k = 0; k < 3; k++) {
+                    const ang = this.animTime * 2.5 + k * (Math.PI * 2 / 3);
+                    const ox = px + Math.cos(ang) * s * 1.4;
+                    const oy = py + Math.sin(ang) * s * 0.55;
+                    ctx.fillStyle = '#facc15';
+                    ctx.fillRect(ox - 1, oy - 1, 2.5, 2.5);
+                }
+
+                // Celestial Core
+                ctx.fillStyle = '#9333ea';
+                ctx.beginPath();
+                ctx.arc(px, py, s * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#f0abfc';
+                ctx.beginPath();
+                ctx.arc(px, py, s * 0.45, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(px - 1.5, py - 1.5, 3, 3);
+
+                // Crown of stellar rays
+                ctx.fillStyle = '#38bdf8';
+                for (let ray = -2; ray <= 2; ray++) {
+                    ctx.fillRect(px + ray * 3 - 0.5, py - s * 0.8 - Math.abs(ray) * 1.5 - 2, 1.5, 3);
+                }
+
+                // Twin starlight eyes
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(px - 2.5, py - 1, 2, 2);
+                ctx.fillRect(px + 1, py - 1, 2, 2);
+            }
+            // Battle Tank rendering
+            else if (ent.type === 'tank') {
+                const s = size;
+                // Tracks / Treads
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(px - s, py - s * 0.75, s * 2, s * 0.35);
+                ctx.fillRect(px - s, py + s * 0.4, s * 2, s * 0.35);
+                ctx.fillStyle = '#0f172a';
+                for (let tx = -s + 1; tx < s; tx += 2.5) {
+                    ctx.fillRect(px + tx, py - s * 0.75, 1, s * 0.35);
+                    ctx.fillRect(px + tx, py + s * 0.4, 1, s * 0.35);
+                }
+                // Armored Chassis
+                ctx.fillStyle = '#3f4f38';
+                ctx.fillRect(px - s * 0.8, py - s * 0.45, s * 1.6, s * 0.9);
+                // Turret
+                ctx.fillStyle = '#2d3b27';
+                ctx.beginPath();
+                ctx.arc(px, py, s * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+                // Cannon Barrel
+                const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+                ctx.strokeStyle = '#1a2217';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(px + Math.cos(fAng) * s * 1.4, py + Math.sin(fAng) * s * 1.4);
+                ctx.stroke();
+                // Hatch
+                ctx.fillStyle = '#111827';
+                ctx.fillRect(px - 1, py - 1, 2, 2);
+            }
+            // Battleship / Warship rendering
+            else if (ent.type === 'warship') {
+                const s = size;
+                const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.rotate(fAng);
+                // Naval Hull
+                ctx.fillStyle = '#334155';
+                ctx.beginPath();
+                ctx.moveTo(s * 1.3, 0);
+                ctx.lineTo(s * 0.4, -s * 0.45);
+                ctx.lineTo(-s * 1.1, -s * 0.4);
+                ctx.lineTo(-s * 1.1, s * 0.4);
+                ctx.lineTo(s * 0.4, s * 0.45);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                // Wake foam
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillRect(-s * 1.3, -s * 0.25, s * 0.3, s * 0.5);
+                // Deck superstructure
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(-s * 0.3, -s * 0.2, s * 0.7, s * 0.4);
+                // Dual gun turrets
+                ctx.fillStyle = '#475569';
+                ctx.beginPath(); ctx.arc(s * 0.6, 0, s * 0.2, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(s * 0.6, -1, s * 0.5, 1);
+                ctx.fillRect(s * 0.6, 0.5, s * 0.5, 1);
+                ctx.beginPath(); ctx.arc(-s * 0.7, 0, s * 0.2, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(-s * 1.1, -0.7, s * 0.5, 1.4);
+                ctx.restore();
+            }
+            // Attack Helicopter rendering
+            else if (ent.type === 'helicopter') {
+                const s = size;
+                const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.rotate(fAng);
+                // Landing skids
+                ctx.strokeStyle = '#374151';
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(-s * 0.6, -s * 0.5); ctx.lineTo(s * 0.6, -s * 0.5); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-s * 0.6, s * 0.5); ctx.lineTo(s * 0.6, s * 0.5); ctx.stroke();
+                // Fuselage
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath(); ctx.ellipse(0, 0, s * 0.7, s * 0.38, 0, 0, Math.PI * 2); ctx.fill();
+                // Cockpit Glass
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath(); ctx.ellipse(s * 0.4, 0, s * 0.25, s * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+                // Tail boom & Tail rotor
+                ctx.strokeStyle = '#166534'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(-s * 0.6, 0); ctx.lineTo(-s * 1.4, 0); ctx.stroke();
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-s * 1.45, -s * 0.3, 1.5, s * 0.6);
+                // Spinning Main Rotor
+                const bladeAng = this.animTime * 28;
+                ctx.strokeStyle = 'rgba(240, 240, 240, 0.85)'; ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(bladeAng) * s * 1.3, Math.sin(bladeAng) * s * 1.3);
+                ctx.lineTo(-Math.cos(bladeAng) * s * 1.3, -Math.sin(bladeAng) * s * 1.3);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(bladeAng + Math.PI/2) * s * 1.3, Math.sin(bladeAng + Math.PI/2) * s * 1.3);
+                ctx.lineTo(-Math.cos(bladeAng + Math.PI/2) * s * 1.3, -Math.sin(bladeAng + Math.PI/2) * s * 1.3);
+                ctx.stroke();
+                // Rotor mast
+                ctx.fillStyle = '#0f172a'; ctx.beginPath(); ctx.arc(0, 0, 1.8, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+            // Cosmic Starfighter rendering
+            else if (ent.type === 'starfighter') {
+                const s = size;
+                const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.rotate(fAng);
+                // Plasma Thruster Flame
+                const thrustLen = 4 + Math.random() * 4;
+                ctx.fillStyle = '#00e5ff';
+                ctx.beginPath(); ctx.moveTo(-s * 0.8, -2); ctx.lineTo(-s * 0.8 - thrustLen, 0); ctx.lineTo(-s * 0.8, 2); ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-s * 0.8 - thrustLen * 0.5, -0.8, thrustLen * 0.5, 1.6);
+                // Sleek Delta Wing
+                ctx.fillStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.moveTo(s * 1.2, 0);
+                ctx.lineTo(-s * 0.8, -s * 0.9);
+                ctx.lineTo(-s * 0.5, 0);
+                ctx.lineTo(-s * 0.8, s * 0.9);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1; ctx.stroke();
+                // Cockpit Canopy
+                ctx.fillStyle = '#e0f2fe';
+                ctx.fillRect(0, -1, s * 0.5, 2);
+                ctx.restore();
+            }
+            // Kraken rendering
+            else if (ent.type === 'kraken') {
+                const s = size * 0.7;
+                // Mantle
+                ctx.fillStyle = '#0d9488';
+                ctx.beginPath(); ctx.ellipse(px, py - 2, s * 0.8, s * 1.1, 0, 0, Math.PI * 2); ctx.fill();
+                // Tentacles
+                ctx.strokeStyle = '#14b8a6'; ctx.lineWidth = 1.8;
+                for (let t = -3; t <= 3; t += 2) {
+                    const wave = Math.sin(this.animTime * 4 + t) * 3;
+                    ctx.beginPath();
+                    ctx.moveTo(px + t * 2, py + 2);
+                    ctx.quadraticCurveTo(px + t * 3 + wave, py + s * 0.8, px + t * 4 + wave * 1.5, py + s * 1.3);
+                    ctx.stroke();
+                }
+                // Giant Eye
+                ctx.fillStyle = '#facc15'; ctx.fillRect(px - 2, py - 3, 4, 3);
+                ctx.fillStyle = '#000000'; ctx.fillRect(px - 0.5, py - 2, 1, 2);
+            }
+            // Hydra rendering
+            else if (ent.type === 'hydra') {
+                const s = size * 0.7;
+                // Main Serpent Body
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath(); ctx.ellipse(px, py + 2, s * 0.9, s * 0.6, 0, 0, Math.PI * 2); ctx.fill();
+                // 3 Serpent Heads
+                for (let h = -1; h <= 1; h++) {
+                    const hWave = Math.sin(this.animTime * 3 + h * 2) * 2.5;
+                    const hx = px + h * 5 + hWave;
+                    const hy = py - s * 0.9 + Math.abs(h) * 2;
+                    // Neck
+                    ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 1.8;
+                    ctx.beginPath(); ctx.moveTo(px + h * 3, py); ctx.lineTo(hx, hy); ctx.stroke();
+                    // Head
+                    ctx.fillStyle = '#22c55e'; ctx.fillRect(hx - 2, hy - 2, 4, 3);
+                    ctx.fillStyle = '#ef4444'; ctx.fillRect(hx - 1, hy - 1, 1, 1);
+                }
+            }
             // Standard / Custom Creature Body
             else {
                 let bodyColor = ent.color;
@@ -457,6 +690,16 @@ class Renderer {
             } else if (p.type === 'laser') {
                 ctx.fillStyle = '#00e5ff';
                 ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
+            } else if (p.type === 'frost') {
+                ctx.fillStyle = '#a5f3fc';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (p.type === 'acid') {
+                ctx.fillStyle = '#84cc16';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
     }

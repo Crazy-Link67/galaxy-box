@@ -126,6 +126,10 @@
                             <span style="font-size:1.5rem;">🌊</span>
                             <span>Blank Ocean</span>
                         </button>
+                        <button class="gen-preset-btn" data-preset="galaxy" id="btn-preset-galaxy">
+                            <span style="font-size:1.5rem;" id="galaxy-preset-icon">🔒</span>
+                            <span id="galaxy-preset-name">Spiral Galaxy (Locked)</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -315,6 +319,35 @@
                 </div>
 
                 <button id="btn-spawn-custom" class="btn" style="width:100%; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. The Great Galaxy Sacrifice Celebration Modal -->
+    <div class="modal-overlay" id="modal-galaxy-sacrifice">
+        <div class="modal-card celebration-card">
+            <div class="modal-header">
+                <h2>🌌 THE GREAT GALAXY SACRIFICE</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body celebration-body">
+                <div class="sacrifice-badge">✨ RITUAL COMPLETE ✨</div>
+                <div class="sacrifice-hero-icon">🌌</div>
+                <h3 class="sacrifice-title">The Cosmic Supernova Has Awakened!</h3>
+                <p class="sacrifice-desc">
+                    By detonating an Atomic Nuke directly onto the celestial Galaxy Guardian, you have triggered the legendary Great Galaxy Sacrifice! 
+                    Cosmic nebulae and stardust have been unlocked across the universe.
+                </p>
+                <div class="sacrifice-unlocked-box">
+                    <span class="unlocked-icon">⭐</span>
+                    <div>
+                        <strong>SECRET MAP TEMPLATE UNLOCKED!</strong>
+                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #cbd5e1;">The <em>Spiral Galaxy</em> world generator preset is now permanently unlocked in the World Generator!</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="btn-generate-galaxy-now" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: bold; background: linear-gradient(135deg, #a855f7, #38bdf8); box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); cursor: pointer; border-radius: 10px;">
+                    🚀 Generate Spiral Galaxy Now!
+                </button>
             </div>
         </div>
     </div>

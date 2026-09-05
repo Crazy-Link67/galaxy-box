@@ -382,6 +382,8 @@ class Game {
         else if (tool === 'lava') this.world.applyBrush(wx, wy, bSize, TILES.LAVA);
         else if (tool === 'acid') this.world.applyBrush(wx, wy, bSize, TILES.ACID);
         else if (tool === 'bedrock') this.world.applyBrush(wx, wy, bSize, TILES.BEDROCK);
+        else if (tool === 'nebula') this.world.applyBrush(wx, wy, bSize, TILES.NEBULA);
+        else if (tool === 'stardust') this.world.applyBrush(wx, wy, bSize, TILES.STARDUST);
         else if (tool === 'raise') this.world.applyBrush(wx, wy, bSize, 'raise');
         else if (tool === 'lower') this.world.applyBrush(wx, wy, bSize, 'lower');
         else if (tool === 'sponge') this.world.applyBrush(wx, wy, bSize, 'sponge');

@@ -50,6 +50,8 @@ const CATEGORY_TOOLS = {
         { id: 'lava', name: 'Molten Lava', icon: '🔥', desc: 'Fiery magma that solidifies near water.' },
         { id: 'acid', name: 'Acid Sludge', icon: '🧪', desc: 'Corrosive sludge melting organic matter.' },
         { id: 'bedrock', name: 'Bedrock Wall', icon: '🧱', desc: 'Indestructible barrier to contain chaos.' },
+        { id: 'nebula', name: 'Cosmic Nebula', icon: '🌌', desc: 'Swirling luminous interstellar fluid nebula.' },
+        { id: 'stardust', name: 'Stardust Land', icon: '✨', desc: 'Gleaming celestial stardust soil.' },
         { id: 'raise', name: 'Shovel (Raise)', icon: '⬆️', desc: 'Elevates terrain towards mountains.' },
         { id: 'lower', name: 'Shovel (Lower)', icon: '⬇️', desc: 'Carves valleys and ocean trenches.' },
         { id: 'sponge', name: 'Sponge Drain', icon: '🧽', desc: 'Absorbs fluids without altering ground.' },
@@ -73,6 +75,11 @@ const CATEGORY_TOOLS = {
     creatures: [
         { id: 'control', name: 'Possess / Control', icon: '🎮', desc: 'Directly pilot and control any creature with WASD & attacks!' },
         { id: 'creator', name: 'Creature Creator', icon: '🎨', desc: 'Design, customize, and build your own custom monsters!' },
+        { id: 'tank', name: 'Battle Tank', icon: '🚜', desc: 'Heavy armored combat vehicle with explosive cannon & MG turret.' },
+        { id: 'warship', name: 'Battleship', icon: '🚢', desc: 'Heavy naval vessel navigating waters with broadside cannons.' },
+        { id: 'helicopter', name: 'Attack Chopper', icon: '🚁', desc: 'Armed aerial gunship with vulcan machine guns and rockets.' },
+        { id: 'starfighter', name: 'Cosmic Starfighter', icon: '🚀', desc: 'Interstellar spacecraft with photon plasma lasers and warp shockwave.' },
+        { id: 'galaxy_guardian', name: 'Galaxy Guardian', icon: '✨', desc: 'Cosmic celestial titan with planetary rings. Nuke it to trigger The Great Galaxy Sacrifice!' },
         { id: 'crabzilla', name: 'Crabzilla', icon: '🦀', desc: 'Colossal titan crab with twin eye lasers and mega stomp!' },
         { id: 'kaiju', name: 'Kaiju Godzilla', icon: '🦖', desc: 'Atomic radioactive behemoth with atomic breath ray!' },
         { id: 'phoenix', name: 'Solar Phoenix', icon: '🦅', desc: 'Immortal fire bird reborn with solar flares!' },
@@ -125,6 +132,7 @@ class UIManager {
         this.renderCategoryTabs();
         this.switchCategory(this.currentCategory);
         this.setupEventListeners();
+        this.updateGalaxyPresetUI();
     }
 
     renderCategoryTabs() {
@@ -259,6 +267,13 @@ class UIManager {
         document.querySelectorAll('.gen-preset-btn').forEach(btn => {
             btn.onclick = () => {
                 const preset = btn.dataset.preset;
+                if (preset === 'galaxy') {
+                    const isUnlocked = localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
+                    if (!isUnlocked) {
+                        alert("🔒 LOCKED: Spiral Galaxy Template!\n\nTo unlock this secret cosmic template, perform The Great Galaxy Sacrifice:\n1. Spawn a Galaxy Guardian (Creatures tab ✨)\n2. Drop an Atomic Nuke (Destruction tab ☢️) directly onto it!");
+                        return;
+                    }
+                }
                 const seed = parseInt(document.getElementById('gen-seed').value) || Math.floor(Math.random() * 999999);
                 this.game.generateWorld(preset, seed);
                 document.getElementById('modal-generator').classList.remove('active');
@@ -361,9 +376,51 @@ class UIManager {
                 if (this.game.audio) this.game.audio.playMagic();
             };
         }
+
+        // Generate Galaxy Now button in celebration modal
+        const genGalaxyNowBtn = document.getElementById('btn-generate-galaxy-now');
+        if (genGalaxyNowBtn) {
+            genGalaxyNowBtn.onclick = () => {
+                const seed = Math.floor(Math.random() * 999999);
+                this.game.generateWorld('galaxy', seed);
+                document.getElementById('modal-galaxy-sacrifice').classList.remove('active');
+                if (this.game.audio) this.game.audio.playSingularity();
+            };
+        }
+    }
+
+    updateGalaxyPresetUI() {
+        const galaxyBtn = document.getElementById('btn-preset-galaxy');
+        const galaxyIcon = document.getElementById('galaxy-preset-icon');
+        const galaxyName = document.getElementById('galaxy-preset-name');
+        const isUnlocked = localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
+
+        if (galaxyBtn) {
+            if (isUnlocked) {
+                galaxyBtn.classList.remove('locked');
+                if (galaxyIcon) galaxyIcon.textContent = '🌌';
+                if (galaxyName) galaxyName.textContent = 'Spiral Galaxy';
+            } else {
+                galaxyBtn.classList.add('locked');
+                if (galaxyIcon) galaxyIcon.textContent = '🔒';
+                if (galaxyName) galaxyName.textContent = 'Spiral Galaxy (Locked)';
+            }
+        }
+    }
+
+    showGalaxyUnlockModal() {
+        this.updateGalaxyPresetUI();
+        const m = document.getElementById('modal-galaxy-sacrifice');
+        if (m) {
+            m.classList.add('active');
+            if (this.game.audio) this.game.audio.playSingularity();
+        }
     }
 
     showModal(modalId) {
+        if (modalId === 'modal-generator') {
+            this.updateGalaxyPresetUI();
+        }
         const m = document.getElementById(modalId);
         if (m) m.classList.add('active');
     }
