@@ -23,7 +23,9 @@ const TILES = {
     SWAMP: 17,
     ROAD: 18,
     NEBULA: 19,
-    STARDUST: 20
+    STARDUST: 20,
+    OBSIDIAN: 21,
+    CRYSTAL: 22
 };
 
 const TILE_INFO = {
@@ -47,7 +49,9 @@ const TILE_INFO = {
     [TILES.SWAMP]: { name: "Swamp", color: "#365314", isLiquid: false, isSolid: true, flammability: 0.4 },
     [TILES.ROAD]: { name: "Stone Road", color: "#94a3b8", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.NEBULA]: { name: "Cosmic Nebula", color: "#c026d3", isLiquid: true, isSolid: false, flammability: 0 },
-    [TILES.STARDUST]: { name: "Stardust Land", color: "#38bdf8", isLiquid: false, isSolid: true, flammability: 0 }
+    [TILES.STARDUST]: { name: "Stardust Land", color: "#38bdf8", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.OBSIDIAN]: { name: "Volcanic Obsidian", color: "#1e1b2e", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.CRYSTAL]: { name: "Luminous Crystal", color: "#ec4899", isLiquid: false, isSolid: true, flammability: 0 }
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
@@ -131,6 +135,22 @@ class World {
         // Precompute color variations
         for (let i = 0; i < this.size; i++) {
             this.variation[i] = Math.floor(Math.random() * 5); // 0-4 variation offset
+            this.temperature[i] = 20;
+        }
+    }
+
+    resize(newWidth, newHeight) {
+        if (this.width === newWidth && this.height === newHeight) return;
+        this.width = newWidth;
+        this.height = newHeight;
+        this.size = newWidth * newHeight;
+        this.tiles = new Uint8Array(this.size);
+        this.variation = new Uint8Array(this.size);
+        this.temperature = new Int16Array(this.size);
+        this.fire = new Uint8Array(this.size);
+        this.liquids = new Uint8Array(this.size);
+        for (let i = 0; i < this.size; i++) {
+            this.variation[i] = Math.floor(Math.random() * 5);
             this.temperature[i] = 20;
         }
     }
@@ -390,8 +410,8 @@ class World {
 
                         // Lava touching water -> obsidian / stone + steam
                         if (nt === TILES.WATER || nt === TILES.DEEP_WATER || nt === TILES.ICE) {
-                            this.tiles[ni] = TILES.STONE;
-                            if (Math.random() < 0.3) this.tiles[i] = TILES.STONE;
+                            this.tiles[ni] = Math.random() < 0.6 ? TILES.OBSIDIAN : TILES.STONE;
+                            if (Math.random() < 0.4) this.tiles[i] = TILES.OBSIDIAN;
                             if (particleSystem) {
                                 particleSystem.burst(nx, ny, 4, ['#e0e0e0', '#ffffff', '#bdbdbd'], 0.5, 2, 2, 4, 'smoke', -0.01);
                             }

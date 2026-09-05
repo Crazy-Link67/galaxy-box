@@ -15,6 +15,9 @@ const CATEGORIES = [
 const CATEGORY_TOOLS = {
     destruction: [
         { id: 'nuke', name: 'Atomic Nuke', icon: '☢️', desc: 'Huge radioactive blast and mushroom cloud.' },
+        { id: 'nuke_missile', name: 'Nuke Missile', icon: '🚀', desc: 'Guided ballistic missile causing catastrophic atomic detonation.' },
+        { id: 'ion_cannon', name: 'Orbital Ion Cannon', icon: '🛰️', desc: 'Targeting grid summoning an orbital death beam from space.' },
+        { id: 'rift', name: 'Dimension Rift', icon: '🌀', desc: 'Cosmic tear pulling land in and spawning nether demons.' },
         { id: 'antimatter', name: 'Antimatter Bomb', icon: '🌌', desc: 'Cosmic implosion that deletes matter.' },
         { id: 'blackhole', name: 'Black Hole', icon: '🕳️', desc: 'Singularity that sucks in land and creatures.' },
         { id: 'laser', name: 'Orbital Laser', icon: '⚡', desc: 'Continuous divine death ray beam.' },
@@ -28,12 +31,15 @@ const CATEGORY_TOOLS = {
     nature: [
         { id: 'volcano', name: 'Volcano', icon: '🌋', desc: 'Spews endless ash, smoke, and molten lava.' },
         { id: 'tornado', name: 'Tornado', icon: '🌪️', desc: 'Wandering twister flinging trees and creatures.' },
+        { id: 'geyser', name: 'Thermal Geyser', icon: '⛲', desc: 'High-pressure thermal water eruption bursting from ground.' },
         { id: 'earthquake', name: 'Earthquake', icon: '⚡', desc: 'Tears jagged chasms through the terrain.' },
         { id: 'lightning', name: 'Lightning Strike', icon: '🌩️', desc: 'Electric strike that burns or empowers.' },
         { id: 'tsunami', name: 'Tsunami Deluge', icon: '🌊', desc: 'Giant surge of ocean water flooding land.' },
         { id: 'rain', name: 'Reviving Rain', icon: '🌧️', desc: 'Extinguishes fires, replenishes plants.' },
         { id: 'snow', name: 'Blizzard', icon: '❄️', desc: 'Freezes lakes and coats the world in snow.' },
         { id: 'acidrain', name: 'Acid Storm', icon: '☣️', desc: 'Toxic green rain dissolving vegetation.' },
+        { id: 'sandstorm', name: 'Sandstorm', icon: '🏜️', desc: 'Fierce desert gale eroding terrain and vegetation into sand.' },
+        { id: 'clone_rain', name: 'Clone Rain', icon: '🔮', desc: 'Arcane celestial tempest raining cloned creatures from heaven!' },
         { id: 'wildfire', name: 'Wildfire', icon: '🔥', desc: 'Rapidly propagating forest fire.' }
     ],
     landscaping: [
@@ -49,6 +55,8 @@ const CATEGORY_TOOLS = {
         { id: 'ice', name: 'Solid Ice', icon: '🧊', desc: 'Slick ice that melts when heated.' },
         { id: 'lava', name: 'Molten Lava', icon: '🔥', desc: 'Fiery magma that solidifies near water.' },
         { id: 'acid', name: 'Acid Sludge', icon: '🧪', desc: 'Corrosive sludge melting organic matter.' },
+        { id: 'obsidian', name: 'Obsidian Glass', icon: '🖤', desc: 'Volcanic glossy dark mineral glass.' },
+        { id: 'crystal', name: 'Prismatic Crystal', icon: '💎', desc: 'Luminescent gemstone refracting prismatic light.' },
         { id: 'bedrock', name: 'Bedrock Wall', icon: '🧱', desc: 'Indestructible barrier to contain chaos.' },
         { id: 'nebula', name: 'Cosmic Nebula', icon: '🌌', desc: 'Swirling luminous interstellar fluid nebula.' },
         { id: 'stardust', name: 'Stardust Land', icon: '✨', desc: 'Gleaming celestial stardust soil.' },
@@ -59,6 +67,14 @@ const CATEGORY_TOOLS = {
     ],
     powers: [
         { id: 'hand', name: "God's Hand", icon: '✋', desc: 'Grab any creature and fling with momentum!' },
+        { id: 'shield', name: 'Forcefield Bubble', icon: '🛡️', desc: 'Deploy a protective kinetic shield bubble deflecting attacks.' },
+        { id: 'mind_control', name: 'Mind Control', icon: '🧠', desc: 'Psychic wave ordering all nearby creatures to march to target.' },
+        { id: 'overclock', name: 'Overclock Surge', icon: '⚡', desc: 'Infuses creatures with 2.5x speed, power, and electric aura.' },
+        { id: 'necromancy', name: 'Necromancy', icon: '☠️', desc: 'Summon an undead skeleton army out of the earth.' },
+        { id: 'equip_sword', name: 'Equip: Flaming Sword', icon: '🗡️', desc: 'Arm nearest creature with a flaming melee broadsword (+15 Atk).' },
+        { id: 'equip_bow', name: 'Equip: Ranger Bow', icon: '🏹', desc: 'Arm nearest creature with a rapid-fire recurve bow (+range).' },
+        { id: 'equip_blaster', name: 'Equip: Plasma Blaster', icon: '🔫', desc: 'Arm nearest creature with a futuristic plasma ray pistol.' },
+        { id: 'equip_staff', name: 'Equip: Arcane Staff', icon: '🪄', desc: 'Arm nearest creature with a homing stardust magic staff.' },
         { id: 'heatray', name: 'Heat Ray', icon: '☀️', desc: 'Intense thermal beam to melt or ignite.' },
         { id: 'freezeray', name: 'Freeze Ray', icon: '❄️', desc: 'Cryogenic beam freezing water and creatures.' },
         { id: 'blessing', name: 'Divine Blessing', icon: '✨', desc: 'Golden halo, double HP, super speed.' },
@@ -75,6 +91,9 @@ const CATEGORY_TOOLS = {
     creatures: [
         { id: 'control', name: 'Possess / Control', icon: '🎮', desc: 'Directly pilot and control any creature with WASD & attacks!' },
         { id: 'creator', name: 'Creature Creator', icon: '🎨', desc: 'Design, customize, and build your own custom monsters!' },
+        { id: 'dragon', name: 'Fire Dragon', icon: '🐉', desc: 'Controllable winged titan with flamethrower breath & dive-bomb firestorm!' },
+        { id: 'mech', name: 'Steampunk Mech', icon: '🤖', desc: 'Controllable heavy armored combat walker with gatling cannon & rockets!' },
+        { id: 'wizard', name: 'Arcane Wizard', icon: '🧙', desc: 'Wise archmage casting homing mystic stardust orbs and novae.' },
         { id: 'tank', name: 'Battle Tank', icon: '🚜', desc: 'Heavy armored combat vehicle with explosive cannon & MG turret.' },
         { id: 'warship', name: 'Battleship', icon: '🚢', desc: 'Heavy naval vessel navigating waters with broadside cannons.' },
         { id: 'helicopter', name: 'Attack Chopper', icon: '🚁', desc: 'Armed aerial gunship with vulcan machine guns and rockets.' },
@@ -94,7 +113,6 @@ const CATEGORY_TOOLS = {
         { id: 'cow', name: 'Cow', icon: '🐄', desc: 'Domestic farm animal.' },
         { id: 'wolf', name: 'Grey Wolf', icon: '🐺', desc: 'Pack predator hunting sheep and villagers.' },
         { id: 'bear', name: 'Grizzly Bear', icon: '🐻', desc: 'Fierce territorial apex beast.' },
-        { id: 'dragon', name: 'Fire Dragon', icon: '🐉', desc: 'Winged titan raining fire streams.' },
         { id: 'golem', name: 'Rock Golem', icon: '🗿', desc: 'Massive stone titan stomping terrain.' },
         { id: 'zombie', name: 'Zombie Horde', icon: '🧟', desc: 'Infectious undead biting the living.' },
         { id: 'skeleton', name: 'Skeleton', icon: '💀', desc: 'Risen undead warrior with sword.' },
@@ -105,6 +123,7 @@ const CATEGORY_TOOLS = {
     ],
     menu: [
         { id: 'btn_gen', name: 'World Generator', icon: '🌍', desc: 'Procedural continents, islands, seeds.' },
+        { id: 'btn_diplomacy', name: 'Kingdom Ledger', icon: '👑', desc: 'Inspect all sovereign empires, populations, and wars.' },
         { id: 'btn_save', name: 'Save / Load', icon: '💾', desc: 'Local slots and JSON world export.' },
         { id: 'btn_settings', name: 'Settings', icon: '⚙️', desc: 'Audio volume, display toggles, FPS.' },
         { id: 'btn_codex', name: "God's Codex", icon: '📖', desc: 'Complete encyclopedia and guides.' },
@@ -188,6 +207,10 @@ class UIManager {
         // Special actions for menu tools
         if (tool.id === 'btn_gen') {
             this.showModal('modal-generator');
+            return;
+        } else if (tool.id === 'btn_diplomacy') {
+            this.showModal('modal-diplomacy');
+            this.populateDiplomacyLedger();
             return;
         } else if (tool.id === 'btn_save') {
             this.showModal('modal-save');
@@ -279,6 +302,47 @@ class UIManager {
                 document.getElementById('modal-generator').classList.remove('active');
             };
         });
+
+        // World Pixel Density / Size Selector buttons
+        document.querySelectorAll('.world-size-btn').forEach(btn => {
+            btn.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                document.querySelectorAll('.world-size-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const w = parseInt(btn.dataset.width);
+                const h = parseInt(btn.dataset.height);
+                this.game.setWorldSize(w, h);
+            };
+        });
+
+        // Cinematic mode button
+        const btnCinematic = document.getElementById('btn-cinematic');
+        if (btnCinematic) {
+            btnCinematic.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                document.body.classList.toggle('cinematic');
+            };
+        }
+
+        // Diplomacy ledger buttons
+        const btnLedgerPeace = document.getElementById('btn-ledger-peace');
+        if (btnLedgerPeace) {
+            btnLedgerPeace.onclick = () => {
+                this.game.entityManager.forcePeace = true;
+                this.game.entityManager.worldWar = false;
+                if (this.game.audio) this.game.audio.playMagic();
+                this.populateDiplomacyLedger();
+            };
+        }
+        const btnLedgerWar = document.getElementById('btn-ledger-war');
+        if (btnLedgerWar) {
+            btnLedgerWar.onclick = () => {
+                this.game.entityManager.worldWar = true;
+                this.game.entityManager.forcePeace = false;
+                if (this.game.audio) this.game.audio.playThunder();
+                this.populateDiplomacyLedger();
+            };
+        }
 
         // Export & Import
         const expBtn = document.getElementById('btn-export-world');
@@ -423,6 +487,45 @@ class UIManager {
         }
         const m = document.getElementById(modalId);
         if (m) m.classList.add('active');
+    }
+
+    populateDiplomacyLedger() {
+        const listEl = document.getElementById('diplomacy-kingdom-list');
+        if (!listEl) return;
+        const kingdoms = this.game.entityManager.getKingdomOverview();
+        if (kingdoms.length === 0) {
+            listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;">No sovereign kingdoms have emerged yet.<br>Spawn Humans, Elves, Orcs, or Dwarves to witness the rise of civilizations!</div>`;
+            return;
+        }
+
+        listEl.innerHTML = '';
+        kingdoms.forEach(k => {
+            const row = document.createElement('div');
+            row.className = 'kingdom-card-row';
+            const statusBadge = this.game.entityManager.worldWar 
+                ? '<span class="kingdom-badge-tag" style="background:#ef4444; color:#fff;">AT WAR</span>' 
+                : (this.game.entityManager.forcePeace 
+                    ? '<span class="kingdom-badge-tag" style="background:#22c55e; color:#fff;">PEACE</span>' 
+                    : '<span class="kingdom-badge-tag">SOVEREIGN</span>');
+
+            row.innerHTML = `
+                <div class="kingdom-card-header">
+                    <div class="kingdom-color-dot" style="background-color: ${k.color}; color: ${k.color};"></div>
+                    <div>
+                        <div class="kingdom-title-text">${k.name}</div>
+                        <div style="font-size: 0.76rem; color: #94a3b8;">Race: ${k.race} | Monarch: ${k.kingName}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div class="kingdom-stats-strip">
+                        <span>👥 Pop: <strong>${k.population}</strong></span>
+                        <span>🏰 Bldgs: <strong>${k.buildingsCount}</strong></span>
+                    </div>
+                    ${statusBadge}
+                </div>
+            `;
+            listEl.appendChild(row);
+        });
     }
 
     refreshSaveSlots() {

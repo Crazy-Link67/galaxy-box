@@ -808,4 +808,84 @@ body, html {
     border-color: #f59e0b;
 }
 
+/* ==========================================
+   CINEMATIC MODE (H key or eye button)
+   ========================================== */
+body.cinematic #top-hud,
+body.cinematic #bottom-hud,
+body.cinematic #tool-info-hud,
+body.cinematic #inspector-panel,
+body.cinematic #minimap-container {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* World Size Selector */
+.world-size-btn {
+    transition: all 0.15s ease;
+}
+
+.world-size-btn.active {
+    background: rgba(59, 130, 246, 0.35) !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+/* ==========================================
+   KINGDOM LEDGER & DIPLOMACY MODAL
+   ========================================== */
+.kingdom-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px 16px;
+    transition: all 0.15s ease;
+}
+
+.kingdom-card-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-accent);
+}
+
+.kingdom-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kingdom-color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 8px currentColor;
+}
+
+.kingdom-title-text {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #f8fafc;
+}
+
+.kingdom-badge-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+.kingdom-stats-strip {
+    display: flex;
+    gap: 14px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+
 

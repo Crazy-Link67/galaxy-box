@@ -11,10 +11,12 @@ class Game {
         // Core systems
         this.audio = new SoundManager();
         this.particleSystem = new ParticleSystem(7000);
-        this.world = new World(256, 144, Math.floor(Math.random() * 999999));
+        this.world = new World(384, 216, Math.floor(Math.random() * 999999));
         this.entityManager = new EntityManager();
         this.disasterManager = new DisasterManager();
         this.renderer = new Renderer(this.canvas, this.minimapCanvas);
+        this.renderer.camera.x = 192;
+        this.renderer.camera.y = 108;
         this.ui = new UIManager(this);
 
         // Creature Possession / Direct Control
@@ -90,6 +92,18 @@ class Game {
         if (preset !== 'flat' && preset !== 'ocean') {
             this.seedStarterCivilizations();
         }
+    }
+
+    setWorldSize(width, height) {
+        this.unpossess();
+        this.world.resize(width, height);
+        this.entityManager.clear();
+        this.disasterManager.clear();
+        this.particleSystem.clear();
+        this.world.generate('continents');
+        this.seedStarterCivilizations();
+        this.renderer.camera.x = width / 2;
+        this.renderer.camera.y = height / 2;
     }
 
     seedStarterCivilizations() {
@@ -291,13 +305,24 @@ class Game {
             if (cat) this.ui.switchCategory(cat.id);
         }
 
-        // Space to Pause
+        // Space: Attack if controlled, else toggle Pause
         if (e.code === 'Space') {
             e.preventDefault();
+            if (this.controlledEntity && this.controlledEntity.active) {
+                this.controlledEntity.usePrimaryAbility(this.mouse.worldX, this.mouse.worldY, this.world, this.entityManager, this.particleSystem, this.audio);
+                return;
+            }
             this.timeScale = this.timeScale === 0 ? 1 : 0;
             document.querySelectorAll('.time-btn').forEach(b => {
                 b.classList.toggle('active', parseFloat(b.dataset.speed) === this.timeScale);
             });
+            return;
+        }
+
+        // H key: Toggle Cinematic Mode (HUD visibility)
+        if (e.key === 'h' || e.key === 'H') {
+            document.body.classList.toggle('cinematic');
+            return;
         }
 
         // Brush resize [ and ]
@@ -339,6 +364,12 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerSupernova(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'corrosion') {
             if (isFirstClick) this.disasterManager.triggerCorrosionBomb(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'nuke_missile') {
+            if (isFirstClick) this.disasterManager.triggerNukeMissile(wx, wy);
+        } else if (tool === 'ion_cannon') {
+            if (isFirstClick) this.disasterManager.triggerIonCannon(wx, wy);
+        } else if (tool === 'rift') {
+            if (isFirstClick) this.disasterManager.triggerDimensionRift(wx, wy);
         }
 
         // 2. NATURE & DISASTERS
@@ -364,6 +395,12 @@ class Game {
             this.disasterManager.startStorm('snow', 800);
         } else if (tool === 'acidrain') {
             this.disasterManager.startStorm('acid', 800);
+        } else if (tool === 'sandstorm') {
+            this.disasterManager.startStorm('sandstorm', 800);
+        } else if (tool === 'clone_rain') {
+            this.disasterManager.triggerCloneRain(800);
+        } else if (tool === 'geyser') {
+            if (isFirstClick) this.disasterManager.triggerGeyser(wx, wy, this.world, this.particleSystem, this.audio);
         } else if (tool === 'wildfire') {
             this.world.ignite(tx, ty, 80);
         }
@@ -382,6 +419,8 @@ class Game {
         else if (tool === 'lava') this.world.applyBrush(wx, wy, bSize, TILES.LAVA);
         else if (tool === 'acid') this.world.applyBrush(wx, wy, bSize, TILES.ACID);
         else if (tool === 'bedrock') this.world.applyBrush(wx, wy, bSize, TILES.BEDROCK);
+        else if (tool === 'obsidian') this.world.applyBrush(wx, wy, bSize, TILES.OBSIDIAN);
+        else if (tool === 'crystal') this.world.applyBrush(wx, wy, bSize, TILES.CRYSTAL);
         else if (tool === 'nebula') this.world.applyBrush(wx, wy, bSize, TILES.NEBULA);
         else if (tool === 'stardust') this.world.applyBrush(wx, wy, bSize, TILES.STARDUST);
         else if (tool === 'raise') this.world.applyBrush(wx, wy, bSize, 'raise');
@@ -392,7 +431,6 @@ class Game {
         // 4. VARIOUS POWERS & MIRACLES
         else if (tool === 'hand') {
             if (isFirstClick) {
-                // Pick up nearest creature
                 const nearest = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
                 if (nearest && Math.hypot(nearest.x - wx, nearest.y - wy) < 12) {
                     this.disasterManager.grabbedEntity = nearest;
@@ -408,6 +446,34 @@ class Game {
             this.disasterManager.triggerHeatRay(wx, wy, this.world, this.particleSystem);
         } else if (tool === 'freezeray') {
             this.disasterManager.triggerFreezeRay(wx, wy, this.world, this.entityManager, this.particleSystem);
+        } else if (tool === 'shield') {
+            if (isFirstClick) this.disasterManager.triggerForcefield(wx, wy);
+        } else if (tool === 'mind_control') {
+            if (isFirstClick) this.disasterManager.triggerMindControl(wx, wy, this.entityManager, this.particleSystem);
+        } else if (tool === 'overclock') {
+            if (isFirstClick) this.disasterManager.triggerOverclock(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'necromancy') {
+            if (isFirstClick) this.disasterManager.triggerNecromancy(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'equip_sword') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'sword');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 12, ['#e2e8f0', '#facc15'], 1, 3, 1, 2);
+            }
+        } else if (tool === 'equip_bow') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'bow');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 12, ['#b45309', '#cbd5e1'], 1, 3, 1, 2);
+            }
+        } else if (tool === 'equip_blaster') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'blaster');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 12, ['#06b6d4', '#38bdf8'], 1, 3, 1, 2);
+            }
+        } else if (tool === 'equip_staff') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'staff');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 12, ['#a855f7', '#c084fc'], 1, 3, 1, 2);
+            }
         } else if (tool === 'blessing') {
             if (isFirstClick) this.disasterManager.triggerBlessing(wx, wy, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'curse') {
@@ -453,6 +519,7 @@ class Game {
             const validCreatures = [
                 'human', 'elf', 'orc', 'dwarf', 'sheep', 'cow', 'wolf', 'bear', 
                 'dragon', 'golem', 'zombie', 'skeleton', 'demon', 'alien',
+                'mech', 'wizard',
                 'crabzilla', 'kaiju', 'phoenix', 'kraken', 'hydra', 'frost_titan',
                 'galaxy_guardian', 'tank', 'warship', 'helicopter', 'starfighter'
             ];
@@ -461,8 +528,8 @@ class Game {
                 this.particleSystem.burst(wx, wy, 12, ['#ffffff', '#a855f7', '#38bdf8'], 1.5, 4, 1.5, 3);
                 if (this.audio) this.audio.playCreatureSound(tool);
 
-                // Auto possess colossal bosses & vehicles for instant action!
-                if (tool === 'crabzilla' || tool === 'kaiju' || tool === 'tank' || tool === 'warship' || tool === 'helicopter' || tool === 'starfighter') {
+                // Auto possess colossal bosses, dragons, mechs & vehicles for instant direct control action!
+                if (['crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter'].includes(tool)) {
                     this.possess(ent);
                 }
             }

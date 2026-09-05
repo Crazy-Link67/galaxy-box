@@ -145,6 +145,8 @@ class Entity {
         this.isControlled = false;
         this.abilityCooldown = 0;
         this.specialCooldown = 0;
+        this.weapon = null; // 'sword', 'bow', 'blaster', 'staff'
+        this.overclockTimer = 0;
 
         // Traits set
         this.traits = new Set();
@@ -309,6 +311,29 @@ class Entity {
                 this.isVehicle = true;
                 this.isFlying = true;
                 this.traits.add('fireproof');
+                break;
+            case 'mech':
+                this.name = 'Steampunk War Mech';
+                this.hp = 1800;
+                this.maxHp = 1800;
+                this.speed = 0.6;
+                this.attack = 75;
+                this.size = 7;
+                this.color = '#b45309';
+                this.isVehicle = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                break;
+            case 'wizard':
+                this.name = 'Arcane Wizard';
+                this.hp = 450;
+                this.maxHp = 450;
+                this.speed = 0.75;
+                this.attack = 55;
+                this.size = 3;
+                this.color = '#6366f1';
+                this.isCiv = true;
+                this.traits.add('immortal');
                 break;
             case 'human':
                 this.hp = 100;
@@ -507,6 +532,19 @@ class Entity {
         }
     }
 
+    equipWeapon(type) {
+        this.weapon = type;
+        if (type === 'sword') {
+            this.attack = Math.max(this.attack, 35) + 15;
+        } else if (type === 'bow') {
+            this.attack = Math.max(this.attack, 25) + 10;
+        } else if (type === 'blaster') {
+            this.attack = Math.max(this.attack, 30) + 15;
+        } else if (type === 'staff') {
+            this.attack = Math.max(this.attack, 35) + 20;
+        }
+    }
+
     applyBlessing() {
         this.blessed = true;
         this.cursed = false;
@@ -558,6 +596,30 @@ class Entity {
         const dirX = dx / dist;
         const dirY = dy / dist;
 
+        // 1. Equipped Weapon Attacks
+        if (this.weapon === 'sword') {
+            if (audio) audio.playClick();
+            const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 12)) {
+                target.takeDamage(this.attack * 1.5, this);
+                if (particleSystem) particleSystem.burst(target.x, target.y, 8, ['#ff4500', '#f59e0b', '#ffffff'], 1.5, 3, 1.5, 2, 'fire');
+            }
+            return;
+        } else if (this.weapon === 'bow') {
+            if (audio) audio.playClick();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6.5, dirY * 6.5, 'arrow', this.id, this.attack));
+            return;
+        } else if (this.weapon === 'blaster') {
+            if (audio) audio.playLaser();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
+            return;
+        } else if (this.weapon === 'staff') {
+            if (audio) audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 5.5, dirY * 5.5, 'laser', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 10, ['#a855f7', '#38bdf8'], 1, 3, 1, 2, 'stardust');
+            return;
+        }
+
         if (this.type === 'crabzilla' || this.hasTrait('laser_eyes')) {
             // Twin Eye Lasers!
             if (audio) audio.playLaser();
@@ -581,8 +643,16 @@ class Entity {
                     world.setTile(mx, my, TILES.LAVA);
                 }
             }
-        } else if (this.type === 'phoenix' || this.type === 'dragon') {
-            // Fireball
+        } else if (this.type === 'dragon') {
+            // Dragon Flamethrower Breath Stream
+            if (audio) audio.playExplosion(0.7);
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.18;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 5.5, Math.sin(ang) * 5.5, 'fireball', this.id, this.attack * 0.8));
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 4, this.y + dirY * 4, 10, ['#ef4444', '#f97316', '#fbbf24'], 2, 4, 1.5, 3, 'fire');
+        } else if (this.type === 'phoenix') {
+            // Phoenix Solar Fireball
             if (audio) audio.playExplosion(0.8);
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 4, dirY * 4, 'fireball', this.id, this.attack));
         } else if (this.type === 'frost_titan') {
@@ -619,6 +689,17 @@ class Entity {
             if (audio) audio.playLaser();
             entityManager.projectiles.push(new Projectile(this.x - 2, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
             entityManager.projectiles.push(new Projectile(this.x + 2, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
+        } else if (this.type === 'mech') {
+            // Twin Heavy Gatling Cannons
+            if (audio) audio.playLaser();
+            entityManager.projectiles.push(new Projectile(this.x - 3, this.y, dirX * 7, dirY * 7, 'arrow', this.id, this.attack * 0.6));
+            entityManager.projectiles.push(new Projectile(this.x + 3, this.y, dirX * 7, dirY * 7, 'arrow', this.id, this.attack * 0.6));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 6, ['#f59e0b', '#78350f'], 1, 3, 1, 2);
+        } else if (this.type === 'wizard') {
+            // Arcane Mystic Orb
+            if (audio) audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 5, dirY * 5, 'laser', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 8, ['#818cf8', '#c084fc', '#ffffff'], 1.5, 4, 1.5, 3, 'stardust');
         } else if (this.hasTrait('venomous') || this.type === 'hydra') {
             // Acid / Venom Spit
             if (audio) audio.playSplash();
@@ -702,6 +783,28 @@ class Entity {
                     other.takeDamage(75, this);
                 }
             }
+        } else if (this.type === 'mech') {
+            // Flamethrower Arc Sweep
+            if (audio) audio.playExplosion(0.7);
+            for (let i = -2; i <= 2; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 4, Math.sin(ang) * 4, 'fireball', this.id, 50));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 30, ['#ef4444', '#f59e0b', '#fbbf24'], 2, 5, 2, 3, 'fire');
+        } else if (this.type === 'wizard') {
+            // Arcane Blink & Chain Lightning Shockwave
+            if (audio) audio.playMagic();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 40, ['#818cf8', '#a855f7', '#ffffff'], 2, 6, 2, 4, 'stardust');
+            this.x += (Math.random() - 0.5) * 30;
+            this.y += (Math.random() - 0.5) * 30;
+            this.x = Math.max(4, Math.min(world.width - 4, this.x));
+            this.y = Math.max(4, Math.min(world.height - 4, this.y));
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 20) {
+                    other.takeDamage(70, this);
+                }
+            }
         } else if (this.type === 'kaiju') {
             // Kaiju Nuclear Roar & Shockwave
             if (audio) audio.playNuke();
@@ -714,6 +817,25 @@ class Entity {
             }
             for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
                 entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(angle) * 4, Math.sin(angle) * 4, 'fireball', this.id, 40));
+            }
+        } else if (this.type === 'dragon') {
+            // Dragon Great Firestorm Dive Bomb
+            if (audio) audio.playNuke();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 80, ['#ef4444', '#dc2626', '#f59e0b', '#fbbf24'], 3, 8, 2, 5, 'fire');
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 5, Math.sin(a) * 5, 'fireball', this.id, 65));
+            }
+            const rad = 12;
+            for (let dy = -rad; dy <= rad; dy++) {
+                for (let dx = -rad; dx <= rad; dx++) {
+                    if (dx * dx + dy * dy <= rad * rad) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                            world.ignite(tx, ty, 60);
+                        }
+                    }
+                }
             }
         } else if (this.type === 'frost_titan') {
             // Frost Nova: Freeze surrounding ground into ice!
@@ -1125,6 +1247,67 @@ class EntityManager {
             }
         }
         return nearest;
+    }
+
+    clone(ent) {
+        if (!ent || !ent.active) return null;
+        const newEnt = new Entity(ent.type, ent.x + (Math.random() - 0.5) * 6, ent.y + (Math.random() - 0.5) * 6);
+        newEnt.color = ent.color;
+        newEnt.hp = ent.hp;
+        newEnt.maxHp = ent.maxHp;
+        newEnt.attack = ent.attack;
+        newEnt.speed = ent.speed;
+        newEnt.scale = ent.scale;
+        newEnt.size = ent.size;
+        newEnt.weapon = ent.weapon;
+        newEnt.kingdomId = ent.kingdomId;
+        ent.traits.forEach(t => newEnt.traits.add(t));
+        this.entities.push(newEnt);
+        return newEnt;
+    }
+
+    equipNearest(x, y, weaponType) {
+        const ent = this.findNearestEntity({ id: -1, x, y });
+        if (ent && Math.hypot(ent.x - x, ent.y - y) < (ent.size * ent.scale + 16)) {
+            ent.equipWeapon(weaponType);
+            return ent;
+        }
+        return null;
+    }
+
+    getKingdomOverview() {
+        const overview = [];
+        for (const kd of this.kingdoms.values()) {
+            let kingName = "Elected Council";
+            let pop = 0;
+            let warriors = 0;
+            for (let i = 0; i < this.entities.length; i++) {
+                const ent = this.entities[i];
+                if (ent.active && ent.kingdomId === kd.id) {
+                    pop++;
+                    if (ent.isKing) kingName = ent.name;
+                    if (ent.attack > 15) warriors++;
+                }
+            }
+            const bCount = this.buildings.filter(b => b.kingdomId === kd.id).length;
+            const enemyNames = [];
+            for (const enemyId of kd.enemies) {
+                if (this.kingdoms.has(enemyId)) enemyNames.push(this.kingdoms.get(enemyId).name);
+            }
+            overview.push({
+                id: kd.id,
+                name: kd.name,
+                color: kd.color,
+                ruler: kingName,
+                population: pop,
+                warriors: warriors,
+                buildings: bCount,
+                wood: kd.wood,
+                stone: kd.stone,
+                enemies: enemyNames
+            });
+        }
+        return overview;
     }
 
     clear() {

@@ -32,6 +32,8 @@
             <button class="time-btn active" data-speed="1" title="Normal Speed">1x</button>
             <button class="time-btn" data-speed="2" title="Fast Speed">2x</button>
             <button class="time-btn" data-speed="5" title="Hyper Speed">5x</button>
+            <button class="time-btn" data-speed="10" title="Ultra Fast Speed">10x</button>
+            <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">👁️</button>
         </div>
     </div>
 
@@ -91,6 +93,14 @@
                 <button class="close-btn modal-close">&times;</button>
             </div>
             <div class="modal-body">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:6px;">World Pixel Density & Resolution:</label>
+                    <div style="display:flex; gap:8px;">
+                        <button class="world-size-btn" data-width="256" data-height="144" style="flex:1; padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">256x144<br><span style="font-size:0.7rem; color:#94a3b8;">Retro</span></button>
+                        <button class="world-size-btn active" data-width="384" data-height="216" style="flex:1; padding:8px 4px; background:rgba(59,130,246,0.3); border:1px solid #3b82f6; border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">384x216<br><span style="font-size:0.7rem; color:#60a5fa;">Dense Default</span></button>
+                        <button class="world-size-btn" data-width="512" data-height="288" style="flex:1; padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">512x288<br><span style="font-size:0.7rem; color:#94a3b8;">Micro HD</span></button>
+                    </div>
+                </div>
                 <div>
                     <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:6px;">Seed (Optional):</label>
                     <input type="number" id="gen-seed" class="input-field" placeholder="Random seed...">
@@ -348,6 +358,28 @@
                 <button class="btn btn-primary" id="btn-generate-galaxy-now" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: bold; background: linear-gradient(135deg, #a855f7, #38bdf8); box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); cursor: pointer; border-radius: 10px;">
                     🚀 Generate Spiral Galaxy Now!
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Kingdom Ledger & Diplomacy Modal -->
+    <div class="modal-overlay" id="modal-diplomacy">
+        <div class="modal-card" style="max-width: 620px;">
+            <div class="modal-header">
+                <h2>👑 Kingdom Ledger & Diplomacy</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                    Overview of all sovereign empires, their monarchs, populations, territories, and current diplomatic standing.
+                </p>
+                <div id="diplomacy-kingdom-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto;">
+                    <!-- Dynamically populated -->
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 14px;">
+                    <button class="btn btn-secondary" id="btn-ledger-peace" style="flex: 1;">🕊️ Enforce Global Peace</button>
+                    <button class="btn btn-danger" id="btn-ledger-war" style="flex: 1;">⚔️ Provoke World War</button>
+                </div>
             </div>
         </div>
     </div>
