@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GALAXYBOX - The Ultimate God Sandbox Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Fullscreen Canvas Container -->
+    <div id="canvas-container">
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- Top HUD -->
+    <div id="top-hud">
+        <!-- Logo & Title -->
+        <div class="hud-group">
+            <div class="game-logo">
+                <span>🌌 GALAXYBOX</span>
+                <span class="logo-badge">GOD SIM</span>
+            </div>
+            <div class="stat-tag" id="stat-fps">60 FPS</div>
+            <div class="stat-tag" id="stat-pop">0 Creatures</div>
+            <div class="stat-tag" id="stat-kingdoms">0 Kingdoms</div>
+        </div>
+
+        <!-- Simulation Time Controls -->
+        <div class="hud-group">
+            <button class="time-btn" data-speed="0" title="Pause (Spacebar)">⏸ Pause</button>
+            <button class="time-btn" data-speed="0.5" title="Slow Motion">0.5x</button>
+            <button class="time-btn active" data-speed="1" title="Normal Speed">1x</button>
+            <button class="time-btn" data-speed="2" title="Fast Speed">2x</button>
+            <button class="time-btn" data-speed="5" title="Hyper Speed">5x</button>
+        </div>
+    </div>
+
+    <!-- Tool Info & Brush Size HUD -->
+    <div id="tool-info-hud">
+        <div class="active-tool-header">
+            <div id="active-tool-name">Atomic Nuke</div>
+        </div>
+        <div id="active-tool-desc">Huge radioactive blast and mushroom cloud.</div>
+        <div class="brush-controls">
+            <span>Brush:</span>
+            <button class="brush-btn" id="brush-minus">-</button>
+            <span id="brush-size-val">5</span>
+            <button class="brush-btn" id="brush-plus">+</button>
+            <span style="font-size:0.75rem; color:#64748b;">(Keys [ and ])</span>
+        </div>
+    </div>
+
+    <!-- Inspector Panel Card -->
+    <div id="inspector-panel">
+        <div class="insp-header">
+            <span class="insp-title">Inspector</span>
+            <button class="close-btn" id="close-inspector">&times;</button>
+        </div>
+        <div id="inspector-content">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Bottom Floating Dock: Dynamic Tool Palette + 6 Category Tabs -->
+    <div id="bottom-hud">
+        <!-- Active Sub-tool Palette -->
+        <div id="tool-palette">
+            <!-- Dynamically populated by active category -->
+        </div>
+
+        <!-- 6 Main Category Tabs -->
+        <div id="category-tabs">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Minimap HUD -->
+    <div id="minimap-container">
+        <canvas id="minimap-canvas" width="140" height="80"></canvas>
+    </div>
+
+    <!-- ==========================================
+         MODAL DIALOGS
+         ========================================== -->
+
+    <!-- 1. World Generator Modal -->
+    <div class="modal-overlay" id="modal-generator">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🌍 World Generator</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:6px;">Seed (Optional):</label>
+                    <input type="number" id="gen-seed" class="input-field" placeholder="Random seed...">
+                </div>
+                <div>
+                    <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:8px;">Choose Map Preset:</label>
+                    <div class="preset-grid">
+                        <button class="gen-preset-btn" data-preset="continents">
+                            <span style="font-size:1.5rem;">🗺️</span>
+                            <span>Continents</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="archipelago">
+                            <span style="font-size:1.5rem;">🏝️</span>
+                            <span>Archipelago</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="pangea">
+                            <span style="font-size:1.5rem;">🌍</span>
+                            <span>Pangea</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="ring">
+                            <span style="font-size:1.5rem;">🌋</span>
+                            <span>Ring of Fire</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="chaos">
+                            <span style="font-size:1.5rem;">💥</span>
+                            <span>Chaos World</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="flat">
+                            <span style="font-size:1.5rem;">🟩</span>
+                            <span>Flat Grass</span>
+                        </button>
+                        <button class="gen-preset-btn" data-preset="ocean">
+                            <span style="font-size:1.5rem;">🌊</span>
+                            <span>Blank Ocean</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Save / Load Modal -->
+    <div class="modal-overlay" id="modal-save">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>💾 World Save & Load</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="save-slots-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div style="border-top: 1px solid var(--border-glass); padding-top: 14px; display:flex; gap:10px;">
+                    <button class="btn" id="btn-export-world">📥 Export World JSON</button>
+                    <label class="btn" style="display:inline-flex; align-items:center; cursor:pointer;">
+                        📤 Import World JSON
+                        <input type="file" id="input-import-world" accept=".json" style="display:none;">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Settings Modal -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>⚙️ Game Settings</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Master SFX Volume:</span>
+                    <input type="range" id="sound-volume" min="0" max="1" step="0.05" value="0.5" style="accent-color:var(--accent-blue);">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Mute All Audio:</span>
+                    <input type="checkbox" id="sound-mute" style="accent-color:var(--accent-blue); width:18px; height:18px;">
+                </div>
+                <div style="margin-top:10px; font-size:0.85rem; color:var(--text-secondary); line-height:1.5;">
+                    <p>🎮 <strong>Keyboard Controls:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 4px;">
+                        <li><strong>1 - 6</strong>: Quick switch category</li>
+                        <li><strong>WASD / Arrow Keys</strong>: Pan the camera</li>
+                        <li><strong>Right-Click / Middle-Click Drag</strong>: Pan camera smoothly</li>
+                        <li><strong>Scroll Wheel</strong>: Zoom in and out</li>
+                        <li><strong>Spacebar</strong>: Pause or unpause simulation</li>
+                        <li><strong>[ and ]</strong>: Decrease / increase brush size</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. God's Codex (Encyclopedia) Modal -->
+    <div class="modal-overlay" id="modal-codex">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>📖 God's Codex & Guide</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="codex-section">
+                    <h3>💥 1. Destruction & Chaos</h3>
+                    <p>Unleash supreme god powers to pulverize lands: <strong>Atomic Nukes</strong>, <strong>Antimatter Implosions</strong>, <strong>Black Holes</strong> that crush matter, <strong>Orbital Lasers</strong>, <strong>Meteors</strong>, and <strong>Tsar Disintegration</strong>.</p>
+                </div>
+                <div class="codex-section">
+                    <h3>🌪️ 2. Nature & Natural Disasters</h3>
+                    <p>Harness the primal forces of the planet: Active <strong>Volcanoes</strong> that pour hot magma, wandering <strong>Tornadoes</strong>, seismic <strong>Earthquakes</strong>, <strong>Lightning</strong> bolts, <strong>Tsunamis</strong>, and <strong>Acid Storms</strong>.</p>
+                </div>
+                <div class="codex-section">
+                    <h3>🗺️ 3. Landscaping</h3>
+                    <p>Sculpt oceans, sands, fertile soil, grasslands, mountain peaks, lava, and acid. Use the <strong>Elevation Shovels</strong> to raise or lower land, the <strong>Sponge</strong> to drain floods, and <strong>Life Sprout</strong> to instantly bloom forests.</p>
+                </div>
+                <div class="codex-section">
+                    <h3>✨ 4. Various Powers & Miracles</h3>
+                    <p>Pick up creatures with <strong>God's Hand</strong> and throw them across the sea. Bestow <strong>Divine Blessings</strong>, cast dark <strong>Curses</strong>, trigger a contagious <strong>Zombie Plague</strong>, flip the <strong>Coin of Fate</strong> (Thanos snap 50%), or inspect any lifeform with <strong>Miracle Eye</strong>.</p>
+                </div>
+                <div class="codex-section">
+                    <h3>👥 5. Creatures & Civilizations</h3>
+                    <p>Spawn Humans, Elves, Dwarves, and Orcs. Watch them build campfires, wooden cottages, and townhalls, form named kingdoms with banners, harvest wood and stone, and wage war with neighboring nations! Also populate the world with sheep, wolves, dragons, golems, and aliens.</p>
+                </div>
+                <div class="codex-section">
+                    <h3>⚙️ 6. The Menu</h3>
+                    <p>Generate endless procedural worlds (Continents, Archipelagos, Ring Worlds), save your creations to 5 local save slots, export/import JSON files to share with friends, and tweak sound and simulation speeds.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controlled Creature HUD -->
+    <div id="control-hud">
+        <div class="ctrl-left">
+            <span class="ctrl-icon">🎮</span>
+            <div>
+                <div id="ctrl-name">Crabzilla</div>
+                <div class="ctrl-hp-container">
+                    <div class="ctrl-hp-bar">
+                        <div id="ctrl-hp-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="ctrl-hp-text">5000 / 5000 HP</span>
+                </div>
+            </div>
+        </div>
+        <div class="ctrl-center">
+            <div class="ctrl-instruction"><span class="ctrl-badge">WASD</span> Move</div>
+            <div class="ctrl-instruction"><span class="ctrl-badge">L-CLICK</span> Primary Attack / Laser</div>
+            <div class="ctrl-instruction"><span class="ctrl-badge" id="ctrl-cd">R-CLICK / Q</span> Special Ability</div>
+        </div>
+        <div class="ctrl-right">
+            <button id="btn-exit-control" class="btn btn-sm btn-danger">Exit (ESC)</button>
+        </div>
+    </div>
+
+    <!-- 5. Creature Creator Studio Modal -->
+    <div class="modal-overlay" id="modal-creator">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🎨 Creature Creator Studio</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; gap:12px;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Creature Name:</label>
+                        <input type="text" id="custom-name" value="Megazord Titan" class="input-field">
+                    </div>
+                    <div style="width:90px;">
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Color:</label>
+                        <input type="color" id="custom-color" value="#ea580c" style="width:100%; height:38px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Base Archetype:</label>
+                    <select id="custom-archetype" class="input-field">
+                        <option value="crabzilla">Crabzilla Colossus (Crab Titan)</option>
+                        <option value="kaiju">Kaiju Godzilla (Atomic Reptile)</option>
+                        <option value="dragon">Flying Dragon (Winged Flier)</option>
+                        <option value="frost_titan">Frost Titan (Elemental Giant)</option>
+                        <option value="human">Humanoid Warrior / Hero</option>
+                        <option value="golem">Rock Golem (Stonemason)</option>
+                    </select>
+                </div>
+
+                <!-- Stats Sliders -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:flex; justify-content:space-between;">Health: <span id="val-custom-hp">1500</span></label>
+                        <input type="range" id="custom-hp" min="100" max="10000" step="100" value="1500" style="width:100%;" oninput="document.getElementById('val-custom-hp').textContent=this.value">
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:flex; justify-content:space-between;">Attack: <span id="val-custom-atk">60</span></label>
+                        <input type="range" id="custom-attack" min="10" max="300" step="5" value="60" style="width:100%;" oninput="document.getElementById('val-custom-atk').textContent=this.value">
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:flex; justify-content:space-between;">Speed: <span id="val-custom-spd">0.7</span></label>
+                        <input type="range" id="custom-speed" min="0.2" max="2.5" step="0.1" value="0.7" style="width:100%;" oninput="document.getElementById('val-custom-spd').textContent=this.value">
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem; color:var(--text-secondary); display:flex; justify-content:space-between;">Scale: <span id="val-custom-scale">2.5x</span></label>
+                        <input type="range" id="custom-scale" min="0.5" max="5.0" step="0.2" value="2.5" style="width:100%;" oninput="document.getElementById('val-custom-scale').textContent=this.value + 'x'">
+                    </div>
+                </div>
+
+                <!-- Traits Selection -->
+                <div>
+                    <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:6px;">Select Traits & Powers:</label>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:6px; max-height:130px; overflow-y:auto; padding:4px;">
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="titan" checked> 🗿 Titan</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="laser_eyes" checked> ⚡ Laser Eyes</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="fireproof" checked> 🔥 Fireproof</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="water_walker" checked> 🌊 Water Walker</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="regenerating" checked> 💚 Regeneration</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="super_speed"> 💨 Super Speed</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="immortal"> 👑 Immortal</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="venomous"> 🧪 Venomous</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="explosive_death"> 💣 Explosive</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="electrocharged"> 🌩️ Electro</label>
+                        <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="bloodthirsty"> 🩸 Bloodthirsty</label>
+                    </div>
+                </div>
+
+                <button id="btn-spawn-custom" class="btn" style="width:100%; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/entities.js"></script>
+    <script src="js/disasters.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
+
