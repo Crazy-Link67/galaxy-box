@@ -59,6 +59,8 @@ class Game {
         this.camStartTouchX = 0;
         this.camStartTouchY = 0;
         this.camStartTouchZoom = 1;
+        this.chronoFreezeTimer = 0;
+        this.settings = null;
 
         // Generate initial world
         this.generateWorld('continents');
@@ -94,6 +96,7 @@ class Game {
     }
 
     shakeCamera(intensity = 10, duration = 20) {
+        if (this.settings && this.settings.shake === false) return;
         this.shakeIntensity = Math.max(this.shakeIntensity, intensity);
         this.shakeDuration = Math.max(this.shakeDuration, duration);
     }
@@ -185,6 +188,14 @@ class Game {
         // Keyboard shortcuts
         window.addEventListener('keydown', (e) => this.handleKeyDown(e));
         window.addEventListener('keyup', (e) => this.handleKeyUp(e));
+
+        // Clear keys on window blur or cancel to prevent sticking
+        const clearKeys = () => {
+            this.keys = {};
+            this.virtualKeys = { up: false, down: false, left: false, right: false };
+        };
+        window.addEventListener('blur', clearKeys);
+        window.addEventListener('pointercancel', clearKeys);
     }
 
     handleMouseDown(e) {
@@ -421,6 +432,12 @@ class Game {
         // 1. DESTRUCTION & CHAOS
         if (tool === 'nuke') {
             if (isFirstClick) this.disasterManager.triggerNuke(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'duck_barrage') {
+            if (isFirstClick) this.disasterManager.triggerDuckBarrage(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'plasma_barrage') {
+            if (isFirstClick) this.disasterManager.triggerPlasmaBarrage(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'gamma_ray') {
+            this.disasterManager.triggerGammaRay(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'antimatter') {
             if (isFirstClick) this.disasterManager.triggerAntimatter(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'blackhole') {
@@ -461,6 +478,12 @@ class Game {
                 this.disasterManager.spawnVolcano(wx, wy, this.world);
                 if (this.audio) this.audio.playExplosion(1.5);
             }
+        } else if (tool === 'solar_flare') {
+            if (isFirstClick) this.disasterManager.triggerSolarFlare(this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'frost_tempest') {
+            if (isFirstClick) this.disasterManager.triggerFrostTempest(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'crystal_spire') {
+            if (isFirstClick) this.disasterManager.triggerCrystalSpire(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'tornado') {
             if (isFirstClick) {
                 this.disasterManager.spawnTornado(wx, wy);
@@ -550,6 +573,43 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerOverclock(wx, wy, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'necromancy') {
             if (isFirstClick) this.disasterManager.triggerNecromancy(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'chrono_freeze') {
+            if (isFirstClick) this.disasterManager.triggerChronoFreeze(this, this.audio);
+        } else if (tool === 'genesis_wave') {
+            if (isFirstClick) this.disasterManager.triggerGenesisWave(this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'duck_stampede') {
+            if (isFirstClick) this.disasterManager.triggerDuckStampede(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'sanctuary_beacon') {
+            if (isFirstClick) this.disasterManager.triggerSanctuaryBeacon(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'war_drum') {
+            if (isFirstClick) this.disasterManager.triggerWarHorn(this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'bounty_blessing') {
+            if (isFirstClick) this.disasterManager.triggerBountyBlessing(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'equip_thunder_hammer') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'thunder_hammer');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#38bdf8', '#facc15'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_flamethrower') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'flamethrower');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#f97316', '#ef4444'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_frost_wand') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'frost_wand');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#a5f3fc', '#38bdf8'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_chaos_mace') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'chaos_mace');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#ef4444', '#78350f'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_shuriken') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'shuriken');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#cbd5e1', '#ffffff'], 1.2, 3.5, 1, 2);
+            }
         } else if (tool === 'equip_sword') {
             if (isFirstClick) {
                 const ent = this.entityManager.equipNearest(wx, wy, 'sword');
@@ -661,7 +721,8 @@ class Game {
                 'mech', 'wizard',
                 'crabzilla', 'kaiju', 'phoenix', 'kraken', 'hydra', 'frost_titan',
                 'galaxy_guardian', 'tank', 'warship', 'helicopter', 'starfighter',
-                'colossus_mech', 'seraph_angel', 'dune_leviathan', 'vampire_lord', 'void_titan', 'evermean'
+                'colossus_mech', 'seraph_angel', 'dune_leviathan', 'vampire_lord', 'void_titan', 'evermean',
+                'duck', 'crystal_golem', 'shadow_assassin'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);
@@ -669,7 +730,7 @@ class Game {
                 if (this.audio) this.audio.playCreatureSound(tool);
 
                 // Auto possess colossal bosses, dragons, mechs & vehicles for instant direct control action!
-                if (['crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter', 'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean'].includes(tool)) {
+                if (['crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter', 'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean', 'duck', 'crystal_golem', 'shadow_assassin'].includes(tool)) {
                     this.possess(ent);
                 }
             }
@@ -719,7 +780,8 @@ class Game {
         }
 
         const cam = this.renderer.camera;
-        const panSpeed = 6 / cam.zoom;
+        const panMult = (this.settings && this.settings.panSpeed) ? this.settings.panSpeed : 1.0;
+        const panSpeed = (6 / cam.zoom) * panMult;
 
         if (this.keys['w'] || this.keys['arrowup'] || (this.virtualKeys && this.virtualKeys.up)) cam.y -= panSpeed;
         if (this.keys['s'] || this.keys['arrowdown'] || (this.virtualKeys && this.virtualKeys.down)) cam.y += panSpeed;
@@ -763,12 +825,20 @@ class Game {
 
         // Step simulation if not paused
         if (this.timeScale > 0) {
-            const steps = this.timeScale;
-            for (let s = 0; s < steps; s++) {
-                this.world.update(this.particleSystem);
-                this.entityManager.update(this.world, this.particleSystem, this.audio, this.disasterManager);
-                this.disasterManager.update(this.world, this.entityManager, this.particleSystem, this.audio);
+            if (this.chronoFreezeTimer > 0) {
+                this.chronoFreezeTimer -= dt;
                 this.particleSystem.update(1);
+                if (this.controlledEntity && this.controlledEntity.active) {
+                    this.controlledEntity.update(this.world, this.entityManager, this.particleSystem, this.audio, this.disasterManager);
+                }
+            } else {
+                const steps = this.timeScale;
+                for (let s = 0; s < steps; s++) {
+                    this.world.update(this.particleSystem);
+                    this.entityManager.update(this.world, this.particleSystem, this.audio, this.disasterManager);
+                    this.disasterManager.update(this.world, this.entityManager, this.particleSystem, this.audio);
+                    this.particleSystem.update(1);
+                }
             }
         }
 

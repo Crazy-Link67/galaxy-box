@@ -115,8 +115,14 @@ class Renderer {
         }
 
         // 6.5. Render Corpses & Remains
-        if (entityManager.corpses) {
+        const showCorpses = !(typeof window !== 'undefined' && window.game && window.game.settings && window.game.settings.corpses === false);
+        if (showCorpses && entityManager.corpses) {
             this.renderCorpses(entityManager.corpses);
+        }
+
+        // 6.8. Render Explosive Eggs
+        if (entityManager.explosiveEggs) {
+            this.renderExplosiveEggs(entityManager.explosiveEggs);
         }
 
         // 7. Render Entities
@@ -129,7 +135,8 @@ class Renderer {
         particleSystem.render(ctx);
 
         // 8.5. Render Floating Combat Damage Numbers
-        if (entityManager.floatingTexts) {
+        const showDamage = !(typeof window !== 'undefined' && window.game && window.game.settings && window.game.settings.damageText === false);
+        if (showDamage && entityManager.floatingTexts) {
             this.renderFloatingTexts(entityManager.floatingTexts);
         }
 
@@ -1207,12 +1214,32 @@ class Renderer {
 
                 // Root Legs / Moving Feet
                 ctx.fillStyle = '#451a03';
-                ctx.fillRect(-s * 0.7, s * 0.4 + legStep, 3, s * 0.7);
-                ctx.fillRect(s * 0.3, s * 0.4 - legStep, 3, s * 0.7);
-                // Root toes grasping soil
-                ctx.fillStyle = '#78350f';
-                ctx.fillRect(-s * 0.9, s * 0.9 + legStep, 4.5, 2.5);
-                ctx.fillRect(s * 0.2, s * 0.9 - legStep, 4.5, 2.5);
+                // Pointy Sharp Root Legs (Tapered wooden needle stilts)
+                ctx.fillStyle = '#451a03';
+                // Left sharp pointy root leg
+                ctx.beginPath();
+                ctx.moveTo(-s * 0.7, s * 0.3);
+                ctx.lineTo(-s * 1.1, s * 0.8 + legStep);
+                ctx.lineTo(-s * 0.9, s * 1.4 + legStep); // needle sharp point
+                ctx.lineTo(-s * 0.4, s * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                // Right sharp pointy root leg
+                ctx.beginPath();
+                ctx.moveTo(s * 0.7, s * 0.3);
+                ctx.lineTo(s * 1.1, s * 0.8 - legStep);
+                ctx.lineTo(s * 0.9, s * 1.4 - legStep); // needle sharp point
+                ctx.lineTo(s * 0.4, s * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                // Center sharp pointed stabilizing root
+                ctx.fillStyle = '#270e02';
+                ctx.beginPath();
+                ctx.moveTo(-1.2, s * 0.35);
+                ctx.lineTo(0, s * 1.25);
+                ctx.lineTo(1.2, s * 0.35);
+                ctx.closePath();
+                ctx.fill();
 
                 // Gnarled Wooden Trunk
                 ctx.fillStyle = '#451a03';
@@ -1223,15 +1250,15 @@ class Renderer {
                 ctx.fillRect(-s * 0.4, -s * 0.4, 2, s * 0.8);
                 ctx.fillRect(s * 0.2, -s * 0.3, 2, s * 0.7);
 
-                // Ancient Hollow Face & Amber Eyes
+                // Eyeless Menacing Bark Fissure (Hollow dark wooden void - NO EYES)
+                ctx.fillStyle = '#0a0502';
+                ctx.fillRect(-2.5, -s * 0.35, 5, 3.8);
+                ctx.fillRect(-1.5, -s * 0.45, 3, 1.2);
+                ctx.fillRect(-1, -s * 0.1, 2, 2.5);
+                // Dark knotted wood fissures
                 ctx.fillStyle = '#1c0a00';
-                ctx.fillRect(-2.5, -s * 0.3, 5, 4);
-                ctx.fillStyle = '#facc15';
-                ctx.fillRect(-2, -s * 0.25, 1.5, 1.5);
-                ctx.fillRect(0.5, -s * 0.25, 1.5, 1.5);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(-1.5, -s * 0.25, 0.8, 0.8);
-                ctx.fillRect(1.0, -s * 0.25, 0.8, 0.8);
+                ctx.fillRect(-3.2, -s * 0.25, 1, 2);
+                ctx.fillRect(2.2, -s * 0.25, 1, 2);
 
                 // Leafy Foliage Canopy (Crown of Living Oak)
                 ctx.fillStyle = '#14532d';
@@ -1395,6 +1422,18 @@ class Renderer {
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(px + 3.5, py - 0.8, 1, 1);
             }
+            else if (ent.type === 'duck') {
+                this.renderDuck(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'crystal_golem') {
+                this.renderCrystalGolem(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'shadow_assassin') {
+                this.renderShadowAssassin(ctx, ent, px, py, size);
+            }
+            else if (ent.bodyParts || (ent.customData && ent.customData.bodyParts)) {
+                this.renderCustomModularCreature(ctx, ent, px, py, size);
+            }
             // Standard / Custom Creature Body Fallback
             else {
                 let bodyColor = ent.color;
@@ -1501,6 +1540,60 @@ class Renderer {
                 ctx.fillRect(-0.5, -size * 1.7, 1.0, size * 1.7);
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(-0.3, -size * 1.5, 0.6, size * 1.2);
+                ctx.restore();
+            } else if (ent.weapon === 'thunder_hammer') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slam = ent.attackCooldown > 10 ? Math.sin(this.animTime * 20) * 0.8 : 0.2;
+                ctx.rotate(slam * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-0.7, -size * 0.2, 1.4, size * 1.5);
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(-3, -size * 0.7, 6, 3.5);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-1.5, -size * 0.6, 3, 1.5);
+                ctx.restore();
+            } else if (ent.weapon === 'flamethrower') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(ent.vx < 0 ? -5 : 0, -2, 5, 4);
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(ent.vx < 0 ? -7 : 5, -1, 3, 2);
+                ctx.fillStyle = Math.random() < 0.5 ? '#f97316' : '#facc15';
+                ctx.fillRect(ent.vx < 0 ? -9 : 8, -0.6, 2, 1.2);
+                ctx.restore();
+            } else if (ent.weapon === 'frost_wand') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                ctx.fillStyle = '#e0f2fe';
+                ctx.fillRect(-0.6, -size * 1.3, 1.2, size * 1.8);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-1.5, -size * 1.5 - 2, 3, 3);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-0.5, -size * 1.5 - 1, 1, 1);
+                ctx.restore();
+            } else if (ent.weapon === 'chaos_mace') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const swing = Math.sin(this.animTime * 12) * 0.5;
+                ctx.rotate(swing * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(-0.6, -size * 0.2, 1.2, size * 1.4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-2.5, -size * 0.8, 5, 5);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(-1.2, -size * 0.7, 2.4, 2.4);
+                ctx.restore();
+            } else if (ent.weapon === 'shuriken') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.6 : size * 0.6), py);
+                ctx.rotate(this.animTime * 15);
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(-2.5, -0.6, 5, 1.2);
+                ctx.fillRect(-0.6, -2.5, 1.2, 5);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-0.5, -0.5, 1, 1);
                 ctx.restore();
             }
 
@@ -1739,6 +1832,352 @@ class Renderer {
             }
         }
         ctx.restore();
+    }
+
+    renderDuck(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+
+        const waddle = Math.sin(this.animTime * 14) * 0.8;
+        const s = size;
+
+        // Orange Webbed Feet
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(-2, 1.5 + waddle, 2.2, 1.2);
+        ctx.fillRect(0.8, 1.5 - waddle, 2.2, 1.2);
+
+        // Plump Yellow Body
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(-3, -2, 6, 4);
+        ctx.fillRect(-2, -3, 4, 1);
+
+        // Little Wing Flap
+        ctx.fillStyle = '#eab308';
+        const wingOffset = Math.sin(this.animTime * 12) * 0.5;
+        ctx.fillRect(-1.5, -1.8 + wingOffset, 3, 2.5);
+
+        // Duck Head
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(1.5, -4.5, 3.5, 3.5);
+
+        // Cute Black Bead Eye
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(3.5, -3.8, 1, 1);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(3.8, -3.8, 0.5, 0.5);
+
+        // Bright Orange Beak
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(5, -3.2, 2.5, 1.5);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(5, -2.2, 2.5, 0.6);
+
+        // Cartoon Bomb Fuse on Head
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(2.5, -5.8, 1, 1.5);
+        ctx.fillRect(3.2, -6.5, 1.2, 0.8);
+
+        // Sparking Fuse Tip
+        const sparkColors = ['#ff4500', '#facc15', '#ffffff', '#fbbf24'];
+        ctx.fillStyle = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+        ctx.fillRect(3.8, -7.2, 1.4, 1.4);
+
+        ctx.restore();
+    }
+
+    renderCrystalGolem(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.8;
+        const step = Math.sin(this.animTime * 6) * 1.5;
+
+        // Crystal Legs
+        ctx.fillStyle = '#be185d';
+        ctx.fillRect(-s * 0.6, s * 0.2 + step, s * 0.4, s * 0.8);
+        ctx.fillRect(s * 0.2, s * 0.2 - step, s * 0.4, s * 0.8);
+
+        // Crystal Torso Facets
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(-s * 0.7, -s * 0.6, s * 1.4, s * 0.9);
+        ctx.fillStyle = '#f472b6';
+        ctx.fillRect(-s * 0.5, -s * 0.5, s * 1.0, s * 0.7);
+
+        // Glowing Core
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-1.5, -s * 0.3, 3, 3);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-0.8, -s * 0.3 + 0.7, 1.6, 1.6);
+
+        // Spiky Crystal Shoulders
+        ctx.fillStyle = '#db2777';
+        ctx.fillRect(-s * 0.9, -s * 0.8, s * 0.3, s * 0.5);
+        ctx.fillRect(s * 0.6, -s * 0.8, s * 0.3, s * 0.5);
+
+        // Faceted Head
+        ctx.fillStyle = '#be185d';
+        ctx.fillRect(-s * 0.35, -s * 1.1, s * 0.7, s * 0.5);
+        ctx.fillStyle = '#67e8f9';
+        ctx.fillRect(-s * 0.2, -s * 0.95, s * 0.4, 1.2);
+
+        ctx.restore();
+    }
+
+    renderShadowAssassin(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const bob = Math.sin(this.animTime * 10) * 0.6;
+
+        // Shadow Cloak / Shroud
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-2, -2 + bob, 4, 5);
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(-1.5, -1 + bob, 3, 3);
+
+        // Ninja Hood & Piercing Cyan Eyes
+        ctx.fillStyle = '#09090b';
+        ctx.fillRect(-1.8, -4.5 + bob, 3.6, 3);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(-1, -3.5 + bob, 0.8, 0.8);
+        ctx.fillRect(0.3, -3.5 + bob, 0.8, 0.8);
+
+        // Dual Stealth Daggers
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(2.2, -1 + bob, 1.2, 3.5);
+        ctx.fillRect(-3.4, -1 + bob, 1.2, 3.5);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(2.2, 2.5 + bob, 1.2, 1);
+        ctx.fillRect(-3.4, 2.5 + bob, 1.2, 1);
+
+        ctx.restore();
+    }
+
+    renderCustomModularCreature(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+
+        const bp = (ent.customData && ent.customData.bodyParts) || ent.bodyParts || {
+            head: 'humanoid', body: 'standard', arms: 'bipedal_arms', legs: 'bipedal_legs', back: 'none'
+        };
+        const col = (ent.customData && ent.customData.colors) || ent.colors || {
+            primary: ent.color || '#facc15',
+            secondary: '#3b82f6',
+            glow: '#00ffff'
+        };
+
+        const primaryCol = col.primary || ent.color || '#facc15';
+        const secCol = col.secondary || '#3b82f6';
+        const glowCol = col.glow || '#00ffff';
+
+        const s = size * 0.8;
+        const walkBob = Math.sin(this.animTime * 9) * 0.8;
+        const legStep = Math.sin(this.animTime * 8) * 1.5;
+
+        // 1. Back Accessories
+        if (bp.back === 'demon_wings') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 1.5, -s * 0.9, s * 0.9, 1.5);
+            ctx.fillRect(-s * 1.7, -s * 0.5, s * 1.1, 1.5);
+            ctx.fillRect(s * 0.6, -s * 0.9, s * 0.9, 1.5);
+            ctx.fillRect(s * 0.6, -s * 0.5, s * 1.1, 1.5);
+        } else if (bp.back === 'angel_wings') {
+            ctx.fillStyle = '#ffffff';
+            const flap = Math.sin(this.animTime * 10) * 1.5;
+            ctx.fillRect(-s * 1.4, -s * 0.8 + flap, s * 0.8, 2);
+            ctx.fillRect(s * 0.6, -s * 0.8 - flap, s * 0.8, 2);
+        } else if (bp.back === 'spiky_carapace') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.8, -s * 0.6, 2, 2);
+            ctx.fillRect(s * 0.6, -s * 0.6, 2, 2);
+            ctx.fillRect(-1, -s * 0.8, 2, 2);
+        } else if (bp.back === 'energy_exhaust') {
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(-s * 0.7, -s * 0.8, 2, 3);
+            ctx.fillRect(s * 0.5, -s * 0.8, 2, 3);
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-s * 0.7, -s * 1.0, 2, 1.5);
+            ctx.fillRect(s * 0.5, -s * 1.0, 2, 1.5);
+        } else if (bp.back === 'starlight_halo') {
+            ctx.strokeStyle = glowCol;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(-s * 0.6, -s * 1.4, s * 1.2, 2);
+        }
+
+        // 2. Legs / Movement Base
+        if (bp.legs === 'bipedal_legs') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.4, s * 0.2 + legStep, 1.8, s * 0.7);
+            ctx.fillRect(s * 0.2, s * 0.2 - legStep, 1.8, s * 0.7);
+        } else if (bp.legs === 'quadruped_paws') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.7, s * 0.2 + legStep, 2, s * 0.6);
+            ctx.fillRect(s * 0.4, s * 0.2 - legStep, 2, s * 0.6);
+            ctx.fillRect(-s * 0.3, s * 0.2 - legStep, 1.5, s * 0.6);
+            ctx.fillRect(s * 0.1, s * 0.2 + legStep, 1.5, s * 0.6);
+        } else if (bp.legs === 'arachnid_legs') {
+            ctx.strokeStyle = secCol;
+            ctx.lineWidth = 1.2;
+            for (let l = -2; l <= 2; l += 2) {
+                const w = Math.sin(this.animTime * 8 + l) * 1.5;
+                ctx.beginPath();
+                ctx.moveTo(-s * 0.4, s * 0.1);
+                ctx.lineTo(-s * 0.9, s * 0.5 + w);
+                ctx.lineTo(-s * 1.2, s * 0.9);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(s * 0.4, s * 0.1);
+                ctx.lineTo(s * 0.9, s * 0.5 - w);
+                ctx.lineTo(s * 1.2, s * 0.9);
+                ctx.stroke();
+            }
+        } else if (bp.legs === 'treads') {
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(-s * 0.7, s * 0.3, s * 1.4, s * 0.5);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-s * 0.6, s * 0.4, s * 1.2, 1.5);
+        } else if (bp.legs === 'ethereal_wisp') {
+            ctx.fillStyle = glowCol;
+            const wave = Math.sin(this.animTime * 7) * 1.5;
+            ctx.fillRect(-s * 0.4 + wave * 0.5, s * 0.2, s * 0.8, s * 0.6);
+            ctx.fillRect(-s * 0.2 - wave * 0.5, s * 0.6, s * 0.4, s * 0.4);
+        } else if (bp.legs === 'duck_webbed') {
+            ctx.fillStyle = '#f97316';
+            ctx.fillRect(-s * 0.5, s * 0.4 + legStep, 2.5, 1.5);
+            ctx.fillRect(s * 0.2, s * 0.4 - legStep, 2.5, 1.5);
+        }
+
+        // 3. Torso / Body
+        ctx.fillStyle = primaryCol;
+        ctx.fillRect(-s * 0.5, -s * 0.4 + walkBob, s, s * 0.8);
+
+        if (bp.body === 'armored') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.4, -s * 0.35 + walkBob, s * 0.8, s * 0.4);
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-1, -s * 0.2 + walkBob, 2, 2);
+        } else if (bp.body === 'muscular') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.3, -s * 0.3 + walkBob, 2, s * 0.5);
+            ctx.fillRect(s * 0.1, -s * 0.3 + walkBob, 2, s * 0.5);
+        } else if (bp.body === 'treant_bark') {
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(-s * 0.4, -s * 0.3 + walkBob, 1.5, s * 0.5);
+            ctx.fillRect(s * 0.1, -s * 0.2 + walkBob, 1.5, s * 0.4);
+        } else if (bp.body === 'chassis') {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(-s * 0.4, -s * 0.3 + walkBob, s * 0.8, 1.5);
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-s * 0.3, -s * 0.1 + walkBob, s * 0.6, 1.5);
+        } else if (bp.body === 'crystalline') {
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-1.5, -s * 0.25 + walkBob, 3, 3);
+        }
+
+        // 4. Arms / Weapons
+        if (bp.arms === 'bipedal_arms') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.7, -s * 0.3 + walkBob, 1.5, s * 0.6);
+            ctx.fillRect(s * 0.5, -s * 0.3 + walkBob, 1.5, s * 0.6);
+        } else if (bp.arms === 'blade_arms') {
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(-s * 0.9, -s * 0.4 + walkBob, 2, s * 0.9);
+            ctx.fillRect(s * 0.7, -s * 0.4 + walkBob, 2, s * 0.9);
+        } else if (bp.arms === 'blaster_arms') {
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(s * 0.5, -s * 0.2 + walkBob, s * 0.5, 2.5);
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(s * 0.9, -s * 0.2 + walkBob, 1.5, 1.5);
+        } else if (bp.arms === 'tentacles') {
+            ctx.strokeStyle = secCol;
+            ctx.lineWidth = 1.2;
+            const tw = Math.sin(this.animTime * 8) * 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-s * 0.5, -s * 0.1 + walkBob);
+            ctx.lineTo(-s * 0.9, s * 0.3 + tw);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(s * 0.5, -s * 0.1 + walkBob);
+            ctx.lineTo(s * 0.9, s * 0.3 - tw);
+            ctx.stroke();
+        } else if (bp.arms === 'wood_branches') {
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-s * 0.8, -s * 0.4 + walkBob, s * 0.4, 2);
+            ctx.fillRect(s * 0.5, -s * 0.4 + walkBob, s * 0.4, 2);
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(-s * 0.9, -s * 0.5 + walkBob, 2, 2);
+            ctx.fillRect(s * 0.8, -s * 0.5 + walkBob, 2, 2);
+        } else if (bp.arms === 'feather_wings') {
+            ctx.fillStyle = primaryCol;
+            ctx.fillRect(-s * 0.9, -s * 0.3 + walkBob, 3, s * 0.6);
+            ctx.fillRect(s * 0.6, -s * 0.3 + walkBob, 3, s * 0.6);
+        }
+
+        // 5. Head
+        ctx.fillStyle = primaryCol;
+        ctx.fillRect(-s * 0.35, -s * 0.85 + walkBob, s * 0.7, s * 0.5);
+
+        if (bp.head === 'horned') {
+            ctx.fillStyle = secCol;
+            ctx.fillRect(-s * 0.5, -s * 1.1 + walkBob, 1.5, 2.5);
+            ctx.fillRect(s * 0.35, -s * 1.1 + walkBob, 1.5, 2.5);
+        } else if (bp.head === 'draconic') {
+            ctx.fillStyle = primaryCol;
+            ctx.fillRect(s * 0.3, -s * 0.75 + walkBob, 2.5, 2);
+        } else if (bp.head === 'cyclops') {
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-1, -s * 0.75 + walkBob, 2, 2);
+        } else if (bp.head === 'treant') {
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(-s * 0.5, -s * 1.1 + walkBob, s * 1.0, 2);
+        } else if (bp.head === 'robotic') {
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(-s * 0.4, -s * 0.9 + walkBob, s * 0.8, 1.5);
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-s * 0.25, -s * 0.75 + walkBob, s * 0.5, 1.2);
+        } else if (bp.head === 'skull') {
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(-s * 0.3, -s * 0.85 + walkBob, s * 0.6, s * 0.45);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-1.5, -s * 0.75 + walkBob, 1, 1);
+            ctx.fillRect(0.5, -s * 0.75 + walkBob, 1, 1);
+        } else if (bp.head === 'duck') {
+            ctx.fillStyle = '#f97316';
+            ctx.fillRect(s * 0.3, -s * 0.7 + walkBob, 2.5, 1.5);
+        }
+
+        // Eyes (if not cyclops/robotic/skull)
+        if (bp.head !== 'cyclops' && bp.head !== 'robotic' && bp.head !== 'skull') {
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(-1.5, -s * 0.7 + walkBob, 1, 1);
+            ctx.fillRect(0.5, -s * 0.7 + walkBob, 1, 1);
+        }
+
+        ctx.restore();
+    }
+
+    renderExplosiveEggs(eggs) {
+        const ctx = this.ctx;
+        for (let i = 0; i < eggs.length; i++) {
+            const egg = eggs[i];
+            if (!egg.active) continue;
+            ctx.save();
+            ctx.fillStyle = '#fef08a';
+            ctx.fillRect(egg.x - 2, egg.y - 3, 4, 5);
+            ctx.fillRect(egg.x - 2.5, egg.y - 2, 5, 3);
+            ctx.fillStyle = '#ea580c';
+            ctx.fillRect(egg.x - 1, egg.y - 1, 1, 1);
+            ctx.fillRect(egg.x + 1, egg.y - 2, 1, 1);
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(egg.x - 0.5, egg.y - 4, 1, 1.5);
+            if (egg.timer % 20 < 10) {
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(egg.x - 0.5, egg.y - 5.5, 1.5, 1.5);
+            }
+            ctx.restore();
+        }
     }
 
     renderMinimap(world, entityManager) {

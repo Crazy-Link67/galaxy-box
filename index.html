@@ -186,30 +186,156 @@
 
     <!-- 3. Settings Modal -->
     <div class="modal-overlay" id="modal-settings">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 580px;">
             <div class="modal-header">
-                <h2>⚙️ Game Settings</h2>
+                <h2>⚙️ Game Settings & Performance</h2>
                 <button class="close-btn modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Master SFX Volume:</span>
-                    <input type="range" id="sound-volume" min="0" max="1" step="0.05" value="0.5" style="accent-color:var(--accent-blue);">
+                <!-- PWA Installation Banner -->
+                <button class="btn" id="btn-pwa-install" style="width:100%; margin-bottom:14px; padding:12px 16px; font-weight:700; font-size:0.95rem; background:linear-gradient(135deg, #4f46e5, #9333ea); border:1px solid #c084fc; box-shadow: 0 0 16px rgba(168, 85, 247, 0.4); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
+                    <span style="font-size:1.2rem;">📲</span>
+                    <span>Install GalaxyBox App (Offline Mobile & PC)</span>
+                </button>
+
+                <!-- Audio & Volume Section -->
+                <div class="settings-section">
+                    <h3 class="settings-subhead">🔊 Audio Controls</h3>
+                    <div class="setting-row">
+                        <div class="setting-label-group">
+                            <span>Master SFX Volume:</span>
+                            <span class="setting-val" id="val-sound-volume">50%</span>
+                        </div>
+                        <input type="range" id="sound-volume" min="0" max="1" step="0.05" value="0.5" class="setting-slider">
+                    </div>
+                    <div class="setting-toggle-row">
+                        <div class="setting-desc-text">
+                            <strong>Mute All Audio</strong>
+                            <small>Instantly silences all synthesized Web Audio effects</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sound-mute">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Mute All Audio:</span>
-                    <input type="checkbox" id="sound-mute" style="accent-color:var(--accent-blue); width:18px; height:18px;">
+
+                <!-- Simulation & Visual FX Toggles -->
+                <div class="settings-section" style="margin-top: 12px;">
+                    <h3 class="settings-subhead">✨ Visual Effects & Simulation Toggles</h3>
+                    <div class="settings-grid-toggles">
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Screen Shake</span>
+                                <small>Explosions & impacts</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-shake" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Damage Numbers</span>
+                                <small>Floating combat text</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-damagetext" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Lingering Corpses</span>
+                                <small>Fallen skeletons & stumps</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-corpses" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Weather Particles</span>
+                                <small>Rain, snow, dust storms</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-weather" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Footstep Ripples</span>
+                                <small>Water splashes & dust</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-footsteps" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Hit Flashes</span>
+                                <small>White flash on injury</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-hitflashes" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Pixel Edge Shading</span>
+                                <small>Native cellular lighting</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-edgeshading" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-toggle-item">
+                            <div class="toggle-info">
+                                <span>Creature Voices</span>
+                                <small>Duck quacks & groans</small>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-voices" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div style="margin-top:10px; font-size:0.85rem; color:var(--text-secondary); line-height:1.5;">
-                    <p>🎮 <strong>Keyboard Controls:</strong></p>
-                    <ul style="margin-left: 20px; margin-top: 4px;">
-                        <li><strong>1 - 6</strong>: Quick switch category</li>
-                        <li><strong>WASD / Arrow Keys</strong>: Pan the camera</li>
-                        <li><strong>Right-Click / Middle-Click Drag</strong>: Pan camera smoothly</li>
-                        <li><strong>Scroll Wheel</strong>: Zoom in and out</li>
-                        <li><strong>Spacebar</strong>: Pause or unpause simulation</li>
-                        <li><strong>[ and ]</strong>: Decrease / increase brush size</li>
-                    </ul>
+
+                <!-- Sliders Section -->
+                <div class="settings-section" style="margin-top: 12px;">
+                    <h3 class="settings-subhead">🎛️ Performance & Control Sliders</h3>
+                    <div class="setting-row">
+                        <div class="setting-label-group">
+                            <span>Max Particle Pool:</span>
+                            <span class="setting-val" id="val-setting-particles">1500</span>
+                        </div>
+                        <input type="range" id="setting-particle-limit" min="300" max="3500" step="100" value="1500" class="setting-slider">
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-label-group">
+                            <span>Camera Pan Speed:</span>
+                            <span class="setting-val" id="val-setting-pan">1.0x</span>
+                        </div>
+                        <input type="range" id="setting-pan-speed" min="0.5" max="3.0" step="0.1" value="1.0" class="setting-slider">
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-label-group">
+                            <span>Mobile D-Pad Size:</span>
+                            <span class="setting-val" id="val-setting-dpad">100%</span>
+                        </div>
+                        <input type="range" id="setting-dpad-scale" min="0.7" max="1.5" step="0.05" value="1.0" class="setting-slider">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                    <button class="btn btn-secondary" id="btn-reset-settings" style="font-size:0.8rem;">🔄 Reset Defaults</button>
+                    <span style="font-size:0.75rem; color:#64748b;">Settings saved to local storage</span>
                 </div>
             </div>
         </div>
@@ -295,43 +421,134 @@
 
     <!-- 5. Creature Creator Studio Modal -->
     <div class="modal-overlay" id="modal-creator">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 640px;">
             <div class="modal-header">
                 <h2>🎨 Creature Creator Studio</h2>
                 <button class="close-btn modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display:flex; gap:12px;">
-                    <div style="flex:1;">
-                        <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Creature Name:</label>
-                        <input type="text" id="custom-name" value="Megazord Titan" class="input-field">
+                <!-- Top Row: Name, Base Archetype, Live Preview Canvas -->
+                <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:12px;">
+                    <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:3px;">Creature Name:</label>
+                            <input type="text" id="custom-name" value="Omega Chimera" class="input-field">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:3px;">Base Archetype Preset:</label>
+                            <select id="custom-archetype" class="input-field">
+                                <option value="human">Humanoid Warrior / Hero</option>
+                                <option value="evermean">Evermean Treant (Eyeless Pointy-Legged Tree)</option>
+                                <option value="duck">Exploding Duck (Ticking Egg Fowl)</option>
+                                <option value="crystal_golem">Crystal Golem (Prism Colossus)</option>
+                                <option value="shadow_assassin">Shadow Assassin (Ninja Rogue)</option>
+                                <option value="crabzilla">Crabzilla Colossus (Crab Titan)</option>
+                                <option value="kaiju">Kaiju Godzilla (Atomic Reptile)</option>
+                                <option value="dragon">Flying Dragon (Winged Flier)</option>
+                                <option value="colossus_mech">Colossus Heavy Walker</option>
+                                <option value="void_titan">Cosmic Void Titan</option>
+                                <option value="seraph_angel">Seraph Celestial Angel</option>
+                                <option value="dune_leviathan">Dune Sand Leviathan</option>
+                                <option value="vampire_lord">Vampire Lord</option>
+                                <option value="frost_titan">Frost Titan (Elemental Giant)</option>
+                                <option value="golem">Rock Golem (Stonemason)</option>
+                            </select>
+                        </div>
+                        <!-- 3 Color Customizers -->
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Custom Color Palette:</label>
+                            <div style="display:flex; gap:8px;">
+                                <div style="flex:1;">
+                                    <span style="font-size:0.7rem; color:#94a3b8; display:block;">Primary Body</span>
+                                    <input type="color" id="custom-color" value="#ea580c" style="width:100%; height:32px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                                </div>
+                                <div style="flex:1;">
+                                    <span style="font-size:0.7rem; color:#94a3b8; display:block;">Secondary Armor</span>
+                                    <input type="color" id="custom-color-sec" value="#38bdf8" style="width:100%; height:32px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                                </div>
+                                <div style="flex:1;">
+                                    <span style="font-size:0.7rem; color:#94a3b8; display:block;">Energy Glow</span>
+                                    <input type="color" id="custom-color-glow" value="#facc15" style="width:100%; height:32px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="width:90px;">
-                        <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Color:</label>
-                        <input type="color" id="custom-color" value="#ea580c" style="width:100%; height:38px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                    <!-- Live Pixel Preview Box -->
+                    <div class="creator-preview-box">
+                        <div class="preview-badge">LIVE PIXEL PREVIEW</div>
+                        <canvas id="creator-preview-canvas" width="100" height="100" class="creator-canvas"></canvas>
+                        <span id="preview-species-tag" style="font-size:0.68rem; color:#38bdf8; font-family:monospace; margin-top:4px;">ANIMATED SPRITE</span>
                     </div>
                 </div>
 
-                <div>
-                    <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Base Archetype:</label>
-                    <select id="custom-archetype" class="input-field">
-                        <option value="evermean">Evermean Treant (Living Walking Tree)</option>
-                        <option value="crabzilla">Crabzilla Colossus (Crab Titan)</option>
-                        <option value="kaiju">Kaiju Godzilla (Atomic Reptile)</option>
-                        <option value="dragon">Flying Dragon (Winged Flier)</option>
-                        <option value="colossus_mech">Colossus Heavy Walker</option>
-                        <option value="void_titan">Cosmic Void Titan</option>
-                        <option value="seraph_angel">Seraph Celestial Angel</option>
-                        <option value="dune_leviathan">Dune Sand Leviathan</option>
-                        <option value="vampire_lord">Vampire Lord</option>
-                        <option value="frost_titan">Frost Titan (Elemental Giant)</option>
-                        <option value="human">Humanoid Warrior / Hero</option>
-                        <option value="golem">Rock Golem (Stonemason)</option>
-                    </select>
+                <!-- Modular Body Parts Customizer -->
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; margin-bottom: 12px;">
+                    <label style="font-size:0.82rem; font-weight:700; color:#cbd5e1; display:block; margin-bottom:6px;">🧬 Modular Body Parts:</label>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:8px;">
+                        <div>
+                            <label style="font-size:0.72rem; color:#94a3b8; display:block;">Head Style:</label>
+                            <select id="custom-part-head" class="input-field" style="font-size:0.75rem; padding:5px 8px;">
+                                <option value="humanoid">Humanoid</option>
+                                <option value="horned">Demon Horns</option>
+                                <option value="draconic">Dragon Snout</option>
+                                <option value="cyclops">Cyclops Visor</option>
+                                <option value="treant">Eyeless Bark</option>
+                                <option value="robotic">Cyborg Helm</option>
+                                <option value="skull">Undead Skull</option>
+                                <option value="duck">Duck Bill</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.72rem; color:#94a3b8; display:block;">Torso Style:</label>
+                            <select id="custom-part-body" class="input-field" style="font-size:0.75rem; padding:5px 8px;">
+                                <option value="standard">Standard Frame</option>
+                                <option value="armored">Steel Plated</option>
+                                <option value="muscular">Brawny Titan</option>
+                                <option value="treant_bark">Knotted Bark</option>
+                                <option value="chassis">Mech Core</option>
+                                <option value="avian_feather">Feathered Body</option>
+                                <option value="crystalline">Crystal Shard</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.72rem; color:#94a3b8; display:block;">Arms / Weapon:</label>
+                            <select id="custom-part-arms" class="input-field" style="font-size:0.75rem; padding:5px 8px;">
+                                <option value="bipedal_arms">Bipedal Fists</option>
+                                <option value="blade_arms">Scythe Blades</option>
+                                <option value="blaster_arms">Plasma Cannons</option>
+                                <option value="tentacles">Lashing Tentacles</option>
+                                <option value="wood_branches">Twisted Branches</option>
+                                <option value="feather_wings">Winged Arms</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.72rem; color:#94a3b8; display:block;">Legs / Base:</label>
+                            <select id="custom-part-legs" class="input-field" style="font-size:0.75rem; padding:5px 8px;">
+                                <option value="bipedal_legs">Bipedal Legs</option>
+                                <option value="pointy_roots">Pointy Needle Roots</option>
+                                <option value="quadruped_paws">Beast Paws</option>
+                                <option value="arachnid_legs">Spider Legs</option>
+                                <option value="treads">Heavy Treads</option>
+                                <option value="ethereal_wisp">Ethereal Wisp</option>
+                                <option value="duck_webbed">Webbed Flippers</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.72rem; color:#94a3b8; display:block;">Back Accessory:</label>
+                            <select id="custom-part-back" class="input-field" style="font-size:0.75rem; padding:5px 8px;">
+                                <option value="none">None</option>
+                                <option value="demon_wings">Demon Wings</option>
+                                <option value="angel_wings">Angel Wings</option>
+                                <option value="spiky_carapace">Spike Carapace</option>
+                                <option value="energy_exhaust">Rocket Thrusters</option>
+                                <option value="starlight_halo">Starlight Halo</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Stats Sliders -->
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
                     <div>
                         <label style="font-size:0.8rem; color:var(--text-secondary); display:flex; justify-content:space-between;">Health: <span id="val-custom-hp">1500</span></label>
                         <input type="range" id="custom-hp" min="100" max="10000" step="100" value="1500" style="width:100%;" oninput="document.getElementById('val-custom-hp').textContent=this.value">
@@ -353,7 +570,7 @@
                 <!-- Traits Selection -->
                 <div>
                     <label style="font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:6px;">Select Traits & Powers:</label>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:6px; max-height:140px; overflow-y:auto; padding:4px;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap:6px; max-height:130px; overflow-y:auto; padding:4px;">
                         <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="titan" checked> 🗿 Titan</label>
                         <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="headslammer" checked> 💥 Headslammer</label>
                         <label class="trait-check-label"><input type="checkbox" class="custom-trait-check" value="laser_eyes" checked> ⚡ Laser Eyes</label>
@@ -382,7 +599,7 @@
                     </div>
                 </div>
 
-                <button id="btn-spawn-custom" class="btn" style="width:100%; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
+                <button id="btn-spawn-custom" class="btn" style="width:100%; margin-top:10px; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
             </div>
         </div>
     </div>

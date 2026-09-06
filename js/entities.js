@@ -111,6 +111,28 @@ class Building {
             this.color = '#64748b';
         }
     }
+
+    takeDamage(amount, world = null, particleSystem = null, audio = null) {
+        this.hp -= amount;
+        if (particleSystem) {
+            particleSystem.burst(this.x, this.y, 4, ['#78350f', '#64748b', '#d97706'], 1, 2.5, 1, 2);
+        }
+        if (this.hp <= 0) {
+            this.hp = 0;
+            this.destroyed = true;
+            if (audio && typeof audio.playExplosion === 'function') {
+                audio.playExplosion(0.8);
+            }
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 16, ['#78350f', '#451a03', '#94a3b8', '#374151'], 1.5, 4, 1.5, 3, 'smoke');
+            }
+            if (world && world.inBounds(Math.floor(this.x), Math.floor(this.y))) {
+                world.setTile(Math.floor(this.x), Math.floor(this.y), TILES.ASH);
+            }
+            return true;
+        }
+        return false;
+    }
 }
 
 class Projectile {
@@ -762,6 +784,16 @@ class Entity {
             this.attack = Math.max(this.attack, 45) + 30;
         } else if (type === 'galaxy_blade') {
             this.attack = Math.max(this.attack, 55) + 45;
+        } else if (type === 'thunder_hammer') {
+            this.attack = Math.max(this.attack, 50) + 35;
+        } else if (type === 'flamethrower') {
+            this.attack = Math.max(this.attack, 35) + 20;
+        } else if (type === 'frost_wand') {
+            this.attack = Math.max(this.attack, 35) + 20;
+        } else if (type === 'chaos_mace') {
+            this.attack = Math.max(this.attack, 45) + 30;
+        } else if (type === 'shuriken') {
+            this.attack = Math.max(this.attack, 30) + 15;
         }
     }
 
@@ -884,7 +916,7 @@ class Entity {
 
         // Explosive death: Detonates in a huge explosion when slain
         if (this.hasTrait('explosive_death') && disasterManager) {
-            disasterManager.triggerExplosion(this.x, this.y, 16, 1.5, world, this, particleSystem, audio);
+            disasterManager.triggerExplosion(this.x, this.y, 16, 1.5, world, em, particleSystem, audio);
         }
         if (this.deathType === 'duck_explode' && particleSystem) {
             particleSystem.burst(this.x, this.y, 30, ['#facc15', '#fef08a', '#ffffff', '#f97316'], 2, 6, 2, 4, 'stardust');
@@ -972,6 +1004,53 @@ class Entity {
             if (audio) audio.playMagic();
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
             if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#38bdf8', '#facc15', '#ffffff'], 2, 4, 1.5, 2.5, 'stardust');
+            return;
+        } else if (this.weapon === 'thunder_hammer') {
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (typeof window !== 'undefined' && window.game && typeof window.game.shakeCamera === 'function') window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x + dirX * 10, this.y + dirY * 10, 20, ['#38bdf8', '#facc15', '#ffffff'], 2, 5, 2, 4, 'spark');
+            const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 22)) {
+                target.takeDamage(this.attack * 1.6, this);
+            }
+            if (entityManager.damageBuildingsInRadius) {
+                entityManager.damageBuildingsInRadius(this.x + dirX * 10, this.y + dirY * 10, 16, this.attack * 1.5, world, particleSystem, audio);
+            }
+            return;
+        } else if (this.weapon === 'flamethrower') {
+            if (audio && typeof audio.playClick === 'function') audio.playClick();
+            for (let i = 0; i < 3; i++) {
+                const spread = (Math.random() - 0.5) * 0.4;
+                const fx = dirX * Math.cos(spread) - dirY * Math.sin(spread);
+                const fy = dirX * Math.sin(spread) + dirY * Math.cos(spread);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, fx * 6, fy * 6, 'fireball', this.id, this.attack * 0.45));
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 4, this.y + dirY * 4, 10, ['#f97316', '#ef4444', '#facc15'], 1.5, 4, 1.5, 3, 'fire');
+            return;
+        } else if (this.weapon === 'frost_wand') {
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7, dirY * 7, 'frost', this.id, this.attack * 0.7));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 8, ['#a5f3fc', '#ffffff', '#38bdf8'], 1.5, 3.5, 1, 2, 'spark');
+            return;
+        } else if (this.weapon === 'chaos_mace') {
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.0);
+            if (particleSystem) particleSystem.burst(this.x + dirX * 12, this.y + dirY * 12, 16, ['#ef4444', '#f97316', '#000000'], 2, 4, 1.5, 3, 'fire');
+            const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 18)) {
+                target.takeDamage(this.attack * 1.5, this);
+            }
+            if (entityManager.damageBuildingsInRadius) {
+                entityManager.damageBuildingsInRadius(this.x + dirX * 12, this.y + dirY * 12, 14, this.attack * 1.4, world, particleSystem, audio);
+            }
+            return;
+        } else if (this.weapon === 'shuriken') {
+            if (audio && typeof audio.playClick === 'function') audio.playClick();
+            for (let a = -0.25; a <= 0.25; a += 0.25) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8.5, sy * 8.5, 'arrow', this.id, this.attack * 0.55));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 6, ['#cbd5e1', '#ffffff'], 1, 3, 1, 2);
             return;
         }
 
@@ -2262,6 +2341,17 @@ class EntityManager {
             });
         }
         return overview;
+    }
+
+    damageBuildingsInRadius(cx, cy, radius, damage, world = null, particleSystem = null, audio = null) {
+        for (let i = this.buildings.length - 1; i >= 0; i--) {
+            const b = this.buildings[i];
+            if (Math.hypot(b.x - cx, b.y - cy) <= radius) {
+                if (b.takeDamage(damage, world, particleSystem, audio)) {
+                    this.buildings.splice(i, 1);
+                }
+            }
+        }
     }
 
     clear() {
