@@ -662,14 +662,16 @@ class NukeMissile {
     constructor(targetX, targetY) {
         this.targetX = targetX;
         this.targetY = targetY;
-        this.x = targetX + (Math.random() - 0.5) * 60;
-        this.y = -100;
-        this.speed = 4.2;
+        this.x = targetX + (Math.random() - 0.5) * 80;
+        this.y = -180;
+        this.speed = 4.0;
         this.active = true;
         this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+        this.animTimer = 0;
     }
 
     update(world, entityManager, disasterManager, particleSystem, audio) {
+        this.animTimer++;
         const dx = this.targetX - this.x;
         const dy = this.targetY - this.y;
         const dist = Math.hypot(dx, dy);
@@ -677,62 +679,113 @@ class NukeMissile {
         this.angle = Math.atan2(dy, dx);
         this.x += Math.cos(this.angle) * this.speed;
         this.y += Math.sin(this.angle) * this.speed;
-        this.speed = Math.min(9.5, this.speed + 0.18);
+        this.speed = Math.min(11.0, this.speed + 0.22);
 
         if (particleSystem) {
-            const exX = this.x - Math.cos(this.angle) * 8;
-            const exY = this.y - Math.sin(this.angle) * 8;
-            particleSystem.spawn(exX, exY, -Math.cos(this.angle) * 2 + (Math.random() - 0.5), -Math.sin(this.angle) * 2 + (Math.random() - 0.5), 2.2, '#f97316', 20, 'fire');
-            particleSystem.spawn(exX, exY, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, 3.2, '#64748b', 30, 'smoke');
+            const exX = this.x - Math.cos(this.angle) * 12;
+            const exY = this.y - Math.sin(this.angle) * 12;
+            particleSystem.spawn(exX, exY, -Math.cos(this.angle) * 2.5 + (Math.random() - 0.5), -Math.sin(this.angle) * 2.5 + (Math.random() - 0.5), 3.2, '#f97316', 25, 'fire');
+            particleSystem.spawn(exX, exY, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, 4.5, '#475569', 35, 'smoke');
+            if (Math.random() < 0.35) {
+                particleSystem.spawn(exX, exY, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, 2.5, '#facc15', 15, 'spark');
+            }
         }
 
-        const reachedTarget = dist <= Math.max(10, this.speed * 1.5) || (this.y >= this.targetY && Math.abs(dx) <= 16);
+        const reachedTarget = dist <= Math.max(12, this.speed * 1.5) || (this.y >= this.targetY && Math.abs(dx) <= 20);
 
         if (reachedTarget) {
             this.active = false;
-            disasterManager.triggerNuke(this.targetX, this.targetY, world, entityManager, particleSystem, audio);
+            disasterManager.triggerWorldEndingNuke(this.targetX, this.targetY, world, entityManager, particleSystem, audio);
         }
     }
 
     render(ctx) {
         ctx.save();
+
+        // 1. Tactical Apocalyptic Targeting Reticle at target ground zero
+        const tx = Math.floor(this.targetX);
+        const ty = Math.floor(this.targetY);
+        const pulse = Math.sin(this.animTimer * 0.15) * 5;
+        const r = Math.floor(26 + pulse);
+
+        // Stepped pixel hazard corners
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(tx - r, ty - r, 8, 2);
+        ctx.fillRect(tx - r, ty - r, 2, 8);
+        ctx.fillRect(tx + r - 8, ty - r, 8, 2);
+        ctx.fillRect(tx + r - 2, ty - r, 2, 8);
+        ctx.fillRect(tx - r, ty + r - 2, 8, 2);
+        ctx.fillRect(tx - r, ty + r - 8, 2, 8);
+        ctx.fillRect(tx + r - 8, ty + r - 2, 8, 2);
+        ctx.fillRect(tx + r - 2, ty + r - 8, 2, 8);
+
+        // Crosshairs
+        ctx.fillRect(tx - r - 6, ty - 1, 6, 2);
+        ctx.fillRect(tx + r, ty - 1, 6, 2);
+        ctx.fillRect(tx - 1, ty - r - 6, 2, 6);
+        ctx.fillRect(tx - 1, ty + r, 2, 6);
+
+        // Concentric inner box
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tx - Math.floor(r * 0.5), ty - Math.floor(r * 0.5), Math.floor(r), Math.floor(r));
+
+        // Warning text
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('☢️ APOCALYPTIC TARGET ☢️', tx, ty - r - 8);
+
+        // 2. Heavy Ballistic ICBM Missile Body
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle + Math.PI / 2);
 
-        // Missile body
+        // Missile hull
         ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(-2.5, -8, 5, 16);
+        ctx.fillRect(-3.5, -12, 7, 24);
 
-        // Warhead (conical red tip)
+        // Conical red warhead tip
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
-        ctx.moveTo(-2.5, -8);
-        ctx.lineTo(0, -14);
-        ctx.lineTo(2.5, -8);
+        ctx.moveTo(-3.5, -12);
+        ctx.lineTo(0, -20);
+        ctx.lineTo(3.5, -12);
         ctx.closePath();
         ctx.fill();
 
         // Nuclear hazard stripes
         ctx.fillStyle = '#eab308';
-        ctx.fillRect(-2.5, -3, 5, 3);
+        ctx.fillRect(-3.5, -5, 7, 3);
         ctx.fillStyle = '#0f172a';
-        ctx.fillRect(-2.5, 0, 5, 2);
+        ctx.fillRect(-3.5, -2, 7, 3);
 
-        // Fins
+        // Hazard symbol indicator
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-1.5, 3, 3, 3);
+
+        // Stabilizer fins
         ctx.fillStyle = '#475569';
         ctx.beginPath();
-        ctx.moveTo(-2.5, 4); ctx.lineTo(-6, 8); ctx.lineTo(-2.5, 8);
+        ctx.moveTo(-3.5, 6); ctx.lineTo(-8, 12); ctx.lineTo(-3.5, 12);
         ctx.fill();
         ctx.beginPath();
-        ctx.moveTo(2.5, 4); ctx.lineTo(6, 8); ctx.lineTo(2.5, 8);
+        ctx.moveTo(3.5, 6); ctx.lineTo(8, 12); ctx.lineTo(3.5, 12);
         ctx.fill();
 
-        // Thruster flame
+        // Rocket thruster exhaust
         ctx.fillStyle = '#f97316';
         ctx.beginPath();
-        ctx.moveTo(-2, 8);
-        ctx.lineTo(0, 14 + Math.random() * 4);
-        ctx.lineTo(2, 8);
+        ctx.moveTo(-2.5, 12);
+        ctx.lineTo(0, 22 + Math.random() * 6);
+        ctx.lineTo(2.5, 12);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.moveTo(-1.5, 12);
+        ctx.lineTo(0, 17 + Math.random() * 3);
+        ctx.lineTo(1.5, 12);
         ctx.closePath();
         ctx.fill();
 
@@ -786,6 +839,7 @@ class DisasterManager {
         this.duckBarrages = [];
         this.activeStorm = null; // rain, snow, acid, sandstorm, clone_rain
         this.stormTimer = 0;
+        this.nuclearFlashTimer = 0;
 
         // God's hand state
         this.grabbedEntity = null;
@@ -802,6 +856,10 @@ class DisasterManager {
     }
 
     update(world, entityManager, particleSystem, audio) {
+        if (this.nuclearFlashTimer > 0) {
+            this.nuclearFlashTimer--;
+        }
+
         // Update Nuke Missiles
         for (let i = this.nukeMissiles.length - 1; i >= 0; i--) {
             const nm = this.nukeMissiles[i];
@@ -947,6 +1005,120 @@ class DisasterManager {
     // ==========================================
     // 1. DESTRUCTION & CHAOS POWERS
     // ==========================================
+
+    // Total Apocalyptic World-Ending Nuke Detonation (Obliterates the entire planet)
+    triggerWorldEndingNuke(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio) {
+            if (typeof audio.playWorldEnderNuke === 'function') audio.playWorldEnderNuke();
+            else if (typeof audio.playNuke === 'function') audio.playNuke();
+        }
+
+        // Blinding full-screen whiteout nuclear flash
+        this.nuclearFlashTimer = 65;
+
+        // Catastrophic prolonged seismic rumble
+        if (window.game) {
+            window.game.shakeCamera(55, 140);
+            if (window.game.ui && typeof window.game.ui.showNotification === 'function') {
+                window.game.ui.showNotification("☢️ APOCALYPTIC NUKE IMPACT: THE ENTIRE WORLD HAS BEEN DESTROYED!");
+            }
+        }
+
+        const maxDim = world ? Math.max(world.width, world.height) : 600;
+
+        // Colossal atmospheric mushroom cloud & fiery explosion bursts
+        if (particleSystem) {
+            particleSystem.nukeMushroom(cx, cy, 4.5);
+            particleSystem.burst(cx, cy, 800, ['#ffffff', '#fef08a', '#f97316', '#ef4444', '#84cc16', '#475569'], 6, 32, 2, 9, 'fire');
+
+            // Multiple global supersonic shockwaves sweeping across the map
+            for (let s = 0; s < 4; s++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 16 + s * 12, '#f97316', 100 + s * 25, 'shockwave', 0, 1);
+                if (sw) sw.extra = maxDim * 2.5;
+            }
+        }
+
+        // 1. COMPLETE OBLITERATION OF ALL KINGDOM BUILDINGS ACROSS THE ENTIRE WORLD
+        if (entityManager && Array.isArray(entityManager.buildings)) {
+            for (let i = entityManager.buildings.length - 1; i >= 0; i--) {
+                const b = entityManager.buildings[i];
+                b.takeDamage(99999, world, particleSystem, audio);
+            }
+            entityManager.buildings = [];
+        }
+
+        // 2. COMPLETE ANNIHILATION OF ALL LIVING ENTITIES ACROSS THE ENTIRE WORLD
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (!ent.active) continue;
+
+                // Check for The Great Galaxy Sacrifice
+                if (ent.type === 'galaxy_guardian' || ent.isCelestial) {
+                    this.triggerGreatGalaxySacrifice(ent.x, ent.y, world, entityManager, particleSystem, audio);
+                }
+
+                ent.takeDamage(99999);
+                const angle = Math.atan2(ent.y - cy, ent.x - cx);
+                ent.vx += Math.cos(angle) * 22;
+                ent.vy += Math.sin(angle) * 22;
+            }
+        }
+
+        // 3. COMPLETE WORLD TERRAIN DESTRUCTION ACROSS EVERY TILE ON THE PLANET
+        if (world) {
+            for (let i = 0; i < world.size; i++) {
+                const tx = i % world.width;
+                const ty = Math.floor(i / world.width);
+                const dist = Math.hypot(tx - cx, ty - cy);
+                const tile = world.tiles[i];
+
+                if (tile === TILES.BEDROCK) continue;
+
+                // Ground Zero Void Abyss (Core Crater)
+                if (dist < 40) {
+                    world.setTile(tx, ty, TILES.VOID);
+                }
+                // Heavy Thermal & Radioactive Rupture Zone (~40 to 95 tiles)
+                else if (dist < 95) {
+                    const r = Math.random();
+                    world.setTile(tx, ty, r < 0.5 ? TILES.FALLOUT : (r < 0.8 ? TILES.LAVA : TILES.MAGMA_ROCK));
+                    if (Math.random() < 0.3) world.ignite(tx, ty, 200);
+                }
+                // Middle Fallout & Acid Crater (~95 to 180 tiles)
+                else if (dist < 180) {
+                    if (tile === TILES.WATER || tile === TILES.DEEP_WATER) {
+                        world.setTile(tx, ty, Math.random() < 0.6 ? TILES.ACID : TILES.SAND);
+                    } else if (tile === TILES.ICE || tile === TILES.SNOW) {
+                        world.setTile(tx, ty, TILES.WATER);
+                    } else {
+                        world.setTile(tx, ty, Math.random() < 0.4 ? TILES.FALLOUT : TILES.ASH);
+                        world.ignite(tx, ty, 180);
+                    }
+                }
+                // Rest of the ENTIRE WORLD (Global Thermal Shockwave & Incineration)
+                else {
+                    if (tile === TILES.GRASS || tile === TILES.FOREST || tile === TILES.SWAMP || tile === TILES.BIOLUMINESCENT_MOSS) {
+                        world.setTile(tx, ty, TILES.ASH);
+                        world.ignite(tx, ty, 240);
+                    } else if (tile === TILES.WATER) {
+                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.ACID : TILES.WATER);
+                    } else if (tile === TILES.DEEP_WATER) {
+                        if (Math.random() < 0.25) world.setTile(tx, ty, TILES.ACID);
+                    } else if (tile === TILES.ICE || tile === TILES.SNOW) {
+                        world.setTile(tx, ty, TILES.WATER);
+                    } else if (tile === TILES.ROAD || tile === TILES.SOIL) {
+                        world.setTile(tx, ty, TILES.ASH);
+                    } else if (tile === TILES.STONE || tile === TILES.HIGH_MOUNTAIN) {
+                        if (Math.random() < 0.35) world.setTile(tx, ty, TILES.ASH);
+                    }
+                }
+            }
+        }
+
+        // Global Nuclear Winter Fallout Storm
+        this.startStorm('acid', 3500);
+    }
 
     // Atomic Nuke (Mega-Destruction Overhaul)
     triggerNuke(cx, cy, world, entityManager, particleSystem, audio) {
@@ -1834,7 +2006,10 @@ class DisasterManager {
     }
 
     // Nuke Missile Airstrike
-    triggerNukeMissile(targetX, targetY) {
+    triggerNukeMissile(targetX, targetY, audio = null) {
+        if (audio && typeof audio.playApocalypseSiren === 'function') {
+            audio.playApocalypseSiren();
+        }
         this.nukeMissiles.push(new NukeMissile(targetX, targetY));
     }
 
@@ -2093,6 +2268,7 @@ class DisasterManager {
         this.duckBarrages = [];
         this.activeStorm = null;
         this.stormTimer = 0;
+        this.nuclearFlashTimer = 0;
         this.grabbedEntity = null;
     }
 }

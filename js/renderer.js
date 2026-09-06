@@ -15,10 +15,10 @@ class Renderer {
 
         // Camera
         this.camera = {
-            x: 128,
-            y: 72,
-            zoom: 3.5,
-            minZoom: 1.0,
+            x: 320,
+            y: 180,
+            zoom: 2.2,
+            minZoom: 0.25,
             maxZoom: 16.0
         };
 
@@ -146,6 +146,18 @@ class Renderer {
         }
 
         ctx.restore();
+
+        // 9.5. Full-Screen Apocalyptic Nuclear Blast Flash Overlay
+        if (disasterManager && disasterManager.nuclearFlashTimer > 0) {
+            const alpha = Math.min(1.0, disasterManager.nuclearFlashTimer / 25);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
+            ctx.fillRect(0, 0, w, h);
+            if (disasterManager.nuclearFlashTimer > 30) {
+                const fireAlpha = (disasterManager.nuclearFlashTimer - 30) / 35;
+                ctx.fillStyle = `rgba(249, 115, 22, ${fireAlpha * 0.5})`;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
 
         // 10. Render Minimap
         this.renderMinimap(world, entityManager);

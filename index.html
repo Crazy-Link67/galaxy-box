@@ -86,7 +86,7 @@
 
     <!-- Minimap HUD -->
     <div id="minimap-container">
-        <canvas id="minimap-canvas" width="140" height="80"></canvas>
+        <canvas id="minimap-canvas" width="160" height="90"></canvas>
     </div>
 
     <!-- ==========================================
@@ -103,10 +103,12 @@
             <div class="modal-body">
                 <div style="margin-bottom: 12px;">
                     <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:6px;">World Pixel Density & Resolution:</label>
-                    <div style="display:flex; gap:8px;">
-                        <button class="world-size-btn" data-width="256" data-height="144" style="flex:1; padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">256x144<br><span style="font-size:0.7rem; color:#94a3b8;">Retro</span></button>
-                        <button class="world-size-btn active" data-width="384" data-height="216" style="flex:1; padding:8px 4px; background:rgba(59,130,246,0.3); border:1px solid #3b82f6; border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">384x216<br><span style="font-size:0.7rem; color:#60a5fa;">Dense Default</span></button>
-                        <button class="world-size-btn" data-width="512" data-height="288" style="flex:1; padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem;">512x288<br><span style="font-size:0.7rem; color:#94a3b8;">Micro HD</span></button>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:8px;">
+                        <button class="world-size-btn" data-width="384" data-height="216" style="padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.75rem;">384x216<br><span style="font-size:0.68rem; color:#94a3b8;">Retro</span></button>
+                        <button class="world-size-btn" data-width="512" data-height="288" style="padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.75rem;">512x288<br><span style="font-size:0.68rem; color:#94a3b8;">Large</span></button>
+                        <button class="world-size-btn active" data-width="640" data-height="360" style="padding:8px 4px; background:rgba(59,130,246,0.3); border:1px solid #3b82f6; border-radius:6px; color:#fff; cursor:pointer; font-size:0.75rem;">640x360<br><span style="font-size:0.68rem; color:#60a5fa;">Huge (Default)</span></button>
+                        <button class="world-size-btn" data-width="800" data-height="450" style="padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.75rem;">800x450<br><span style="font-size:0.68rem; color:#94a3b8;">Colossal</span></button>
+                        <button class="world-size-btn" data-width="1024" data-height="576" style="padding:8px 4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; cursor:pointer; font-size:0.75rem;">1024x576<br><span style="font-size:0.68rem; color:#a855f7;">Titan Giant</span></button>
                     </div>
                 </div>
                 <div>

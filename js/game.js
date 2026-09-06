@@ -11,12 +11,13 @@ class Game {
         // Core systems
         this.audio = new SoundManager();
         this.particleSystem = new ParticleSystem(7000);
-        this.world = new World(384, 216, Math.floor(Math.random() * 999999));
+        this.world = new World(640, 360, Math.floor(Math.random() * 999999));
         this.entityManager = new EntityManager();
         this.disasterManager = new DisasterManager();
         this.renderer = new Renderer(this.canvas, this.minimapCanvas);
-        this.renderer.camera.x = 192;
-        this.renderer.camera.y = 108;
+        this.renderer.camera.x = 320;
+        this.renderer.camera.y = 180;
+        this.renderer.camera.zoom = 2.0;
         this.ui = new UIManager(this);
         window.game = this;
 
@@ -124,37 +125,43 @@ class Game {
         this.seedStarterCivilizations();
         this.renderer.camera.x = width / 2;
         this.renderer.camera.y = height / 2;
+        this.renderer.camera.zoom = width >= 800 ? 1.4 : (width >= 600 ? 1.8 : 2.2);
     }
 
     seedStarterCivilizations() {
         const w = this.world.width;
         const h = this.world.height;
 
-        // Spawn 3-4 initial human settlements on green grass
+        // Scale kingdoms with world scale: 3 on retro, 5-6 on huge, 8-10 on colossal
+        const targetSettlements = Math.max(3, Math.min(10, Math.floor(w / 110)));
         let settlementsPlaced = 0;
-        for (let attempts = 0; attempts < 400 && settlementsPlaced < 3; attempts++) {
+        for (let attempts = 0; attempts < 600 && settlementsPlaced < targetSettlements; attempts++) {
             const rx = Math.floor(20 + Math.random() * (w - 40));
             const ry = Math.floor(20 + Math.random() * (h - 40));
 
             if (this.world.getTile(rx, ry) === TILES.GRASS) {
-                // Spawn founder human
+                // Spawn founder human settlement
                 for (let p = 0; p < 4; p++) {
                     this.entityManager.spawn('human', rx + (Math.random() - 0.5) * 4, ry + (Math.random() - 0.5) * 4);
                 }
-                // Spawn starter sheep
+                // Spawn starter livestock
                 for (let s = 0; s < 3; s++) {
-                    this.entityManager.spawn('sheep', rx + (Math.random() - 0.5) * 8, ry + (Math.random() - 0.5) * 8);
+                    this.entityManager.spawn(Math.random() < 0.6 ? 'sheep' : 'cow', rx + (Math.random() - 0.5) * 8, ry + (Math.random() - 0.5) * 8);
                 }
                 settlementsPlaced++;
             }
         }
 
-        // Spawn some wild creatures
-        for (let i = 0; i < 6; i++) {
+        // Spawn wild creatures distributed across continents
+        const wildCount = Math.max(8, Math.floor((w * h) / 16000));
+        for (let i = 0; i < wildCount; i++) {
             const rx = Math.floor(Math.random() * w);
             const ry = Math.floor(Math.random() * h);
-            if (this.world.getTile(rx, ry) === TILES.FOREST) {
-                this.entityManager.spawn('wolf', rx, ry);
+            const tile = this.world.getTile(rx, ry);
+            if (tile === TILES.FOREST) {
+                this.entityManager.spawn(Math.random() < 0.7 ? 'wolf' : 'bear', rx, ry);
+            } else if (tile === TILES.WATER) {
+                if (Math.random() < 0.4) this.entityManager.spawn('duck', rx, ry);
             }
         }
     }
@@ -457,7 +464,7 @@ class Game {
         } else if (tool === 'corrosion') {
             if (isFirstClick) this.disasterManager.triggerCorrosionBomb(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'nuke_missile') {
-            if (isFirstClick) this.disasterManager.triggerNukeMissile(wx, wy);
+            if (isFirstClick) this.disasterManager.triggerNukeMissile(wx, wy, this.audio);
         } else if (tool === 'ion_cannon') {
             if (isFirstClick) this.disasterManager.triggerIonCannon(wx, wy);
         } else if (tool === 'rift') {

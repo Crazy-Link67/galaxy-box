@@ -21,7 +21,7 @@ const CATEGORY_TOOLS = {
         { id: 'napalm_strike', name: 'Napalm Airstrike', icon: '🔥', desc: 'Air carpet-bombing releasing blazing sea of continuous fire.' },
         { id: 'kinetic_strike', name: 'Kinetic Rod Strike', icon: '☄️', desc: 'Dense tungsten telephone pole dropped from orbit piercing bedrock.' },
         { id: 'void_implosion', name: 'Void Implosion', icon: '🌌', desc: 'Inverted cosmic shockwave pulling surrounding land into singularity.' },
-        { id: 'nuke_missile', name: 'Nuke Missile', icon: '🚀', desc: 'Guided ballistic missile causing catastrophic atomic detonation.' },
+        { id: 'nuke_missile', name: 'Apocalypse Nuke Missile', icon: '🚀', desc: 'World-destroying ICBM: Vaporizes all kingdoms, incinerates continents into ash, and wipes out the whole planet!' },
         { id: 'ion_cannon', name: 'Orbital Ion Cannon', icon: '🛰️', desc: 'Targeting grid summoning an orbital death beam from space.' },
         { id: 'rift', name: 'Dimension Rift', icon: '🌀', desc: 'Cosmic tear pulling land in and spawning nether demons.' },
         { id: 'antimatter', name: 'Antimatter Bomb', icon: '🌌', desc: 'Cosmic implosion that vaporizes all matter into void.' },
@@ -824,11 +824,12 @@ class UIManager {
             document.body.appendChild(toast);
         }
         toast.textContent = text;
-        toast.style.opacity = '1';
-        clearTimeout(this._toastTimer);
-        this._toastTimer = setTimeout(() => {
-            if (toast) toast.style.opacity = '0';
-        }, 2200);
+        if (typeof clearTimeout === 'function') clearTimeout(this._toastTimer);
+        if (typeof setTimeout === 'function') {
+            this._toastTimer = setTimeout(() => {
+                if (toast) toast.style.opacity = '0';
+            }, 2200);
+        }
     }
 
     setupPWA() {
