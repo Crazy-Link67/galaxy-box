@@ -73,7 +73,7 @@ const CATEGORY_TOOLS = {
         { id: 'level_terrain', name: 'Plateau / Level', icon: '📐', desc: 'Flattens surrounding terrain to match clicked elevation and tile.' },
         { id: 'raise', name: 'Shovel (Raise)', icon: '⬆️', desc: 'Elevates terrain towards mountains.' },
         { id: 'lower', name: 'Shovel (Lower)', icon: '⬇️', desc: 'Carves valleys and ocean trenches.' },
-        { id: 'sponge', name: 'Sponge Drain', icon: '🧽', desc: 'Absorbs fluids without altering ground.' },
+        { id: 'sponge', name: 'Sponge Cake', icon: '🧽', desc: 'Absorbs fluids without altering ground.' },
         { id: 'fertilizer', name: 'Life Sprout', icon: '🌾', desc: 'Sprouts dense flora, trees and crops.' }
     ],
     powers: [

@@ -134,6 +134,66 @@ class Projectile {
     }
 }
 
+class ExplosiveEgg {
+    constructor(x, y, sourceId = null) {
+        this.x = x;
+        this.y = y;
+        this.timer = 180; // ~3 seconds at 60fps
+        this.maxTimer = 180;
+        this.sourceId = sourceId;
+        this.active = true;
+    }
+
+    update(world, entityManager, particleSystem, audio, disasterManager) {
+        this.timer--;
+        if (this.timer === 120 || this.timer === 60) {
+            if (audio && typeof audio.playEggTick === 'function') audio.playEggTick();
+            if (particleSystem) {
+                particleSystem.spawn(this.x, this.y - 2, 0, -0.4, 1.2, '#facc15', 12, 'spark');
+            }
+        }
+        if (this.timer <= 0) {
+            this.explode(world, entityManager, particleSystem, audio, disasterManager);
+            this.active = false;
+        }
+    }
+
+    explode(world, entityManager, particleSystem, audio, disasterManager) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+        if (typeof window !== 'undefined' && window.game && typeof window.game.shakeCamera === 'function') {
+            window.game.shakeCamera(16, 25);
+        }
+        if (particleSystem) {
+            particleSystem.burst(this.x, this.y, 35, ['#facc15', '#f97316', '#ffffff', '#ef4444'], 2.5, 6, 2, 4, 'fire');
+            particleSystem.burst(this.x, this.y, 25, ['#fef08a', '#facc15', '#ffffff'], 2, 5, 2, 4, 'stardust');
+        }
+        const radius = 12;
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                if (dx * dx + dy * dy <= radius * radius) {
+                    const tx = Math.floor(this.x + dx);
+                    const ty = Math.floor(this.y + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (Math.random() < 0.35) world.setTile(tx, ty, TILES.ASH);
+                        else if (Math.random() < 0.2) world.ignite(tx, ty, 60);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(ent.x - this.x, ent.y - this.y);
+            if (dist < radius * 1.6) {
+                ent.takeDamage(120, null);
+                const ang = Math.atan2(ent.y - this.y, ent.x - this.x);
+                ent.x += Math.cos(ang) * 10;
+                ent.y += Math.sin(ang) * 10;
+            }
+        }
+    }
+}
+
 class Entity {
     constructor(type, x, y, customData = null) {
         this.id = Math.floor(Math.random() * 1000000);
@@ -177,6 +237,8 @@ class Entity {
 
         // Custom properties (for Creature Creator)
         this.customData = customData;
+        this.bodyParts = null;
+        this.colors = null;
 
         // Combat & Stats
         this.initStats();
@@ -567,6 +629,43 @@ class Entity {
                 this.color = '#a855f7';
                 this.isCiv = false;
                 break;
+            case 'duck':
+                this.name = 'Exploding Duck';
+                this.hp = 80;
+                this.maxHp = 80;
+                this.speed = 0.9;
+                this.attack = 25;
+                this.size = 2.2;
+                this.color = '#facc15';
+                this.isCiv = false;
+                this.traits.add('amphibious');
+                this.traits.add('explosive_death');
+                this.deathType = 'duck_explode';
+                break;
+            case 'crystal_golem':
+                this.name = 'Crystal Golem';
+                this.hp = 1200;
+                this.maxHp = 1200;
+                this.speed = 0.35;
+                this.attack = 55;
+                this.size = 5.5;
+                this.color = '#ec4899';
+                this.isCiv = false;
+                this.traits.add('titan');
+                this.traits.add('immortal');
+                break;
+            case 'shadow_assassin':
+                this.name = 'Shadow Assassin';
+                this.hp = 220;
+                this.maxHp = 220;
+                this.speed = 1.1;
+                this.attack = 45;
+                this.size = 2.2;
+                this.color = '#1e1b4b';
+                this.isCiv = true;
+                this.traits.add('invisibility');
+                this.traits.add('super_speed');
+                break;
             default:
                 this.hp = 100;
                 this.maxHp = 100;
@@ -592,6 +691,13 @@ class Entity {
             data.traits.forEach(t => this.traits.add(t));
         }
         if (data.ability) this.customAbility = data.ability;
+        if (data.bodyParts) {
+            this.bodyParts = { ...data.bodyParts };
+        }
+        if (data.colors) {
+            this.colors = { ...data.colors };
+            if (data.colors.primary) this.color = data.colors.primary;
+        }
     }
 
     // Trait Management Methods
@@ -740,7 +846,10 @@ class Entity {
         this.isDying = true;
         this.killer = killer;
 
-        if (this.isBoss || this.isMythic) {
+        if (this.type === 'duck') {
+            this.deathTimer = 22;
+            this.deathType = 'duck_explode';
+        } else if (this.isBoss || this.isMythic) {
             this.deathTimer = 45;
             this.deathType = 'boss';
         } else if (this.type === 'evermean') {
@@ -776,6 +885,9 @@ class Entity {
         // Explosive death: Detonates in a huge explosion when slain
         if (this.hasTrait('explosive_death') && disasterManager) {
             disasterManager.triggerExplosion(this.x, this.y, 16, 1.5, world, this, particleSystem, audio);
+        }
+        if (this.deathType === 'duck_explode' && particleSystem) {
+            particleSystem.burst(this.x, this.y, 30, ['#facc15', '#fef08a', '#ffffff', '#f97316'], 2, 6, 2, 4, 'stardust');
         }
 
         // Splitter: Spawns 2 smaller miniature clones upon demise
@@ -860,6 +972,50 @@ class Entity {
             if (audio) audio.playMagic();
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
             if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#38bdf8', '#facc15', '#ffffff'], 2, 4, 1.5, 2.5, 'stardust');
+            return;
+        }
+
+        if (this.type === 'duck') {
+            // Quack Blast!
+            if (audio && typeof audio.playQuackSound === 'function') audio.playQuackSound();
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 25, ['#facc15', '#ffffff', '#38bdf8'], 2, 5, 1.5, 3, 'stardust');
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                const dist = Math.hypot(other.x - this.x, other.y - this.y);
+                if (dist < 32) {
+                    other.takeDamage(this.attack, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 14;
+                    other.y += Math.sin(ang) * 14;
+                }
+            }
+            return;
+        } else if (this.type === 'crystal_golem') {
+            // Refracted Prismatic Laser Beam
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            for (let a = -0.3; a <= 0.3; a += 0.3) {
+                const rx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const ry = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, rx * 7, ry * 7, 'laser', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#ec4899', '#f472b6', '#ffffff'], 2, 4, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'shadow_assassin') {
+            // Shadow Dash Strike
+            if (audio && typeof audio.playClick === 'function') audio.playClick();
+            this.x += dirX * 12;
+            this.y += dirY * 12;
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#1e1b4b', '#475569', '#000000'], 1.5, 4, 1, 2, 'smoke');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 16) {
+                    other.takeDamage(this.attack * 1.8, this);
+                }
+            }
             return;
         }
 
@@ -1051,6 +1207,53 @@ class Entity {
     useSpecialAbility(world, entityManager, disasterManager, particleSystem, audio) {
         if (this.specialCooldown > 0) return;
         this.specialCooldown = 60;
+
+        if (this.type === 'duck') {
+            // Lay Explosive Egg
+            if (audio && typeof audio.playClick === 'function') audio.playClick();
+            if (entityManager.explosiveEggs) {
+                entityManager.explosiveEggs.push(new ExplosiveEgg(this.x, this.y, this.id));
+            }
+            if (particleSystem) {
+                particleSystem.spawn(this.x, this.y, 0, -0.6, 2, '#fef08a', 15, 'stardust');
+            }
+            return;
+        } else if (this.type === 'crystal_golem') {
+            // Crystal Spire Eruption
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 40, ['#ec4899', '#f472b6', '#ffffff'], 2, 6, 2, 4, 'spark');
+            const rad = 8;
+            for (let dy = -rad; dy <= rad; dy++) {
+                for (let dx = -rad; dx <= rad; dx++) {
+                    if (dx * dx + dy * dy <= rad * rad) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK && Math.random() < 0.45) {
+                            world.setTile(tx, ty, TILES.CRYSTAL);
+                        }
+                    }
+                }
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 26) {
+                    other.takeDamage(70, this);
+                    other.frozen = 35;
+                }
+            }
+            return;
+        } else if (this.type === 'shadow_assassin') {
+            // Smoke Bomb Teleport & Ambush
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 30, ['#1e1b4b', '#475569', '#000000'], 2, 5, 2, 4, 'smoke');
+            const target = entityManager.findNearestEntity(this, (o) => o.id !== this.id);
+            if (target) {
+                this.x = target.x + (Math.random() < 0.5 ? -4 : 4);
+                this.y = target.y + (Math.random() < 0.5 ? -4 : 4);
+                target.takeDamage(this.attack * 2.0, this);
+            }
+            return;
+        }
 
         if (this.type === 'crabzilla') {
             // Crabzilla Mega Stomp Shockwave!
@@ -1320,6 +1523,7 @@ class EntityManager {
         this.projectiles = [];
         this.corpses = [];
         this.floatingTexts = [];
+        this.explosiveEggs = [];
         this.nextKingdomId = 1;
         this.forcePeace = false;
         this.worldWar = false;
@@ -1409,6 +1613,17 @@ class EntityManager {
     }
 
     update(world, particleSystem, audio, disasterManager) {
+        // 0. Update Explosive Eggs
+        if (this.explosiveEggs) {
+            for (let i = this.explosiveEggs.length - 1; i >= 0; i--) {
+                const egg = this.explosiveEggs[i];
+                egg.update(world, this, particleSystem, audio, disasterManager);
+                if (!egg.active) {
+                    this.explosiveEggs.splice(i, 1);
+                }
+            }
+        }
+
         // 1. Update Projectiles
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const p = this.projectiles[i];
@@ -1529,6 +1744,10 @@ class EntityManager {
                     } else if (ent.deathType === 'dragon') {
                         if (Math.random() < 0.35) {
                             particleSystem.spawn(ent.x + (Math.random() - 0.5) * 8, ent.y - 3, (Math.random() - 0.5) * 0.8, -0.4, 2, '#f97316', 20, 'fire');
+                        }
+                    } else if (ent.deathType === 'duck_explode') {
+                        if (particleSystem && Math.random() < 0.5) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 4, ent.y - 2, (Math.random() - 0.5) * 0.8, -0.6, 2, '#facc15', 18, 'spark');
                         }
                     } else if (ent.deathType === 'undead') {
                         if (Math.random() < 0.35) {
@@ -2050,6 +2269,9 @@ class EntityManager {
         this.kingdoms.clear();
         this.buildings = [];
         this.projectiles = [];
+        this.corpses = [];
+        this.floatingTexts = [];
+        this.explosiveEggs = [];
         this.nextKingdomId = 1;
     }
 }
@@ -2057,5 +2279,6 @@ class EntityManager {
 window.TRAITS = TRAITS;
 window.Kingdom = Kingdom;
 window.Building = Building;
+window.ExplosiveEgg = ExplosiveEgg;
 window.Entity = Entity;
 window.EntityManager = EntityManager;

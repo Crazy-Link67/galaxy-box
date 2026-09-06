@@ -185,7 +185,16 @@ class World {
         else if (type === TILES.WATER || type === TILES.DEEP_WATER) this.temperature[i] = 15;
     }
 
-    // --- Procedural Generation Presets ---
+    clear(defaultTile = TILES.DEEP_WATER) {
+        this.tiles.fill(defaultTile);
+        this.fire.fill(0);
+        this.temperature.fill(20);
+        if (typeof window !== 'undefined' && window.game && window.game.entityManager) {
+            window.game.entityManager.corpses = [];
+            window.game.entityManager.floatingTexts = [];
+            if (window.game.entityManager.explosiveEggs) window.game.entityManager.explosiveEggs = [];
+        }
+    }
 
     generate(preset = 'continents', customSeed = null) {
         if (customSeed !== null) this.seed = customSeed;
