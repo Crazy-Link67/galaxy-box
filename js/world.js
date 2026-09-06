@@ -122,7 +122,7 @@ class FastNoise {
 }
 
 class World {
-    constructor(width = 256, height = 144, seed = 12345) {
+    constructor(width = 640, height = 360, seed = 12345) {
         this.width = width;
         this.height = height;
         this.size = width * height;

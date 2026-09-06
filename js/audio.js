@@ -130,6 +130,57 @@ class SoundManager {
         osc.stop(now + 3.0);
     }
 
+    // 2.5. Apocalypse Air Raid Siren
+    playApocalypseSiren() {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.linearRampToValueAtTime(780, now + 0.5);
+        osc.frequency.linearRampToValueAtTime(450, now + 1.0);
+        osc.frequency.linearRampToValueAtTime(780, now + 1.5);
+        osc.frequency.linearRampToValueAtTime(450, now + 2.0);
+
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 2.4);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 2.4);
+    }
+
+    // 2.8. World-Ender Super Detonation & Sub-Harmonic Seismic Tremor
+    playWorldEnderNuke() {
+        this.playNuke();
+        this.playExplosion(3.5);
+
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        // Deep sub-harmonic seismic ground rumble lasting 5 seconds
+        const sub = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(65, now);
+        sub.frequency.exponentialRampToValueAtTime(14, now + 4.5);
+
+        subGain.gain.setValueAtTime(0.7, now);
+        subGain.gain.exponentialRampToValueAtTime(0.01, now + 4.5);
+
+        sub.connect(subGain);
+        subGain.connect(this.masterGain);
+        sub.start(now);
+        sub.stop(now + 4.5);
+    }
+
     // 3. Laser / Death Ray
     playLaser() {
         if (this.muted) return;
