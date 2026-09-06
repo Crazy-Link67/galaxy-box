@@ -114,6 +114,11 @@ class Renderer {
             disasterManager.nukeMissiles[i].render(ctx);
         }
 
+        // 6.5. Render Corpses & Remains
+        if (entityManager.corpses) {
+            this.renderCorpses(entityManager.corpses);
+        }
+
         // 7. Render Entities
         this.renderEntities(entityManager.entities, entityManager.kingdoms);
 
@@ -122,6 +127,11 @@ class Renderer {
 
         // 8. Render Particles
         particleSystem.render(ctx);
+
+        // 8.5. Render Floating Combat Damage Numbers
+        if (entityManager.floatingTexts) {
+            this.renderFloatingTexts(entityManager.floatingTexts);
+        }
 
         // 9. Render Brush Cursor Indicator
         if (mouseWorldPos && activeTool) {
@@ -490,6 +500,30 @@ class Renderer {
             const py = ent.y;
 
             ctx.save();
+
+            // Hit Flash: White-hot brightness when struck
+            if (ent.hitFlash > 0) {
+                ctx.filter = 'brightness(3) contrast(1.5)';
+            }
+
+            // Dying Animation: Progressive toppling tilt, flicker & fade
+            if (ent.isDying) {
+                const prog = 1 - (ent.deathTimer / Math.max(1, ent.maxDeathTimer));
+                const tiltSign = ent.facingLeft ? -1 : 1;
+                const tiltAngle = tiltSign * prog * (Math.PI / 2);
+                ctx.translate(px, py + prog * size * 0.4);
+                ctx.rotate(tiltAngle);
+                ctx.translate(-px, -(py + prog * size * 0.4));
+
+                if (Math.floor(ent.deathTimer / 3) % 2 === 0) {
+                    ctx.filter = 'brightness(2.2)';
+                }
+                ctx.globalAlpha *= Math.max(0.15, 1 - prog * 0.75);
+            } else if (ent.hp > 0 && ent.hp < ent.maxHp * 0.25) {
+                // Low health tremble
+                const tremble = Math.sin(Date.now() * 0.02 + ent.id) * 0.5;
+                ctx.translate(tremble, 0);
+            }
 
             // Status Auras (Stepped retro pixel halos)
             if (ent.blessed) {
@@ -1521,8 +1555,8 @@ class Renderer {
                 ctx.fillText(tagText, px - textWidth / 2, py - size - 8.8);
             }
 
-            // Health Bar (if injured or boss)
-            if (ent.hp < ent.maxHp || ent.isBoss) {
+            // Health Bar (if injured or boss and not dying)
+            if (!ent.isDying && (ent.hp < ent.maxHp || ent.isBoss)) {
                 const barWidth = Math.max(6, size * 1.6);
                 const pct = Math.max(0, ent.hp / ent.maxHp);
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
@@ -1533,6 +1567,93 @@ class Renderer {
 
             ctx.restore();
         }
+    }
+
+    renderCorpses(corpses) {
+        const ctx = this.ctx;
+        for (let i = 0; i < corpses.length; i++) {
+            const c = corpses[i];
+            const px = c.x;
+            const py = c.y;
+            const s = c.scale || 1.0;
+            const alpha = Math.max(0.1, Math.min(1.0, c.timer / 60));
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            if (c.type === 'stump') {
+                // Fallen Evermean Treant trunk stump & moss
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(px - 3 * s, py - 1 * s, 6 * s, 3 * s);
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(px - 2 * s, py - 2 * s, 4 * s, 1.5 * s);
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(px - 1 * s, py - 2.5 * s, 2 * s, 1 * s);
+            } else if (c.type === 'mech_scrap') {
+                // Smoldering robotic scrap chassis
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(px - 3.5 * s, py - 1.5 * s, 7 * s, 3 * s);
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(px - 2 * s, py - 2.5 * s, 4 * s, 1.5 * s);
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(px + 1 * s, py - 1 * s, 1 * s, 1 * s);
+            } else if (c.type === 'dragon_skull') {
+                // Massive horned dragon skull
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(px - 4 * s, py - 2 * s, 8 * s, 3.5 * s);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(px - 5 * s, py - 3.5 * s, 2 * s, 2 * s);
+                ctx.fillRect(px + 3 * s, py - 3.5 * s, 2 * s, 2 * s);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(px - 2 * s, py - 1 * s, 1.5 * s, 1.5 * s);
+                ctx.fillRect(px + 0.5 * s, py - 1 * s, 1.5 * s, 1.5 * s);
+            } else if (c.type === 'leviathan_ribs') {
+                // Arc of colossal bone ribs
+                ctx.fillStyle = '#e2e8f0';
+                for (let r = -3; r <= 3; r += 2) {
+                    ctx.fillRect(px + r * 1.5 * s, py - 3 * s, 1 * s, 4 * s);
+                }
+            } else if (c.type === 'angel_halo') {
+                // Shattered celestial halo
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(px - 2.5 * s, py - 1.5 * s, 5 * s, 3 * s);
+            } else {
+                // Standard bones & skull remains (Humanoids, beasts, orcs, elves, dwarves)
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(px - 2 * s, py - 1.5 * s, 3 * s, 2.5 * s);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(px - 1 * s, py - 1 * s, 1 * s, 1 * s);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(px + 1 * s, py - 0.5 * s, 3 * s, 1.5 * s);
+                ctx.fillRect(px - 2.5 * s, py + 1 * s, 4 * s, 1 * s);
+            }
+
+            ctx.restore();
+        }
+    }
+
+    renderFloatingTexts(floatingTexts) {
+        const ctx = this.ctx;
+        ctx.save();
+        for (let i = 0; i < floatingTexts.length; i++) {
+            const ft = floatingTexts[i];
+            const alpha = Math.max(0, Math.min(1.0, ft.life / 10));
+            ctx.globalAlpha = alpha;
+            ctx.font = ft.isCrit ? 'bold 4.5px monospace' : 'bold 3.5px monospace';
+
+            // Retro dark outline
+            ctx.fillStyle = '#000000';
+            ctx.fillText(ft.text, ft.x - 0.4, ft.y);
+            ctx.fillText(ft.text, ft.x + 0.4, ft.y);
+            ctx.fillText(ft.text, ft.x, ft.y - 0.4);
+            ctx.fillText(ft.text, ft.x, ft.y + 0.4);
+
+            // Primary text fill
+            ctx.fillStyle = ft.color;
+            ctx.fillText(ft.text, ft.x, ft.y);
+        }
+        ctx.restore();
     }
 
     renderProjectiles(projectiles) {

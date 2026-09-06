@@ -148,6 +148,7 @@ class Entity {
         this.kingdomId = null;
         this.isKing = false;
         this.active = true;
+        this.entityManager = null;
 
         // Modifiers & Player Control
         this.blessed = false;
@@ -161,6 +162,15 @@ class Entity {
         this.specialCooldown = 0;
         this.weapon = null; // 'sword', 'bow', 'blaster', 'staff'
         this.overclockTimer = 0;
+
+        // Visual effects, combat feedback & dying animation
+        this.isDying = false;
+        this.deathTimer = 0;
+        this.maxDeathTimer = 0;
+        this.deathType = 'humanoid';
+        this.hitFlash = 0;
+        this.stepTimer = 0;
+        this.facingLeft = false;
 
         // Traits set
         this.traits = new Set();
@@ -673,8 +683,27 @@ class Entity {
     }
 
     takeDamage(amount, source = null) {
+        if (!this.active || this.isDying) return false;
         if (this.blessed && Math.random() < 0.3) return false;
         if (this.hasTrait('immortal') && Math.random() < 0.5) return false;
+
+        // Visual Hit Flash
+        this.hitFlash = 3;
+
+        // Combat Hit SFX
+        const isCrit = amount >= (source && source.attack ? source.attack * 1.3 : 38);
+        if (window.game && window.game.audio) {
+            window.game.audio.playHitSound(isCrit);
+        }
+
+        // Spawn Floating Combat Damage Indicator
+        const em = this.entityManager || (typeof window !== 'undefined' && window.game ? window.game.entityManager : null);
+        if (em) {
+            const displayDmg = Math.max(1, Math.round(amount));
+            const dmgCol = isCrit ? '#f59e0b' : '#ef4444';
+            const dmgText = isCrit ? `CRIT! ${displayDmg}` : `-${displayDmg}`;
+            em.addFloatingText(this.x, this.y - (this.size * this.scale) - 3, dmgText, dmgCol, isCrit);
+        }
 
         // Thorny: Reflect 35% of incoming melee damage
         if (this.hasTrait('thorny') && source && source !== this && typeof source.takeDamage === 'function') {
@@ -699,31 +728,82 @@ class Entity {
         this.hp -= amount;
         if (this.hp <= 0) {
             this.hp = 0;
-            this.active = false;
             if (source && source.kills !== undefined) source.kills++;
-
-            // Splitter: Spawns 2 smaller miniature clones upon demise
-            if (this.hasTrait('splitter') && this.scale >= 0.7 && window.game && window.game.entityManager) {
-                for (let s = 0; s < 2; s++) {
-                    const clone = window.game.entityManager.clone(this);
-                    if (clone) {
-                        clone.active = true;
-                        clone.scale = this.scale * 0.6;
-                        clone.maxHp = Math.max(30, Math.floor(this.maxHp * 0.5));
-                        clone.hp = clone.maxHp;
-                        clone.traits.delete('splitter'); // Avoid endless cascading splits
-                    }
-                }
-            }
-
-            // Necromancer: Killer raises slain foe as a zombie
-            if (source && source.hasTrait && source.hasTrait('necromancer') && window.game && window.game.entityManager) {
-                window.game.entityManager.spawn('zombie', this.x, this.y);
-            }
-
+            this.startDying(source);
             return true; // died
         }
         return false;
+    }
+
+    startDying(killer = null) {
+        if (this.isDying) return;
+        this.isDying = true;
+        this.killer = killer;
+
+        if (this.isBoss || this.isMythic) {
+            this.deathTimer = 45;
+            this.deathType = 'boss';
+        } else if (this.type === 'evermean') {
+            this.deathTimer = 36;
+            this.deathType = 'evermean';
+        } else if (this.type === 'colossus_mech') {
+            this.deathTimer = 36;
+            this.deathType = 'colossus_mech';
+        } else if (this.type === 'seraph_angel') {
+            this.deathTimer = 36;
+            this.deathType = 'seraph_angel';
+        } else if (this.type === 'dragon' || this.type === 'dune_leviathan') {
+            this.deathTimer = 40;
+            this.deathType = 'dragon';
+        } else if (this.type === 'skeleton' || this.type === 'zombie') {
+            this.deathTimer = 22;
+            this.deathType = 'undead';
+        } else {
+            this.deathTimer = 28;
+            this.deathType = 'humanoid';
+        }
+        this.maxDeathTimer = this.deathTimer;
+
+        if (window.game && window.game.audio) {
+            window.game.audio.playDeathSound(this.type, this.isBoss || this.isMythic);
+        }
+    }
+
+    finalizeDeath(world, disasterManager, particleSystem, audio, entityManager = null) {
+        this.active = false;
+        const em = entityManager || this.entityManager || (typeof window !== 'undefined' && window.game ? window.game.entityManager : null);
+
+        // Explosive death: Detonates in a huge explosion when slain
+        if (this.hasTrait('explosive_death') && disasterManager) {
+            disasterManager.triggerExplosion(this.x, this.y, 16, 1.5, world, this, particleSystem, audio);
+        }
+
+        // Splitter: Spawns 2 smaller miniature clones upon demise
+        if (this.hasTrait('splitter') && this.scale >= 0.7 && em) {
+            for (let s = 0; s < 2; s++) {
+                const clone = em.clone(this);
+                if (clone) {
+                    clone.active = true;
+                    clone.isDying = false;
+                    clone.scale = this.scale * 0.6;
+                    clone.maxHp = Math.max(30, Math.floor(this.maxHp * 0.5));
+                    clone.hp = clone.maxHp;
+                    clone.traits.delete('splitter'); // Avoid endless cascading splits
+                }
+            }
+        }
+
+        // Necromancer: Killer raises slain foe as a zombie
+        if (this.killer && this.killer.hasTrait && this.killer.hasTrait('necromancer') && em) {
+            em.spawn('zombie', this.x, this.y);
+        } else if (this.infected && em) {
+            em.spawn('zombie', this.x, this.y);
+        }
+
+        // Add lingering corpse remains to entity manager
+        if (em) {
+            em.addCorpse(this);
+        }
     }
 
     // ==========================================
@@ -1238,13 +1318,63 @@ class EntityManager {
         this.kingdoms = new Map();
         this.buildings = [];
         this.projectiles = [];
+        this.corpses = [];
+        this.floatingTexts = [];
         this.nextKingdomId = 1;
         this.forcePeace = false;
         this.worldWar = false;
     }
 
+    addCorpse(ent) {
+        let corpseType = 'bones';
+        if (ent.type === 'evermean') {
+            corpseType = 'stump';
+        } else if (ent.type === 'colossus_mech') {
+            corpseType = 'mech_scrap';
+        } else if (ent.type === 'dragon') {
+            corpseType = 'dragon_skull';
+        } else if (ent.type === 'dune_leviathan') {
+            corpseType = 'leviathan_ribs';
+        } else if (ent.type === 'seraph_angel') {
+            corpseType = 'angel_halo';
+        }
+
+        this.corpses.push({
+            x: ent.x,
+            y: ent.y,
+            type: corpseType,
+            color: ent.color,
+            scale: ent.scale,
+            facingLeft: ent.facingLeft,
+            timer: 650,
+            maxTimer: 650
+        });
+
+        if (this.corpses.length > 120) {
+            this.corpses.shift();
+        }
+    }
+
+    addFloatingText(x, y, text, color = '#ffffff', isCrit = false) {
+        this.floatingTexts.push({
+            x,
+            y,
+            vy: isCrit ? -0.55 : -0.38,
+            text,
+            color,
+            isCrit,
+            life: 30,
+            maxLife: 30
+        });
+
+        if (this.floatingTexts.length > 60) {
+            this.floatingTexts.shift();
+        }
+    }
+
     spawn(type, x, y, customData = null) {
         const ent = new Entity(type, x, y, customData);
+        ent.entityManager = this;
 
         // If civilized, assign or found kingdom if nearby
         if (ent.isCiv) {
@@ -1320,13 +1450,43 @@ class EntityManager {
             }
         }
 
+        // Update floating combat texts
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+            const ft = this.floatingTexts[i];
+            ft.y += ft.vy;
+            ft.life--;
+            if (ft.life <= 0) {
+                this.floatingTexts.splice(i, 1);
+            }
+        }
+
+        // Update corpses & decay
+        for (let i = this.corpses.length - 1; i >= 0; i--) {
+            const c = this.corpses[i];
+            c.timer--;
+            const tx = Math.floor(c.x);
+            const ty = Math.floor(c.y);
+            if (world.inBounds(tx, ty)) {
+                const t = world.getTile(tx, ty);
+                if (t === TILES.LAVA || t === TILES.ACID) {
+                    c.timer -= 4;
+                    if (particleSystem && Math.random() < 0.15) {
+                        particleSystem.spawn(c.x, c.y, (Math.random() - 0.5) * 0.5, -0.4, 1.2, t === TILES.LAVA ? '#ff5722' : '#84cc16', 10, 'smoke');
+                    }
+                }
+            }
+            if (c.timer <= 0) {
+                this.corpses.splice(i, 1);
+            }
+        }
+
         // 2. Update Kingdoms population count
         for (const kd of this.kingdoms.values()) {
             kd.population = 0;
         }
         for (let i = 0; i < this.entities.length; i++) {
             const ent = this.entities[i];
-            if (ent.active && ent.kingdomId && this.kingdoms.has(ent.kingdomId)) {
+            if (ent.active && !ent.isDying && ent.kingdomId && this.kingdoms.has(ent.kingdomId)) {
                 this.kingdoms.get(ent.kingdomId).population++;
             }
         }
@@ -1335,11 +1495,109 @@ class EntityManager {
         for (let i = this.entities.length - 1; i >= 0; i--) {
             const ent = this.entities[i];
             if (!ent.active) {
-                if (ent.hasTrait('explosive_death') && disasterManager) {
-                    disasterManager.triggerExplosion(ent.x, ent.y, 16, 1.5, world, this, particleSystem, audio);
-                }
                 this.entities.splice(i, 1);
                 continue;
+            }
+
+            // Decrement hit flash
+            if (ent.hitFlash > 0) ent.hitFlash--;
+
+            // Handle Dying Animation State
+            if (ent.isDying) {
+                ent.deathTimer--;
+
+                // Specialized per-tick dying visual particles
+                if (particleSystem) {
+                    if (ent.deathType === 'evermean') {
+                        if (Math.random() < 0.35) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 8, ent.y - (Math.random() * 8), (Math.random() - 0.5) * 0.4, 0.25, 2, '#16a34a', 30, 'leaf');
+                        }
+                        if (Math.random() < 0.2) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 6, ent.y, (Math.random() - 0.5) * 0.8, -0.4, 1.5, '#78350f', 15, 'smoke');
+                        }
+                    } else if (ent.deathType === 'colossus_mech') {
+                        if (Math.random() < 0.45) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 6, ent.y - 4, (Math.random() - 0.5) * 1.5, -0.8, 1.5, '#60a5fa', 12, 'spark');
+                        }
+                        if (Math.random() < 0.25) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 4, ent.y - 2, 0, -0.5, 2.5, '#424242', 25, 'smoke');
+                        }
+                    } else if (ent.deathType === 'seraph_angel') {
+                        if (Math.random() < 0.4) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 6, ent.y - 4, (Math.random() - 0.5) * 0.5, -0.6, 2, '#fef08a', 25, 'stardust');
+                        }
+                    } else if (ent.deathType === 'dragon') {
+                        if (Math.random() < 0.35) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 8, ent.y - 3, (Math.random() - 0.5) * 0.8, -0.4, 2, '#f97316', 20, 'fire');
+                        }
+                    } else if (ent.deathType === 'undead') {
+                        if (Math.random() < 0.35) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 4, ent.y, (Math.random() - 0.5) * 0.6, -0.4, 1.5, '#f8fafc', 20, 'bone', 0.05);
+                        }
+                    } else {
+                        // Humanoid: Ascending soul wisp midway through death
+                        if (ent.deathTimer === Math.floor(ent.maxDeathTimer * 0.55)) {
+                            particleSystem.spawn(ent.x, ent.y - 3, 0, -0.35, 2, '#a5f3fc', 40, 'soul');
+                        }
+                        if (Math.random() < 0.2) {
+                            particleSystem.spawn(ent.x + (Math.random() - 0.5) * 3, ent.y, (Math.random() - 0.5) * 0.4, 0.3, 1.5, '#dc2626', 15, 'blood', 0.05);
+                        }
+                    }
+                }
+
+                if (ent.deathTimer <= 0) {
+                    ent.finalizeDeath(world, disasterManager, particleSystem, audio, this);
+                    this.entities.splice(i, 1);
+                }
+                continue;
+            }
+
+            // Low health warning indicators
+            if (ent.hp > 0 && ent.hp < ent.maxHp * 0.25 && particleSystem && Math.random() < 0.06) {
+                if (ent.type === 'colossus_mech') {
+                    particleSystem.spawn(ent.x, ent.y - 3, 0, -0.35, 1.5, '#64748b', 12, 'smoke');
+                } else if (!ent.hasTrait('immortal')) {
+                    particleSystem.spawn(ent.x + (Math.random() - 0.5) * 2, ent.y, 0, 0.2, 1, '#dc2626', 10, 'blood', 0.05);
+                }
+            }
+
+            // Environmental footprints & water ripples
+            if (Math.hypot(ent.vx, ent.vy) > 0.05) {
+                if (ent.vx < 0) ent.facingLeft = true;
+                else if (ent.vx > 0) ent.facingLeft = false;
+
+                if (ent.stepTimer <= 0) {
+                    const tx = Math.floor(ent.x);
+                    const ty = Math.floor(ent.y);
+                    if (world.inBounds(tx, ty) && particleSystem) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.WATER || t === TILES.DEEP_WATER) {
+                            particleSystem.spawn(ent.x, ent.y + 1, 0, 0, 1.8, '#38bdf8', 16, 'water_ripple');
+                        } else if (t === TILES.SAND || t === TILES.SNOW) {
+                            particleSystem.spawn(ent.x, ent.y + 1, (Math.random() - 0.5) * 0.2, -0.1, 1, t === TILES.SAND ? '#d97706' : '#e2e8f0', 8, 'spark');
+                        } else if (t === TILES.LAVA) {
+                            particleSystem.spawn(ent.x, ent.y + 1, (Math.random() - 0.5) * 0.4, -0.3, 1, '#f97316', 10, 'fire');
+                        }
+                    }
+                    ent.stepTimer = 8 + Math.floor(Math.random() * 5);
+                } else {
+                    ent.stepTimer--;
+                }
+            }
+
+            // Necromancer: resurrect nearby corpses
+            if (ent.hasTrait('necromancer') && Math.random() < 0.04 && this.corpses.length > 0) {
+                for (let cIdx = 0; cIdx < this.corpses.length; cIdx++) {
+                    const c = this.corpses[cIdx];
+                    if (Math.hypot(c.x - ent.x, c.y - ent.y) < 16) {
+                        this.spawn('zombie', c.x, c.y);
+                        if (particleSystem) {
+                            particleSystem.burst(c.x, c.y, 8, ['#22c55e', '#84cc16', '#000000'], 1, 3, 1, 2, 'stardust');
+                        }
+                        this.corpses.splice(cIdx, 1);
+                        break;
+                    }
+                }
             }
 
             // Decrement ability cooldowns
@@ -1714,7 +1972,7 @@ class EntityManager {
         let minDist = Infinity;
         for (let i = 0; i < this.entities.length; i++) {
             const other = this.entities[i];
-            if (!other.active || other.id === from.id) continue;
+            if (!other.active || other.isDying || other.id === from.id) continue;
             if (filterFn && !filterFn(other)) continue;
 
             const dist = Math.hypot(other.x - from.x, other.y - from.y);

@@ -18,6 +18,7 @@ class Game {
         this.renderer.camera.x = 192;
         this.renderer.camera.y = 108;
         this.ui = new UIManager(this);
+        window.game = this;
 
         // Creature Possession / Direct Control
         this.controlledEntity = null;
@@ -696,7 +697,9 @@ class Game {
             if (this.keys['a'] || this.keys['arrowleft'] || (this.virtualKeys && this.virtualKeys.left)) mx -= 1;
             if (this.keys['d'] || this.keys['arrowright'] || (this.virtualKeys && this.virtualKeys.right)) mx += 1;
 
-            if (mx !== 0 || my !== 0) {
+            if (!ent.isDying && (mx !== 0 || my !== 0)) {
+                if (mx < 0) ent.facingLeft = true;
+                else if (mx > 0) ent.facingLeft = false;
                 const len = Math.hypot(mx, my);
                 const spd = ent.speed * 1.8;
                 ent.x += (mx / len) * spd;
@@ -748,7 +751,7 @@ class Game {
 
         // Check controlled entity status
         if (this.controlledEntity) {
-            if (!this.controlledEntity.active || this.controlledEntity.hp <= 0) {
+            if (!this.controlledEntity.active) {
                 this.unpossess();
                 if (this.ui && typeof this.ui.showNotification === 'function') {
                     this.ui.showNotification("Possessed creature perished!");

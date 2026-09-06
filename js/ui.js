@@ -177,6 +177,7 @@ class UIManager {
         this.switchCategory(this.currentCategory);
         this.setupEventListeners();
         this.setupVirtualMobileControls();
+        this.setupPWA();
         this.updateGalaxyPresetUI();
     }
 
@@ -850,6 +851,69 @@ class UIManager {
         this._toastTimer = setTimeout(() => {
             if (toast) toast.style.opacity = '0';
         }, 2200);
+    }
+
+    setupPWA() {
+        const btnInstall = document.getElementById('btn-install-pwa');
+        const nav = typeof navigator !== 'undefined' ? navigator : null;
+        if (!nav) return;
+
+        // 1. Service Worker Registration
+        if ('serviceWorker' in nav && (window.location && window.location.protocol && (window.location.protocol.startsWith('http') || window.location.hostname === 'localhost'))) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('GalaxyBox PWA ServiceWorker registered with scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.warn('GalaxyBox PWA ServiceWorker registration failed:', err);
+                    });
+            });
+        }
+
+        // 2. Before Install Prompt (Chrome / Edge / Android)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredInstallPrompt = e;
+            if (btnInstall) {
+                btnInstall.style.display = 'inline-flex';
+            }
+        });
+
+        // 3. App Installed Event
+        window.addEventListener('appinstalled', () => {
+            this.deferredInstallPrompt = null;
+            if (btnInstall) btnInstall.style.display = 'none';
+            this.showNotification('🌌 GalaxyBox installed to your device! Enjoy offline play!');
+        });
+
+        // 4. Click Install Button
+        if (btnInstall) {
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isMobile && !isStandalone) {
+                btnInstall.style.display = 'inline-flex';
+            }
+
+            btnInstall.addEventListener('click', async () => {
+                if (this.game.audio) this.game.audio.playClick();
+                if (this.deferredInstallPrompt) {
+                    this.deferredInstallPrompt.prompt();
+                    const choice = await this.deferredInstallPrompt.userChoice;
+                    if (choice && choice.outcome === 'accepted') {
+                        btnInstall.style.display = 'none';
+                    }
+                    this.deferredInstallPrompt = null;
+                } else {
+                    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                    if (isIOS) {
+                        this.showNotification('📲 To install on iOS: Tap Share [⎋] then "Add to Home Screen"');
+                    } else {
+                        this.showNotification('📲 Tap browser menu (⋮) -> "Install App" or "Add to Home screen"');
+                    }
+                }
+            });
+        }
     }
 
     showInspector(entity, tile, tx, ty) {

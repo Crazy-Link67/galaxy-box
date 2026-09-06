@@ -57,6 +57,14 @@ class Particle {
             this.size += 0.08 * dt;
         } else if (this.type === 'fire') {
             this.size = Math.max(0.5, this.size - 0.04 * dt);
+        } else if (this.type === 'soul') {
+            this.vy = -0.35;
+            this.x += Math.sin(this.life * 0.18) * 0.35 * dt;
+        } else if (this.type === 'leaf') {
+            this.vy = 0.3;
+            this.x += Math.cos(this.life * 0.15) * 0.45 * dt;
+        } else if (this.type === 'water_ripple') {
+            this.size += 0.35 * dt;
         }
 
         if (this.life <= 0) {
@@ -249,6 +257,34 @@ class ParticleSystem {
                     ctx.fillRect(px + 1, py, Math.max(1, s - 2), s);
                     ctx.fillRect(px, py + 1, s, Math.max(1, s - 2));
                 }
+            } else if (p.type === 'soul') {
+                const px = Math.floor(p.x);
+                const py = Math.floor(p.y);
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(px - 1, py - 1, 3, 3);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(px, py, 1, 1);
+                ctx.fillStyle = 'rgba(165, 243, 252, 0.5)';
+                ctx.fillRect(px, py + 2, 1, 2);
+            } else if (p.type === 'water_ripple') {
+                ctx.strokeStyle = p.color || '#38bdf8';
+                ctx.lineWidth = 1;
+                const r = Math.max(1, Math.floor(p.size));
+                const px = Math.floor(p.x);
+                const py = Math.floor(p.y);
+                ctx.strokeRect(px - r, py - Math.floor(r * 0.6), r * 2, Math.max(1, Math.floor(r * 1.2)));
+            } else if (p.type === 'bone') {
+                const px = Math.floor(p.x);
+                const py = Math.floor(p.y);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(px - 1, py, 3, 1);
+                ctx.fillRect(px, py - 1, 1, 3);
+            } else if (p.type === 'leaf') {
+                const px = Math.floor(p.x);
+                const py = Math.floor(p.y);
+                ctx.fillStyle = p.color || '#22c55e';
+                ctx.fillRect(px, py - 1, 2, 2);
+                ctx.fillRect(px - 1, py, 3, 1);
             } else {
                 // Pixel / square particle for retro crisp look
                 ctx.fillStyle = p.color;
