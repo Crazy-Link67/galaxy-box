@@ -79,31 +79,46 @@ class BlackHole {
     }
 
     render(ctx) {
-        // Accretion disk glow
         ctx.save();
-        ctx.strokeStyle = '#a855f7';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
-        ctx.stroke();
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
 
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 5, 0, Math.PI * 2);
-        ctx.fill();
+        // Orbiting retro pixel accretion ring
+        ctx.fillStyle = '#c084fc';
+        for (let a = 0; a < 8; a++) {
+            const ang = Date.now() * 0.005 + a * (Math.PI / 4);
+            const r = 8 + (a % 2) * 2;
+            ctx.fillRect(Math.floor(cx + Math.cos(ang) * r), Math.floor(cy + Math.sin(ang) * r * 0.6), 2, 2);
+        }
+
+        // Stepped pixel singularity core (retro stepped 9x9 disc)
+        ctx.fillStyle = '#05050b';
+        ctx.fillRect(cx - 3, cy - 4, 6, 8);
+        ctx.fillRect(cx - 4, cy - 3, 8, 6);
+        ctx.fillRect(cx - 2, cy - 5, 4, 10);
+        ctx.fillRect(cx - 5, cy - 2, 10, 4);
+
+        // Event horizon photon ring outline
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(cx - 2, cy - 6, 4, 1);
+        ctx.fillRect(cx - 2, cy + 5, 4, 1);
+        ctx.fillRect(cx - 6, cy - 2, 1, 4);
+        ctx.fillRect(cx + 5, cy - 2, 1, 4);
+
         ctx.restore();
     }
 }
 
 class Tornado {
-    constructor(x, y) {
+    constructor(x, y, isFire = false) {
         this.x = x;
         this.y = y;
         this.vx = (Math.random() - 0.5) * 0.8;
         this.vy = (Math.random() - 0.5) * 0.8;
-        this.radius = 16;
-        this.life = 600;
+        this.radius = isFire ? 20 : 16;
+        this.life = 700;
         this.active = true;
+        this.isFire = isFire;
     }
 
     update(world, entityManager, particleSystem) {
@@ -116,8 +131,8 @@ class Tornado {
         // Wander smoothly
         this.vx += (Math.random() - 0.5) * 0.15;
         this.vy += (Math.random() - 0.5) * 0.15;
-        this.vx = Math.max(-1.2, Math.min(1.2, this.vx));
-        this.vy = Math.max(-1.2, Math.min(1.2, this.vy));
+        this.vx = Math.max(-1.4, Math.min(1.4, this.vx));
+        this.vy = Math.max(-1.4, Math.min(1.4, this.vy));
         this.x += this.vx;
         this.y += this.vy;
 
@@ -129,17 +144,19 @@ class Tornado {
 
         // Funnel cloud particles
         if (particleSystem) {
-            for (let i = 0; i < 6; i++) {
+            const pColor = this.isFire ? (Math.random() < 0.6 ? '#f97316' : '#ef4444') : '#94a3b8';
+            const pType = this.isFire ? 'fire' : 'smoke';
+            for (let i = 0; i < (this.isFire ? 8 : 6); i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = Math.random() * this.radius;
                 const px = this.x + Math.cos(angle) * dist;
                 const py = this.y + Math.sin(angle) * (dist * 0.6);
                 const spd = 1.5 + Math.random() * 2;
-                particleSystem.spawn(px, py, -Math.sin(angle) * spd, -1.2, 2.5, '#94a3b8', 20, 'smoke');
+                particleSystem.spawn(px, py, -Math.sin(angle) * spd, -1.2, 2.5, pColor, 20, pType);
             }
         }
 
-        // Tear up land & trees
+        // Tear up land, ignite or uproot trees
         const tx = Math.floor(this.x);
         const ty = Math.floor(this.y);
         for (let dy = -3; dy <= 3; dy++) {
@@ -148,10 +165,16 @@ class Tornado {
                 const pty = ty + dy;
                 if (!world.inBounds(ptx, pty)) continue;
                 const t = world.getTile(ptx, pty);
-                if (t === TILES.FOREST) {
-                    world.setTile(ptx, pty, TILES.SOIL);
-                } else if (t === TILES.GRASS && Math.random() < 0.2) {
-                    world.setTile(ptx, pty, TILES.SOIL);
+                if (this.isFire) {
+                    if (t === TILES.FOREST || t === TILES.GRASS) {
+                        world.ignite(ptx, pty, 120);
+                    }
+                } else {
+                    if (t === TILES.FOREST) {
+                        world.setTile(ptx, pty, TILES.SOIL);
+                    } else if (t === TILES.GRASS && Math.random() < 0.2) {
+                        world.setTile(ptx, pty, TILES.SOIL);
+                    }
                 }
             }
         }
@@ -163,22 +186,20 @@ class Tornado {
             const dist = Math.hypot(this.x - ent.x, this.y - ent.y);
             if (dist < this.radius) {
                 const angle = Math.atan2(ent.y - this.y, ent.x - this.x) + 1.2;
-                ent.x += Math.cos(angle) * 3;
-                ent.y += Math.sin(angle) * 3;
-                ent.takeDamage(1.5);
+                ent.x += Math.cos(angle) * 3.5;
+                ent.y += Math.sin(angle) * 3.5;
+                ent.takeDamage(this.isFire ? 4.5 : 2.0);
             }
         }
     }
 
     render(ctx, animTime = 0) {
         ctx.save();
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.28)';
-        for (let yOff = 0; yOff < 32; yOff += 4) {
-            const width = Math.max(3, yOff * 0.7);
-            const wobble = Math.sin(animTime * 10 + yOff * 0.4) * 3;
-            ctx.beginPath();
-            ctx.ellipse(this.x + wobble, this.y - yOff, width, width * 0.35, 0, 0, Math.PI * 2);
-            ctx.fill();
+        ctx.fillStyle = this.isFire ? 'rgba(249, 115, 22, 0.45)' : 'rgba(148, 163, 184, 0.35)';
+        for (let yOff = 0; yOff < 34; yOff += 3) {
+            const width = Math.max(3, Math.floor(yOff * 0.75));
+            const wobble = Math.round(Math.sin(animTime * 10 + yOff * 0.4) * 3);
+            ctx.fillRect(Math.floor(this.x + wobble - width * 0.5), Math.floor(this.y - yOff), width, 2);
         }
         ctx.restore();
     }
@@ -252,15 +273,27 @@ class Meteor {
         // Check if reached destination
         if (this.y >= this.targetY || Math.hypot(this.targetX - this.x, this.targetY - this.y) < 6) {
             this.active = false;
-            disasterManager.triggerExplosion(this.targetX, this.targetY, 18, 1.8, world, entityManager, particleSystem, audio);
+            disasterManager.triggerExplosion(this.targetX, this.targetY, 36, 2.5, world, entityManager, particleSystem, audio);
         }
     }
 
     render(ctx) {
-        ctx.fillStyle = '#ff3d00';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        const mx = Math.floor(this.x);
+        const my = Math.floor(this.y);
+        const s = Math.max(2, Math.floor(this.size));
+        // Outer burning crust
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(mx - s, my - s + 1, s * 2, s * 2 - 2);
+        ctx.fillRect(mx - s + 1, my - s, s * 2 - 2, s * 2);
+        // Molten core
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(mx - s + 1, my - s + 1, s * 2 - 2, s * 2 - 2);
+        // Dark volcanic mineral facets
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(mx - s + 2, my - s + 1, 2, 2);
+        ctx.fillRect(mx, my + 1, 2, 2);
+        ctx.restore();
     }
 }
 
@@ -325,26 +358,29 @@ class UFO {
 
     render(ctx) {
         ctx.save();
-        // Tractor beam cone
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
-        ctx.beginPath();
-        ctx.moveTo(this.x - 2, this.y + 3);
-        ctx.lineTo(this.x + 2, this.y + 3);
-        ctx.lineTo(this.x + 14, this.y + 45);
-        ctx.lineTo(this.x - 14, this.y + 45);
-        ctx.closePath();
-        ctx.fill();
+        // Tractor beam cone (dithered pixel columns)
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+        for (let by = 4; by < 45; by += 2) {
+            const spread = Math.floor(by * 0.32);
+            ctx.fillRect(Math.floor(this.x - spread), Math.floor(this.y + by), spread * 2, 1.5);
+        }
 
-        // Saucer dome & hull
+        // Saucer dome (stepped pixel glass canopy)
         ctx.fillStyle = '#67e8f9';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y - 2, 4, Math.PI, 0);
-        ctx.fill();
+        ctx.fillRect(Math.floor(this.x - 2), Math.floor(this.y - 4), 4, 1);
+        ctx.fillRect(Math.floor(this.x - 3), Math.floor(this.y - 3), 6, 1);
+        ctx.fillRect(Math.floor(this.x - 4), Math.floor(this.y - 2), 8, 2);
+        // Highlight
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(Math.floor(this.x - 2), Math.floor(this.y - 3), 2, 1);
 
+        // Saucer hull (stepped metallic pixel rim)
         ctx.fillStyle = '#94a3b8';
-        ctx.beginPath();
-        ctx.ellipse(this.x, this.y + 1, 9, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillRect(Math.floor(this.x - 8), Math.floor(this.y), 16, 2);
+        ctx.fillRect(Math.floor(this.x - 6), Math.floor(this.y + 2), 12, 1);
+        ctx.fillRect(Math.floor(this.x - 3), Math.floor(this.y + 3), 6, 1);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(Math.floor(this.x - 7), Math.floor(this.y + 1), 14, 1);
 
         // Flashing lights
         const colors = ['#f43f5e', '#fbbf24', '#34d399'];
@@ -399,21 +435,41 @@ class Forcefield {
     render(ctx, animTime = 0) {
         ctx.save();
         const pulse = Math.sin(animTime * 4) * 0.08 + 0.95;
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.18)';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * pulse, 0, Math.PI * 2);
-        ctx.fill();
+        const r = Math.floor(this.radius * pulse);
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
 
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        // Dithered pixel scanlines inside shield
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+        for (let dy = -r + 1; dy < r; dy += 2) {
+            const span = Math.floor(Math.sqrt(Math.max(0, r * r - dy * dy)));
+            ctx.fillRect(cx - span, cy + dy, span * 2, 1);
+        }
 
-        // Inner glowing wave
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.65, 0, Math.PI * 2);
-        ctx.stroke();
+        // Stepped retro pixel boundary ring (Bresenham)
+        ctx.fillStyle = '#38bdf8';
+        let x = r;
+        let y = 0;
+        let err = 0;
+        while (x >= y) {
+            ctx.fillRect(cx + x - 1, cy + y, 2, 1);
+            ctx.fillRect(cx + y, cy + x - 1, 1, 2);
+            ctx.fillRect(cx - x, cy + y, 2, 1);
+            ctx.fillRect(cx - y, cy + x - 1, 1, 2);
+            ctx.fillRect(cx - x, cy - y, 2, 1);
+            ctx.fillRect(cx - y, cy - x, 1, 2);
+            ctx.fillRect(cx + x - 1, cy - y, 2, 1);
+            ctx.fillRect(cx + y, cy - x, 1, 2);
+
+            if (err <= 0) {
+                y += 1;
+                err += 2 * y + 1;
+            }
+            if (err > 0) {
+                x -= 1;
+                err -= 2 * x + 1;
+            }
+        }
         ctx.restore();
     }
 }
@@ -429,111 +485,115 @@ class DimensionRift {
         this.spawnTimer = 0;
     }
 
-    update(world, entityManager, particleSystem) {
+    update(world, entityManager, particleSystem, audio) {
         this.life--;
         if (this.life <= 0) {
             this.active = false;
             return;
         }
 
-        // Swirl particles
         if (particleSystem) {
-            for (let k = 0; k < 2; k++) {
-                const a = Math.random() * Math.PI * 2;
-                const d = Math.random() * this.radius;
-                particleSystem.spawn(this.x + Math.cos(a) * d, this.y + Math.sin(a) * d, -Math.sin(a) * 2, Math.cos(a) * 2, 1.5, '#c026d3', 20, 'stardust');
+            particleSystem.spawn(this.x + (Math.random() - 0.5) * 6, this.y + (Math.random() - 0.5) * 16, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, 2.5, '#a855f7', 20, 'stardust');
+            particleSystem.spawn(this.x + (Math.random() - 0.5) * 4, this.y + (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, 2, '#06b6d4', 20, 'stardust');
+        }
+
+        // Pull and consume land
+        const tx = Math.floor(this.x + (Math.random() - 0.5) * 14);
+        const ty = Math.floor(this.y + (Math.random() - 0.5) * 14);
+        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+            if (Math.random() < 0.25) world.setTile(tx, ty, TILES.CORRUPTED);
+            else if (Math.random() < 0.08) world.setTile(tx, ty, TILES.VOID);
+        }
+
+        // Pull nearby entities and damage
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(this.x - ent.x, this.y - ent.y);
+            if (dist < 28) {
+                const angle = Math.atan2(this.y - ent.y, this.x - ent.x);
+                ent.x += Math.cos(angle) * 1.2;
+                ent.y += Math.sin(angle) * 1.2;
+                ent.takeDamage(2.5);
             }
         }
 
-        // Gravitational pull & corruption
-        const rad = Math.floor(this.radius);
-        for (let dy = -rad; dy <= rad; dy++) {
-            for (let dx = -rad; dx <= rad; dx++) {
-                if (dx * dx + dy * dy <= rad * rad) {
-                    const tx = Math.floor(this.x + dx);
-                    const ty = Math.floor(this.y + dy);
-                    if (world.inBounds(tx, ty) && Math.random() < 0.005) {
-                        const cur = world.getTile(tx, ty);
-                        if (cur !== TILES.BEDROCK && cur !== TILES.VOID) {
-                            world.setTile(tx, ty, TILES.CORRUPTED);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Periodic demon / void creature spawn
+        // Spawn Nether Demons or Skeletons
         this.spawnTimer++;
-        if (this.spawnTimer >= 140) {
+        if (this.spawnTimer >= 120 && entityManager.entities.length < 250) {
             this.spawnTimer = 0;
             const spawnType = Math.random() < 0.6 ? 'demon' : (Math.random() < 0.5 ? 'alien' : 'skeleton');
-            entityManager.spawn(spawnType, this.x + (Math.random() - 0.5) * 6, this.y + (Math.random() - 0.5) * 6);
-            if (particleSystem) {
-                particleSystem.burst(this.x, this.y, 15, ['#a855f7', '#7e22ce', '#ffffff'], 1.5, 3.5, 1.5, 3);
-            }
+            entityManager.spawn(spawnType, this.x + (Math.random() - 0.5) * 10, this.y + (Math.random() - 0.5) * 10);
+            if (audio) audio.playMagic();
         }
     }
 
-    render(ctx, animTime = 0) {
+    render(ctx) {
         ctx.save();
         ctx.translate(this.x, this.y);
-        ctx.rotate(animTime * 1.5);
-        ctx.fillStyle = '#3b0764';
-        ctx.beginPath();
-        ctx.ellipse(0, 0, this.radius * 0.8, this.radius * 0.35, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = '#0f051d';
+        ctx.fillRect(-2, -14, 4, 28);
 
-        ctx.strokeStyle = '#e879f9';
-        ctx.lineWidth = 2;
+        // Jagged cosmic energy crack
+        ctx.strokeStyle = '#c026d3';
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.ellipse(0, 0, this.radius * 0.6, this.radius * 0.2, 0, 0, Math.PI * 2);
+        ctx.moveTo(0, -16);
+        ctx.lineTo(-4, -7);
+        ctx.lineTo(4, 2);
+        ctx.lineTo(-3, 10);
+        ctx.lineTo(0, 16);
         ctx.stroke();
 
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(-1.5, -1.5, 3, 3);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(0, -14);
+        ctx.lineTo(-2, -6);
+        ctx.lineTo(2, 3);
+        ctx.lineTo(-1, 9);
+        ctx.lineTo(0, 14);
+        ctx.stroke();
         ctx.restore();
     }
 }
 
 class IonCannon {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+        this.x = Math.floor(x);
+        this.y = Math.floor(y);
         this.timer = 85;
         this.active = true;
-        this.fired = false;
     }
 
     update(world, entityManager, disasterManager, particleSystem, audio) {
         this.timer--;
-        if (this.timer === 35) {
+
+        if (this.timer === 30) {
             if (audio) audio.playLaser();
+            if (window.game) window.game.shakeCamera(16, 28);
         }
 
         if (this.timer <= 30 && this.timer > 0) {
-            if (!this.fired) {
-                this.fired = true;
-                if (audio) {
-                    audio.playNuke();
-                    audio.playSingularity();
-                }
-            }
-
             if (particleSystem) {
-                for (let k = 0; k < 6; k++) {
-                    const bx = this.x + (Math.random() - 0.5) * 16;
-                    particleSystem.spawn(bx, this.y, (Math.random() - 0.5) * 3, -Math.random() * 4, 2, '#38bdf8', 25, 'spark');
+                for (let ly = -50; ly < this.y; ly += 6) {
+                    particleSystem.spawn(this.x + (Math.random() - 0.5) * 12, ly, 0, 5, 2.5, '#38bdf8', 12, 'spark');
+                    particleSystem.spawn(this.x + (Math.random() - 0.5) * 6, ly, 0, 6, 2, '#ffffff', 10, 'spark');
+                }
+                for (let i = 0; i < 6; i++) {
+                    const bx = this.x + (Math.random() - 0.5) * 26;
+                    particleSystem.spawn(bx, this.y, (Math.random() - 0.5) * 4, -Math.random() * 5, 2.5, '#38bdf8', 25, 'spark');
                 }
             }
 
-            const rad = 10;
+            const rad = 20;
             for (let dy = -rad; dy <= rad; dy++) {
                 for (let dx = -rad; dx <= rad; dx++) {
                     if (dx * dx + dy * dy <= rad * rad) {
                         const tx = Math.floor(this.x + dx);
                         const ty = Math.floor(this.y + dy);
                         if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
-                            world.setTile(tx, ty, TILES.FALLOUT);
+                            world.setTile(tx, ty, Math.random() < 0.3 ? TILES.VOID : TILES.FALLOUT);
                         }
                     }
                 }
@@ -541,44 +601,58 @@ class IonCannon {
 
             for (let i = 0; i < entityManager.entities.length; i++) {
                 const ent = entityManager.entities[i];
-                if (ent.active && Math.hypot(ent.x - this.x, ent.y - this.y) < 14) {
-                    ent.takeDamage(80);
+                if (ent.active && Math.hypot(ent.x - this.x, ent.y - this.y) < 24) {
+                    ent.takeDamage(200);
                 }
             }
         }
 
         if (this.timer <= 0) {
             this.active = false;
-            disasterManager.triggerExplosion(this.x, this.y, 22, 2.0, world, entityManager, particleSystem, audio);
+            disasterManager.triggerExplosion(this.x, this.y, 42, 3.5, world, entityManager, particleSystem, audio);
         }
     }
 
     render(ctx, animTime = 0) {
         ctx.save();
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
+
         if (this.timer > 30) {
             const progress = (this.timer - 30) / 55;
-            const r = 8 + progress * 24;
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
-            ctx.stroke();
+            const pr = Math.floor(10 + progress * 26);
 
-            ctx.beginPath();
-            ctx.moveTo(this.x - r - 4, this.y); ctx.lineTo(this.x + r + 4, this.y);
-            ctx.moveTo(this.x, this.y - r - 4); ctx.lineTo(this.x, this.y + r + 4);
-            ctx.stroke();
+            // Tactical pixel crosshairs with corner brackets
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(cx - pr, cy - pr, 7, 2);
+            ctx.fillRect(cx - pr, cy - pr, 2, 7);
+            ctx.fillRect(cx + pr - 7, cy - pr, 7, 2);
+            ctx.fillRect(cx + pr - 2, cy - pr, 2, 7);
+            ctx.fillRect(cx - pr, cy + pr - 2, 7, 2);
+            ctx.fillRect(cx - pr, cy + pr - 7, 2, 7);
+            ctx.fillRect(cx + pr - 7, cy + pr - 2, 7, 2);
+            ctx.fillRect(cx + pr - 2, cy + pr - 7, 2, 7);
+
+            // Crosshair reticle lines
+            ctx.fillRect(cx - pr - 4, cy, 6, 1);
+            ctx.fillRect(cx + pr - 2, cy, 6, 1);
+            ctx.fillRect(cx, cy - pr - 4, 1, 6);
+            ctx.fillRect(cx, cy + pr - 2, 1, 6);
         } else if (this.timer > 0) {
-            ctx.fillStyle = 'rgba(56, 189, 248, 0.8)';
-            ctx.fillRect(this.x - 7, -500, 14, this.y + 500);
+            // Ion Cannon orbital blue plasma beam
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.85)';
+            ctx.fillRect(cx - 10, -500, 20, cy + 500);
 
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(this.x - 3, -500, 6, this.y + 500);
+            ctx.fillRect(cx - 4, -500, 8, cy + 500);
 
+            // Stepped pixel beam impact flare
+            const ir = Math.floor(18 + Math.random() * 6);
             ctx.fillStyle = '#67e8f9';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 14 + Math.random() * 4, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fillRect(cx - ir, cy - 4, ir * 2, 8);
+            ctx.fillRect(cx - 4, cy - ir, 8, ir * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - Math.floor(ir * 0.5), cy - 2, ir, 4);
         }
         ctx.restore();
     }
@@ -612,13 +686,11 @@ class NukeMissile {
             particleSystem.spawn(exX, exY, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, 3.2, '#64748b', 30, 'smoke');
         }
 
-        const tx = Math.floor(this.x);
-        const ty = Math.floor(this.y);
-        const hitGround = world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.AIR && world.getTile(tx, ty) !== TILES.VOID;
+        const reachedTarget = dist <= Math.max(10, this.speed * 1.5) || (this.y >= this.targetY && Math.abs(dx) <= 16);
 
-        if (dist <= this.speed * 1.2 || hitGround || this.y >= this.targetY) {
+        if (reachedTarget) {
             this.active = false;
-            disasterManager.triggerNuke(this.x, this.y, world, entityManager, particleSystem, audio);
+            disasterManager.triggerNuke(this.targetX, this.targetY, world, entityManager, particleSystem, audio);
         }
     }
 
@@ -836,15 +908,16 @@ class DisasterManager {
     // 1. DESTRUCTION & CHAOS POWERS
     // ==========================================
 
-    // Atomic Nuke
+    // Atomic Nuke (Mega-Destruction Overhaul)
     triggerNuke(cx, cy, world, entityManager, particleSystem, audio) {
         if (audio) audio.playNuke();
-        if (particleSystem) particleSystem.nukeMushroom(cx, cy, 1.3);
+        if (particleSystem) particleSystem.nukeMushroom(cx, cy, 2.0);
+        if (window.game) window.game.shakeCamera(22, 45);
 
-        const radius = 35;
+        const radius = 65;
         const rad2 = radius * radius;
 
-        // Obliterate terrain & create crater
+        // Obliterate terrain & create massive layered crater
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
                 const dist2 = dx * dx + dy * dy;
@@ -853,15 +926,16 @@ class DisasterManager {
                 const tx = Math.floor(cx + dx);
                 const ty = Math.floor(cy + dy);
                 if (!world.inBounds(tx, ty)) continue;
-
                 if (world.getTile(tx, ty) === TILES.BEDROCK) continue;
 
-                if (dist2 < radius * radius * 0.25) {
+                if (dist2 < rad2 * 0.18) {
+                    world.setTile(tx, ty, TILES.VOID);
+                } else if (dist2 < rad2 * 0.45) {
                     world.setTile(tx, ty, TILES.FALLOUT);
-                } else if (dist2 < radius * radius * 0.65) {
-                    world.setTile(tx, ty, TILES.ASH);
+                } else if (dist2 < rad2 * 0.75) {
+                    world.setTile(tx, ty, Math.random() < 0.25 ? TILES.MAGMA_ROCK : TILES.ASH);
                 } else {
-                    world.ignite(tx, ty, 100);
+                    world.ignite(tx, ty, 160);
                 }
             }
         }
@@ -871,24 +945,24 @@ class DisasterManager {
             const ent = entityManager.entities[i];
             if (!ent.active) continue;
             const dist = Math.hypot(ent.x - cx, ent.y - cy);
-            if (dist < radius * 1.4) {
+            if (dist < radius * 1.5) {
                 // Check for The Great Galaxy Sacrifice!
                 if (ent.type === 'galaxy_guardian' || ent.isCelestial) {
                     this.triggerGreatGalaxySacrifice(ent.x, ent.y, world, entityManager, particleSystem, audio);
                 }
 
-                ent.takeDamage(250);
-                // Push back violently
+                ent.takeDamage(1500);
+                // Push back violently at supersonic speed
                 const angle = Math.atan2(ent.y - cy, ent.x - cx);
-                ent.x += Math.cos(angle) * (radius - dist) * 0.8;
-                ent.y += Math.sin(angle) * (radius - dist) * 0.8;
+                ent.x += Math.cos(angle) * (radius * 1.5 - dist) * 1.2;
+                ent.y += Math.sin(angle) * (radius * 1.5 - dist) * 1.2;
             }
         }
 
-        // Destroy buildings in blast radius
+        // Destroy all buildings in blast zone
         for (let i = entityManager.buildings.length - 1; i >= 0; i--) {
             const b = entityManager.buildings[i];
-            if (Math.hypot(b.x - cx, b.y - cy) < radius) {
+            if (Math.hypot(b.x - cx, b.y - cy) < radius * 1.2) {
                 entityManager.buildings.splice(i, 1);
             }
         }
@@ -901,39 +975,41 @@ class DisasterManager {
             audio.playSingularity();
         }
 
+        if (window.game) {
+            window.game.shakeCamera(32, 60);
+            window.game.unlockCosmicSacrificeSecrets();
+        }
+
         if (particleSystem) {
             // Massive expanding celestial stardust supernova
-            particleSystem.burst(gx, gy, 450, ['#a855f7', '#c026d3', '#38bdf8', '#facc15', '#ffffff'], 3, 12, 2, 6, 'stardust');
-            for (let r = 0; r < 4; r++) {
-                const sw = particleSystem.spawn(gx, gy, 0, 0, 8 + r * 6, '#38bdf8', 60 + r * 15, 'shockwave', 0, 1);
-                sw.extra = 90;
+            particleSystem.burst(gx, gy, 650, ['#a855f7', '#c026d3', '#38bdf8', '#facc15', '#ffffff'], 4, 18, 2, 8, 'stardust');
+            for (let r = 0; r < 5; r++) {
+                const sw = particleSystem.spawn(gx, gy, 0, 0, 10 + r * 8, '#38bdf8', 70 + r * 15, 'shockwave', 0, 1);
+                sw.extra = 120;
             }
         }
 
-        // Convert ground in radius to cosmic STARDUST & NEBULA
-        const rad = 25;
+        // Convert ground in wide radius to cosmic STARDUST, NEBULA & CRYSTAL
+        const rad = 45;
         for (let dy = -rad; dy <= rad; dy++) {
             for (let dx = -rad; dx <= rad; dx++) {
                 if (dx * dx + dy * dy <= rad * rad) {
                     const tx = Math.floor(gx + dx);
                     const ty = Math.floor(gy + dy);
                     if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
-                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.STARDUST : TILES.NEBULA);
+                        const rnd = Math.random();
+                        world.setTile(tx, ty, rnd < 0.45 ? TILES.STARDUST : (rnd < 0.8 ? TILES.NEBULA : TILES.CRYSTAL));
                     }
                 }
             }
         }
-
-        // Trigger unlock in game & UI
-        if (window.game) {
-            window.game.unlockGalaxyTemplate();
-        }
     }
 
-    // Standard / Generic Explosion
-    triggerExplosion(cx, cy, radius = 15, intensity = 1, world = null, entityManager = null, particleSystem = null, audio = null) {
+    // Standard / Generic Explosion (Buffed)
+    triggerExplosion(cx, cy, radius = 24, intensity = 1.5, world = null, entityManager = null, particleSystem = null, audio = null) {
         if (particleSystem) particleSystem.explosion(cx, cy, radius, intensity);
         if (audio) audio.playExplosion(intensity);
+        if (window.game) window.game.shakeCamera(Math.min(20, 8 * intensity), 16);
 
         if (!world) return;
         const r2 = radius * radius;
@@ -946,12 +1022,12 @@ class DisasterManager {
                 if (!world.inBounds(tx, ty)) continue;
                 if (world.getTile(tx, ty) === TILES.BEDROCK) continue;
 
-                if (dist2 < r2 * 0.3) {
+                if (dist2 < r2 * 0.35) {
                     world.setTile(tx, ty, TILES.VOID);
-                } else if (dist2 < r2 * 0.7) {
+                } else if (dist2 < r2 * 0.75) {
                     world.setTile(tx, ty, TILES.ASH);
                 } else {
-                    world.ignite(tx, ty, 60);
+                    world.ignite(tx, ty, 80);
                 }
             }
         }
@@ -961,19 +1037,28 @@ class DisasterManager {
                 const ent = entityManager.entities[i];
                 if (!ent.active) continue;
                 const dist = Math.hypot(ent.x - cx, ent.y - cy);
-                if (dist < radius * 1.2) {
-                    ent.takeDamage(60 * intensity);
+                if (dist < radius * 1.3) {
+                    ent.takeDamage(120 * intensity);
+                    const angle = Math.atan2(ent.y - cy, ent.x - cx);
+                    ent.x += Math.cos(angle) * (radius * 1.3 - dist) * 0.4;
+                    ent.y += Math.sin(angle) * (radius * 1.3 - dist) * 0.4;
                 }
             }
         }
     }
 
-    // Antimatter / Void Bomb
+    // Antimatter / Void Bomb (Buffed to Colossal Annihilation)
     triggerAntimatter(cx, cy, world, entityManager, particleSystem, audio) {
         if (audio) audio.playSingularity();
-        const radius = 24;
+        if (window.game) window.game.shakeCamera(22, 45);
+
+        const radius = 52;
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 120, ['#a855f7', '#000000', '#3b82f6', '#ffffff'], 2, 7, 2, 5, 'stardust');
+            particleSystem.burst(cx, cy, 260, ['#a855f7', '#000000', '#3b82f6', '#ffffff'], 3, 10, 2, 6, 'stardust');
+            for (let r = 0; r < 3; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 8 + r * 6, '#a855f7', 50 + r * 10, 'shockwave', 0, 1);
+                sw.extra = 90;
+            }
         }
 
         for (let dy = -radius; dy <= radius; dy++) {
@@ -988,10 +1073,10 @@ class DisasterManager {
             }
         }
 
-        // Delete entities
+        // Delete entities instantly
         for (let i = 0; i < entityManager.entities.length; i++) {
             const ent = entityManager.entities[i];
-            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= radius) {
+            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= radius * 1.2) {
                 ent.takeDamage(9999);
             }
         }
@@ -1047,22 +1132,22 @@ class DisasterManager {
         this.meteors.push(new Meteor(startX, startY, tx, ty));
     }
 
-    // Cluster Missiles
+    // Cluster Missiles (Buffed to 18 High-Yield Warheads)
     triggerClusterBomb(cx, cy, world, entityManager, particleSystem, audio) {
-        for (let i = 0; i < 8; i++) {
-            const ox = (Math.random() - 0.5) * 35;
-            const oy = (Math.random() - 0.5) * 35;
+        for (let i = 0; i < 18; i++) {
+            const ox = (Math.random() - 0.5) * 60;
+            const oy = (Math.random() - 0.5) * 60;
             setTimeout(() => {
-                this.triggerExplosion(cx + ox, cy + oy, 8, 1, world, entityManager, particleSystem, audio);
-            }, i * 70);
+                this.triggerExplosion(cx + ox, cy + oy, 14, 1.4, world, entityManager, particleSystem, audio);
+            }, i * 65);
         }
     }
 
-    // Tsar Finger Disintegrator
+    // Tsar Finger Disintegrator (Buffed)
     triggerDisintegrator(x, y, world, entityManager, particleSystem) {
-        const radius = 5;
+        const radius = 10;
         if (particleSystem) {
-            particleSystem.burst(x, y, 15, ['#f43f5e', '#cbd5e1'], 1, 3, 1, 2);
+            particleSystem.burst(x, y, 35, ['#f43f5e', '#cbd5e1', '#ffffff'], 1.5, 4, 1.5, 3);
         }
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -1077,27 +1162,46 @@ class DisasterManager {
         }
         for (let i = 0; i < entityManager.entities.length; i++) {
             const ent = entityManager.entities[i];
-            if (ent.active && Math.hypot(ent.x - x, ent.y - y) <= radius) {
+            if (ent.active && Math.hypot(ent.x - x, ent.y - y) <= radius * 1.2) {
                 ent.takeDamage(9999);
             }
         }
     }
 
-    // Supernova Bomb
+    // Supernova Bomb (Massive Galactic Explosion)
     triggerSupernova(cx, cy, world, entityManager, particleSystem, audio) {
         if (audio) audio.playNuke();
+        if (window.game) window.game.shakeCamera(32, 55);
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 250, ['#ffffff', '#f43f5e', '#a855f7', '#38bdf8', '#facc15'], 2, 9, 2, 6, 'stardust');
+            particleSystem.burst(cx, cy, 450, ['#ffffff', '#f43f5e', '#a855f7', '#38bdf8', '#facc15'], 3, 16, 2, 7, 'stardust');
+            for (let r = 0; r < 4; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#facc15', 60 + r * 15, 'shockwave', 0, 1);
+                sw.extra = 110;
+            }
         }
-        this.triggerExplosion(cx, cy, 45, 3.0, world, entityManager, particleSystem, audio);
+        this.triggerExplosion(cx, cy, 85, 4.0, world, entityManager, particleSystem, audio);
+
+        // Convert central area to cosmic nebula & stardust
+        const rad = 30;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.STARDUST : TILES.NEBULA);
+                    }
+                }
+            }
+        }
     }
 
     // Corrosion Bomb
     triggerCorrosionBomb(cx, cy, world, entityManager, particleSystem, audio) {
         if (audio) audio.playSplash();
-        const radius = 14;
+        const radius = 18;
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 80, ['#84cc16', '#4ade80', '#15803d'], 1, 4, 1.5, 3.5, 'acid');
+            particleSystem.burst(cx, cy, 110, ['#84cc16', '#4ade80', '#15803d'], 1.5, 5, 1.5, 4, 'acid');
         }
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -1110,6 +1214,116 @@ class DisasterManager {
                 }
             }
         }
+    }
+
+    // NEW: Napalm Carpet Bombing Strike
+    triggerNapalmStrike(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio) audio.playExplosion(1.5);
+        if (window.game) window.game.shakeCamera(16, 35);
+        for (let step = -7; step <= 7; step++) {
+            const bx = cx + step * 7;
+            const by = cy + (Math.random() - 0.5) * 12;
+            setTimeout(() => {
+                this.triggerExplosion(bx, by, 16, 1.2, world, entityManager, particleSystem, audio);
+                // Shower area in raging fire and magma
+                for (let fy = -8; fy <= 8; fy++) {
+                    for (let fx = -8; fx <= 8; fx++) {
+                        const tx = Math.floor(bx + fx);
+                        const ty = Math.floor(by + fy);
+                        if (world.inBounds(tx, ty)) {
+                            world.ignite(tx, ty, 180);
+                            if (Math.random() < 0.25 && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                                world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                            }
+                        }
+                    }
+                }
+            }, (step + 7) * 55);
+        }
+    }
+
+    // NEW: Kinetic Orbital Penetrator ("Rods from God")
+    triggerKineticStrike(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio) {
+            audio.playThunder();
+            audio.playExplosion(2.5);
+        }
+        if (window.game) window.game.shakeCamera(28, 50);
+
+        // Penetration shockwave column
+        if (particleSystem) {
+            for (let y = -200; y < cy; y += 8) {
+                particleSystem.spawn(cx + (Math.random() - 0.5) * 4, y, 0, 12, 3, '#f1f5f9', 15, 'fire');
+                particleSystem.spawn(cx + (Math.random() - 0.5) * 8, y, 0, 10, 3, '#64748b', 20, 'smoke');
+            }
+            particleSystem.burst(cx, cy, 300, ['#ffffff', '#f97316', '#475569', '#334155'], 4, 18, 3, 7);
+            for (let r = 0; r < 4; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#f1f5f9', 60 + r * 15, 'shockwave', 0, 1);
+                sw.extra = 110;
+            }
+        }
+
+        // Deep crater drilled into the crust
+        const radius = 38;
+        const rad2 = radius * radius;
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 > rad2) continue;
+                const tx = Math.floor(cx + dx);
+                const ty = Math.floor(cy + dy);
+                if (!world.inBounds(tx, ty)) continue;
+
+                if (dist2 < rad2 * 0.45) {
+                    world.setTile(tx, ty, TILES.VOID);
+                } else if (dist2 < rad2 * 0.8) {
+                    world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                } else {
+                    world.setTile(tx, ty, TILES.STONE);
+                }
+            }
+        }
+
+        // Seismic shockwave wiping entities
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(ent.x - cx, ent.y - cy);
+            if (dist < radius * 1.5) {
+                ent.takeDamage(1200);
+                const angle = Math.atan2(ent.y - cy, ent.x - cx);
+                ent.x += Math.cos(angle) * (radius * 1.5 - dist) * 1.2;
+                ent.y += Math.sin(angle) * (radius * 1.5 - dist) * 1.2;
+            }
+        }
+    }
+
+    // NEW: Void Implosion
+    triggerVoidImplosion(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio) audio.playSingularity();
+        if (window.game) window.game.shakeCamera(18, 35);
+        const radius = 35;
+
+        // Pull tiles and entities inward
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(ent.x - cx, ent.y - cy);
+            if (dist < radius * 1.3) {
+                const angle = Math.atan2(cy - ent.y, cx - ent.x);
+                ent.x += Math.cos(angle) * 12;
+                ent.y += Math.sin(angle) * 12;
+                ent.takeDamage(300);
+            }
+        }
+
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 200, ['#a855f7', '#38bdf8', '#000000', '#ffffff'], 3, 10, 2, 5, 'stardust');
+        }
+
+        setTimeout(() => {
+            this.triggerExplosion(cx, cy, 40, 2.5, world, entityManager, particleSystem, audio);
+        }, 300);
     }
 
     // ==========================================
@@ -1136,28 +1350,119 @@ class DisasterManager {
         this.volcanoes.push(new Volcano(x, y));
     }
 
+    // NEW: Supervolcano (Mega Caldera)
+    spawnSupervolcano(x, y, world) {
+        const radius = 22;
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 <= radius * radius) {
+                    const tx = Math.floor(x + dx);
+                    const ty = Math.floor(y + dy);
+                    if (world.inBounds(tx, ty)) {
+                        if (dist2 < 25) world.setTile(tx, ty, TILES.LAVA);
+                        else if (dist2 < 90) world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                        else if (dist2 < 220) world.setTile(tx, ty, TILES.OBSIDIAN);
+                        else world.setTile(tx, ty, TILES.HIGH_MOUNTAIN);
+                    }
+                }
+            }
+        }
+        this.volcanoes.push(new Volcano(x, y));
+        this.volcanoes.push(new Volcano(x - 5, y - 4));
+        this.volcanoes.push(new Volcano(x + 5, y + 4));
+        if (window.game) window.game.shakeCamera(16, 30);
+    }
+
     spawnTornado(x, y) {
-        this.tornadoes.push(new Tornado(x, y));
+        this.tornadoes.push(new Tornado(x, y, false));
+    }
+
+    // NEW: Fire Tornado
+    spawnFireTornado(x, y) {
+        this.tornadoes.push(new Tornado(x, y, true));
+    }
+
+    // NEW: Meteor Shower Barrage
+    triggerMeteorShower(cx, cy) {
+        for (let i = 0; i < 16; i++) {
+            setTimeout(() => {
+                const ox = (Math.random() - 0.5) * 80;
+                const oy = (Math.random() - 0.5) * 60;
+                this.spawnMeteor(cx + ox, cy + oy);
+            }, i * 90);
+        }
+    }
+
+    // Secret Apocalypse: Cosmic Supernova Collapse (Unlocked via Galaxy Sacrifice)
+    triggerSupernovaCollapse(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio) {
+            audio.playSingularity();
+            audio.playNuke();
+        }
+        if (window.game) window.game.shakeCamera(35, 70);
+
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 800, ['#ffffff', '#a855f7', '#38bdf8', '#facc15', '#ec4899'], 5, 20, 3, 9, 'stardust');
+            for (let r = 0; r < 6; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 12 + r * 10, '#38bdf8', 80 + r * 15, 'shockwave', 0, 1);
+                sw.extra = 140;
+            }
+        }
+
+        // Obliterate terrain in massive 95-tile radius into stardust and deep void
+        const radius = 95;
+        const rad2 = radius * radius;
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 > rad2) continue;
+                const tx = Math.floor(cx + dx);
+                const ty = Math.floor(cy + dy);
+                if (!world.inBounds(tx, ty) || world.getTile(tx, ty) === TILES.BEDROCK) continue;
+
+                if (dist2 < rad2 * 0.2) {
+                    world.setTile(tx, ty, TILES.VOID);
+                } else if (dist2 < rad2 * 0.6) {
+                    world.setTile(tx, ty, Math.random() < 0.6 ? TILES.STARDUST : TILES.NEBULA);
+                } else {
+                    world.setTile(tx, ty, Math.random() < 0.3 ? TILES.CRYSTAL : TILES.CORRUPTED);
+                }
+            }
+        }
+
+        // Annihilate all entities
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) < radius * 1.2) {
+                ent.takeDamage(9999);
+            }
+        }
     }
 
     triggerEarthquake(cx, cy, world, entityManager, particleSystem, audio) {
         if (audio) audio.playThunder();
+        if (window.game) window.game.shakeCamera(18, 40);
         // Create jagged fault line chasm
-        let curX = cx - 30;
-        let curY = cy + (Math.random() - 0.5) * 10;
-        const targetX = cx + 30;
+        let curX = cx - 50;
+        let curY = cy + (Math.random() - 0.5) * 15;
+        const targetX = cx + 50;
 
         while (curX < targetX) {
             curX += 1 + Math.random() * 2;
-            curY += (Math.random() - 0.5) * 3;
+            curY += (Math.random() - 0.5) * 4;
 
-            for (let w = -1; w <= 1; w++) {
+            for (let w = -2; w <= 2; w++) {
                 const tx = Math.floor(curX);
                 const ty = Math.floor(curY + w);
                 if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
-                    world.setTile(tx, ty, TILES.VOID);
-                    if (particleSystem && Math.random() < 0.2) {
-                        particleSystem.spawn(tx, ty, (Math.random() - 0.5) * 2, -1, 2, '#4b5563', 30, 'smoke');
+                    if (Math.abs(w) <= 1) {
+                        world.setTile(tx, ty, Math.random() < 0.2 ? TILES.MAGMA_ROCK : TILES.VOID);
+                    } else if (Math.random() < 0.4) {
+                        world.setTile(tx, ty, TILES.STONE);
+                    }
+                    if (particleSystem && Math.random() < 0.3) {
+                        particleSystem.spawn(tx, ty, (Math.random() - 0.5) * 2, -1.5, 2.5, '#4b5563', 30, 'smoke');
                     }
                 }
             }
@@ -1166,8 +1471,11 @@ class DisasterManager {
         // Damage entities nearby
         for (let i = 0; i < entityManager.entities.length; i++) {
             const ent = entityManager.entities[i];
-            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) < 35) {
-                ent.takeDamage(40);
+            if (!ent.active) continue;
+            const dist = Math.hypot(ent.x - cx, ent.y - cy);
+            if (dist < 55) {
+                ent.takeDamage(120);
+                ent.y += (Math.random() - 0.5) * 4;
             }
         }
     }

@@ -25,7 +25,10 @@ const TILES = {
     NEBULA: 19,
     STARDUST: 20,
     OBSIDIAN: 21,
-    CRYSTAL: 22
+    CRYSTAL: 22,
+    MAGMA_ROCK: 23,
+    BIOLUMINESCENT_MOSS: 24,
+    QUICKSAND: 25
 };
 
 const TILE_INFO = {
@@ -51,7 +54,10 @@ const TILE_INFO = {
     [TILES.NEBULA]: { name: "Cosmic Nebula", color: "#c026d3", isLiquid: true, isSolid: false, flammability: 0 },
     [TILES.STARDUST]: { name: "Stardust Land", color: "#38bdf8", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.OBSIDIAN]: { name: "Volcanic Obsidian", color: "#1e1b2e", isLiquid: false, isSolid: true, flammability: 0 },
-    [TILES.CRYSTAL]: { name: "Luminous Crystal", color: "#ec4899", isLiquid: false, isSolid: true, flammability: 0 }
+    [TILES.CRYSTAL]: { name: "Luminous Crystal", color: "#ec4899", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.MAGMA_ROCK]: { name: "Magma Rock", color: "#b91c1c", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.BIOLUMINESCENT_MOSS]: { name: "Bioluminescent Moss", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0.4 },
+    [TILES.QUICKSAND]: { name: "Quicksand", color: "#b49b65", isLiquid: false, isSolid: false, flammability: 0 }
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
@@ -243,6 +249,40 @@ class World {
                         this.tiles[i] = TILES.VOID;
                         continue;
                     }
+                } else if (preset === 'binary_stars') {
+                    // Twin Orbiting Stellar Cores with Plasma Accretion
+                    const d1 = Math.hypot(dx - 0.28, dy);
+                    const d2 = Math.hypot(dx + 0.28, dy);
+                    if (d1 < 0.12 || d2 < 0.12) {
+                        this.tiles[i] = TILES.STARDUST;
+                        continue;
+                    } else if (Math.abs(dy) < 0.05 && Math.abs(dx) < 0.35) {
+                        this.tiles[i] = TILES.NEBULA;
+                        continue;
+                    } else if (Math.abs(distFromCenter - 0.55) < 0.12) {
+                        const n = this.noise.fractal(nx * 10, ny * 10, 3, 0.5);
+                        if (n > 0.6) this.tiles[i] = TILES.CRYSTAL;
+                        else if (n > 0.35) this.tiles[i] = TILES.STARDUST;
+                        else this.tiles[i] = TILES.CORRUPTED;
+                        continue;
+                    } else {
+                        this.tiles[i] = TILES.VOID;
+                        continue;
+                    }
+                } else if (preset === 'deep_nebula') {
+                    // Deep Cosmic Void with Floating Crystal Isles
+                    const n = this.noise.fractal(nx * 6, ny * 6, 4, 0.5);
+                    const neb = this.noise.fractal(nx * 3, ny * 3, 3, 0.4);
+                    if (n > 0.65) {
+                        this.tiles[i] = TILES.CRYSTAL;
+                    } else if (n > 0.45) {
+                        this.tiles[i] = TILES.STARDUST;
+                    } else if (neb > 0.42) {
+                        this.tiles[i] = TILES.NEBULA;
+                    } else {
+                        this.tiles[i] = TILES.VOID;
+                    }
+                    continue;
                 } else if (preset === 'flat') {
                     this.tiles[i] = TILES.GRASS;
                     continue;
@@ -471,6 +511,53 @@ class World {
                     this.tiles[i] = TILES.GRASS;
                 } else if (t === TILES.ASH && Math.random() < 0.001) {
                     this.tiles[i] = TILES.SOIL;
+                }
+
+                // 6. Magma Rock Heat & Ember Sparkles
+                if (t === TILES.MAGMA_ROCK) {
+                    if (particleSystem && Math.random() < 0.04) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.4, -0.4 - Math.random() * 0.5, 1.2, '#f97316', 15, 'spark');
+                    }
+                    if (Math.random() < 0.02) {
+                        const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.WATER || this.tiles[ni] === TILES.DEEP_WATER) {
+                                this.tiles[ni] = TILES.OBSIDIAN;
+                                if (particleSystem) particleSystem.spawn(nx, ny, 0, -0.8, 3, '#94a3b8', 25, 'smoke');
+                            } else if (TILE_INFO[this.tiles[ni]]?.flammability > 0) {
+                                this.ignite(nx, ny, 60);
+                            }
+                        }
+                    }
+                }
+
+                // 7. Bioluminescent Moss Spreading
+                if (t === TILES.BIOLUMINESCENT_MOSS) {
+                    if (particleSystem && Math.random() < 0.02) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.2, (Math.random() - 0.5) * 0.2, 1.4, '#06b6d4', 20, 'stardust');
+                    }
+                    if (Math.random() < 0.003) {
+                        const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.SOIL || this.tiles[ni] === TILES.STONE) {
+                                this.tiles[ni] = TILES.BIOLUMINESCENT_MOSS;
+                            }
+                        }
+                    }
+                }
+
+                // 8. Quicksand Sinking
+                if (t === TILES.QUICKSAND && Math.random() < 0.02) {
+                    if (y + 1 < this.height) {
+                        const belowIdx = this.idx(x, y + 1);
+                        if (this.tiles[belowIdx] === TILES.WATER || this.tiles[belowIdx] === TILES.SOIL) {
+                            this.tiles[belowIdx] = TILES.QUICKSAND;
+                        }
+                    }
                 }
             }
         }

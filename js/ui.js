@@ -14,25 +14,32 @@ const CATEGORIES = [
 
 const CATEGORY_TOOLS = {
     destruction: [
-        { id: 'nuke', name: 'Atomic Nuke', icon: '☢️', desc: 'Huge radioactive blast and mushroom cloud.' },
+        { id: 'nuke', name: 'Atomic Nuke', icon: '☢️', desc: 'Colossal 65-tile radioactive blast and mega mushroom cloud.' },
+        { id: 'napalm_strike', name: 'Napalm Airstrike', icon: '🔥', desc: 'Air carpet-bombing releasing blazing sea of continuous fire.' },
+        { id: 'kinetic_strike', name: 'Kinetic Rod Strike', icon: '☄️', desc: 'Dense tungsten telephone pole dropped from orbit piercing bedrock.' },
+        { id: 'void_implosion', name: 'Void Implosion', icon: '🌌', desc: 'Inverted cosmic shockwave pulling surrounding land into singularity.' },
         { id: 'nuke_missile', name: 'Nuke Missile', icon: '🚀', desc: 'Guided ballistic missile causing catastrophic atomic detonation.' },
         { id: 'ion_cannon', name: 'Orbital Ion Cannon', icon: '🛰️', desc: 'Targeting grid summoning an orbital death beam from space.' },
         { id: 'rift', name: 'Dimension Rift', icon: '🌀', desc: 'Cosmic tear pulling land in and spawning nether demons.' },
-        { id: 'antimatter', name: 'Antimatter Bomb', icon: '🌌', desc: 'Cosmic implosion that deletes matter.' },
+        { id: 'antimatter', name: 'Antimatter Bomb', icon: '🌌', desc: 'Cosmic implosion that vaporizes all matter into void.' },
         { id: 'blackhole', name: 'Black Hole', icon: '🕳️', desc: 'Singularity that sucks in land and creatures.' },
         { id: 'laser', name: 'Orbital Laser', icon: '⚡', desc: 'Continuous divine death ray beam.' },
         { id: 'meteor', name: 'Meteor Strike', icon: '☄️', desc: 'Fiery space rock hurtling down with crater.' },
         { id: 'cluster', name: 'Cluster Missiles', icon: '🚀', desc: 'Multiple cascading micro-explosions.' },
         { id: 'disintegrator', name: 'Tsar Finger', icon: '👆', desc: 'Instant pixel disintegration on touch.' },
-        { id: 'tnt', name: 'TNT Explosive', icon: '🧨', desc: 'Explosive block causing fiery shockwave.' },
-        { id: 'supernova', name: 'Supernova', icon: '⭐', desc: 'Colossal cosmic star detonation.' },
+        { id: 'tnt', name: 'TNT Explosive', icon: '🧨', desc: 'Heavy explosive block causing fiery shockwave.' },
+        { id: 'supernova', name: 'Supernova', icon: '⭐', desc: 'Colossal 85-tile cosmic star detonation.' },
+        { id: 'supernova_implosion', name: 'Supernova Collapse', icon: '💫', desc: 'SECRET: Catastrophic stellar collapse obliterating the regional cosmos.' },
         { id: 'corrosion', name: 'Corrosion Bomb', icon: '🧪', desc: 'Shower of bubbling acid melting everything.' }
     ],
     nature: [
         { id: 'volcano', name: 'Volcano', icon: '🌋', desc: 'Spews endless ash, smoke, and molten lava.' },
+        { id: 'supervolcano', name: 'Supervolcano', icon: '🌋', desc: 'Massive caldera rupture generating continents of magma and ash.' },
         { id: 'tornado', name: 'Tornado', icon: '🌪️', desc: 'Wandering twister flinging trees and creatures.' },
+        { id: 'fire_tornado', name: 'Fire Tornado', icon: '🌪️', desc: 'Vortex of spinning fire incinerating everything in its path.' },
+        { id: 'meteor_shower', name: 'Meteor Shower', icon: '🌠', desc: 'Torrential barrage of celestial meteors pounding the realm.' },
         { id: 'geyser', name: 'Thermal Geyser', icon: '⛲', desc: 'High-pressure thermal water eruption bursting from ground.' },
-        { id: 'earthquake', name: 'Earthquake', icon: '⚡', desc: 'Tears jagged chasms through the terrain.' },
+        { id: 'earthquake', name: 'Earthquake', icon: '⚡', desc: 'Tears jagged magma chasms through the terrain.' },
         { id: 'lightning', name: 'Lightning Strike', icon: '🌩️', desc: 'Electric strike that burns or empowers.' },
         { id: 'tsunami', name: 'Tsunami Deluge', icon: '🌊', desc: 'Giant surge of ocean water flooding land.' },
         { id: 'rain', name: 'Reviving Rain', icon: '🌧️', desc: 'Extinguishes fires, replenishes plants.' },
@@ -46,20 +53,24 @@ const CATEGORY_TOOLS = {
         { id: 'deep_water', name: 'Deep Ocean', icon: '🌊', desc: 'Dark, deep oceanic waters.' },
         { id: 'water', name: 'Shallow Water', icon: '💧', desc: 'Flowing water for rivers and lakes.' },
         { id: 'sand', name: 'Sand', icon: '🏖️', desc: 'Warm coastal beaches and desert sands.' },
+        { id: 'quicksand', name: 'Quicksand', icon: '⏳', desc: 'Treacherous shifting sand trap swallowing unwary creatures.' },
         { id: 'soil', name: 'Fertile Soil', icon: '🟤', desc: 'Rich soil where vegetation thrives.' },
         { id: 'grass', name: 'Grassland', icon: '🌱', desc: 'Lush green grass for grazing.' },
         { id: 'forest', name: 'Dense Forest', icon: '🌲', desc: 'Lush woodland providing timber.' },
+        { id: 'bioluminescent_moss', name: 'Bioluminescent Moss', icon: '🌿', desc: 'Alien glowing moss spreading across moisture and illuminating land.' },
         { id: 'stone', name: 'Rock / Mountain', icon: '⛰️', desc: 'Durable stone and mineral hills.' },
         { id: 'mountain', name: 'High Peak', icon: '🏔️', desc: 'Towering mountain summit.' },
         { id: 'snow', name: 'Snow Blanket', icon: '🌨️', desc: 'Frigid snowy terrain.' },
         { id: 'ice', name: 'Solid Ice', icon: '🧊', desc: 'Slick ice that melts when heated.' },
         { id: 'lava', name: 'Molten Lava', icon: '🔥', desc: 'Fiery magma that solidifies near water.' },
+        { id: 'magma_rock', name: 'Magma Rock', icon: '🧱', desc: 'Superheated volcanic rock scorching passersby and warming soil.' },
         { id: 'acid', name: 'Acid Sludge', icon: '🧪', desc: 'Corrosive sludge melting organic matter.' },
         { id: 'obsidian', name: 'Obsidian Glass', icon: '🖤', desc: 'Volcanic glossy dark mineral glass.' },
         { id: 'crystal', name: 'Prismatic Crystal', icon: '💎', desc: 'Luminescent gemstone refracting prismatic light.' },
         { id: 'bedrock', name: 'Bedrock Wall', icon: '🧱', desc: 'Indestructible barrier to contain chaos.' },
         { id: 'nebula', name: 'Cosmic Nebula', icon: '🌌', desc: 'Swirling luminous interstellar fluid nebula.' },
         { id: 'stardust', name: 'Stardust Land', icon: '✨', desc: 'Gleaming celestial stardust soil.' },
+        { id: 'level_terrain', name: 'Plateau / Level', icon: '📐', desc: 'Flattens surrounding terrain to match clicked elevation and tile.' },
         { id: 'raise', name: 'Shovel (Raise)', icon: '⬆️', desc: 'Elevates terrain towards mountains.' },
         { id: 'lower', name: 'Shovel (Lower)', icon: '⬇️', desc: 'Carves valleys and ocean trenches.' },
         { id: 'sponge', name: 'Sponge Drain', icon: '🧽', desc: 'Absorbs fluids without altering ground.' },
@@ -70,11 +81,18 @@ const CATEGORY_TOOLS = {
         { id: 'shield', name: 'Forcefield Bubble', icon: '🛡️', desc: 'Deploy a protective kinetic shield bubble deflecting attacks.' },
         { id: 'mind_control', name: 'Mind Control', icon: '🧠', desc: 'Psychic wave ordering all nearby creatures to march to target.' },
         { id: 'overclock', name: 'Overclock Surge', icon: '⚡', desc: 'Infuses creatures with 2.5x speed, power, and electric aura.' },
+        { id: 'chronos_stasis', name: 'Chronos Stasis', icon: '⏱️', desc: 'Freeze time and motion for all nearby creatures.' },
+        { id: 'teleport', name: 'Cosmic Teleport', icon: '✨', desc: 'Instantly warp controlled hero or selected creature to clicked position.' },
         { id: 'necromancy', name: 'Necromancy', icon: '☠️', desc: 'Summon an undead skeleton army out of the earth.' },
         { id: 'equip_sword', name: 'Equip: Flaming Sword', icon: '🗡️', desc: 'Arm nearest creature with a flaming melee broadsword (+15 Atk).' },
         { id: 'equip_bow', name: 'Equip: Ranger Bow', icon: '🏹', desc: 'Arm nearest creature with a rapid-fire recurve bow (+range).' },
         { id: 'equip_blaster', name: 'Equip: Plasma Blaster', icon: '🔫', desc: 'Arm nearest creature with a futuristic plasma ray pistol.' },
         { id: 'equip_staff', name: 'Equip: Arcane Staff', icon: '🪄', desc: 'Arm nearest creature with a homing stardust magic staff.' },
+        { id: 'equip_void_scythe', name: 'Equip: Void Scythe', icon: '⚔️', desc: 'Arm creature with a life-stealing scythe of the cosmic void (+25 Atk).' },
+        { id: 'equip_laser_cannon', name: 'Equip: Laser Cannon', icon: '🔫', desc: 'Arm creature with dual high-tech photon beam blasters (+30 Atk).' },
+        { id: 'equip_galaxy_blade', name: 'Equip: Galaxy Blade', icon: '🌟', desc: 'SECRET: Bestow celestial crescent sword launching stellar waves (+45 Atk)!' },
+        { id: 'cosmic_oblivion', name: 'Cosmic Oblivion', icon: '🔱', desc: 'SECRET: Unfurl absolute divine annihilation ray upon the universe!' },
+        { id: 'galaxy_sacrifice', name: 'Galaxy Sacrifice', icon: '🌌', desc: 'Trigger the Great Galaxy Sacrifice to unlock the Cosmic Vault!' },
         { id: 'heatray', name: 'Heat Ray', icon: '☀️', desc: 'Intense thermal beam to melt or ignite.' },
         { id: 'freezeray', name: 'Freeze Ray', icon: '❄️', desc: 'Cryogenic beam freezing water and creatures.' },
         { id: 'blessing', name: 'Divine Blessing', icon: '✨', desc: 'Golden halo, double HP, super speed.' },
@@ -91,7 +109,13 @@ const CATEGORY_TOOLS = {
     creatures: [
         { id: 'control', name: 'Possess / Control', icon: '🎮', desc: 'Directly pilot and control any creature with WASD & attacks!' },
         { id: 'creator', name: 'Creature Creator', icon: '🎨', desc: 'Design, customize, and build your own custom monsters!' },
+        { id: 'evermean', name: 'Evermean Treant', icon: '🌲', desc: 'Living walking tree that headslams foes and forest trees with shockwaves!' },
         { id: 'dragon', name: 'Fire Dragon', icon: '🐉', desc: 'Controllable winged titan with flamethrower breath & dive-bomb firestorm!' },
+        { id: 'colossus_mech', name: 'Colossus Mech', icon: '🤖', desc: 'Heavy walker titan equipped with twin railguns and micro-missile swarms.' },
+        { id: 'void_titan', name: 'Void Titan', icon: '👾', desc: 'SECRET: Colossal cosmic nightmare wielding singularity collapse vortices!' },
+        { id: 'seraph_angel', name: 'Seraph Angel', icon: '👼', desc: 'Six-winged celestial deity casting divine light and group healing.' },
+        { id: 'dune_leviathan', name: 'Dune Leviathan', icon: '🪱', desc: 'Colossal segmented desert sandworm breaching through rock and earth.' },
+        { id: 'vampire_lord', name: 'Vampire Lord', icon: '🧛', desc: 'Gothic immortal lord draining lifeforce and dashing as bat swarms.' },
         { id: 'mech', name: 'Steampunk Mech', icon: '🤖', desc: 'Controllable heavy armored combat walker with gatling cannon & rockets!' },
         { id: 'wizard', name: 'Arcane Wizard', icon: '🧙', desc: 'Wise archmage casting homing mystic stardust orbs and novae.' },
         { id: 'tank', name: 'Battle Tank', icon: '🚜', desc: 'Heavy armored combat vehicle with explosive cannon & MG turret.' },
@@ -123,6 +147,7 @@ const CATEGORY_TOOLS = {
     ],
     menu: [
         { id: 'btn_gen', name: 'World Generator', icon: '🌍', desc: 'Procedural continents, islands, seeds.' },
+        { id: 'btn_secrets', name: 'Cosmic Vault', icon: '🔮', desc: 'View unlocked secrets from The Great Galaxy Sacrifice.' },
         { id: 'btn_diplomacy', name: 'Kingdom Ledger', icon: '👑', desc: 'Inspect all sovereign empires, populations, and wars.' },
         { id: 'btn_save', name: 'Save / Load', icon: '💾', desc: 'Local slots and JSON world export.' },
         { id: 'btn_settings', name: 'Settings', icon: '⚙️', desc: 'Audio volume, display toggles, FPS.' },
@@ -151,6 +176,7 @@ class UIManager {
         this.renderCategoryTabs();
         this.switchCategory(this.currentCategory);
         this.setupEventListeners();
+        this.setupVirtualMobileControls();
         this.updateGalaxyPresetUI();
     }
 
@@ -222,6 +248,9 @@ class UIManager {
         } else if (tool.id === 'btn_codex') {
             this.showModal('modal-codex');
             return;
+        } else if (tool.id === 'btn_secrets') {
+            this.showGalaxyUnlockModal();
+            return;
         } else if (tool.id === 'btn_clear') {
             if (confirm("Reset the entire world to blank water?")) {
                 this.game.world.generate('ocean');
@@ -240,6 +269,16 @@ class UIManager {
             this.game.entityManager.forcePeace = false;
             alert(this.game.entityManager.worldWar ? "World Law: Total Kingdom War declared!" : "World Law: War frenzy calmed.");
             return;
+        }
+
+        // Check if tool is a secret locked power
+        const secretTools = ['void_titan', 'cosmic_oblivion', 'equip_galaxy_blade', 'supernova_implosion'];
+        if (secretTools.includes(tool.id)) {
+            const isUnlocked = localStorage.getItem('galaxybox_secrets_unlocked') === 'true' || localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
+            if (!isUnlocked) {
+                alert("🔒 SECRET COSMIC ARSENAL LOCKED!\n\nTo unlock the secret powers, titans, and presets, complete The Great Galaxy Sacrifice:\n1. Spawn a Galaxy Guardian (Creatures tab ✨)\n2. Detonate an Atomic Nuke (Destruction tab ☢️) directly on it!");
+                return;
+            }
         }
 
         this.activeTool = tool.id;
@@ -290,10 +329,10 @@ class UIManager {
         document.querySelectorAll('.gen-preset-btn').forEach(btn => {
             btn.onclick = () => {
                 const preset = btn.dataset.preset;
-                if (preset === 'galaxy') {
-                    const isUnlocked = localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
+                if (preset === 'galaxy' || preset === 'binary_stars' || preset === 'deep_nebula') {
+                    const isUnlocked = localStorage.getItem('galaxybox_secrets_unlocked') === 'true' || localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
                     if (!isUnlocked) {
-                        alert("🔒 LOCKED: Spiral Galaxy Template!\n\nTo unlock this secret cosmic template, perform The Great Galaxy Sacrifice:\n1. Spawn a Galaxy Guardian (Creatures tab ✨)\n2. Drop an Atomic Nuke (Destruction tab ☢️) directly onto it!");
+                        alert("🔒 LOCKED: Secret Cosmic Preset!\n\nTo unlock the secret cosmic presets and weapons, perform The Great Galaxy Sacrifice:\n1. Spawn a Galaxy Guardian (Creatures tab ✨)\n2. Drop an Atomic Nuke (Destruction tab ☢️) directly onto it!");
                         return;
                     }
                 }
@@ -451,14 +490,51 @@ class UIManager {
                 if (this.game.audio) this.game.audio.playSingularity();
             };
         }
+        const genBinaryNowBtn = document.getElementById('btn-generate-binary-now');
+        if (genBinaryNowBtn) {
+            genBinaryNowBtn.onclick = () => {
+                const seed = Math.floor(Math.random() * 999999);
+                this.game.generateWorld('binary_stars', seed);
+                document.getElementById('modal-galaxy-sacrifice').classList.remove('active');
+                if (this.game.audio) this.game.audio.playSingularity();
+            };
+        }
+        const genNebulaNowBtn = document.getElementById('btn-generate-nebula-now');
+        if (genNebulaNowBtn) {
+            genNebulaNowBtn.onclick = () => {
+                const seed = Math.floor(Math.random() * 999999);
+                this.game.generateWorld('deep_nebula', seed);
+                document.getElementById('modal-galaxy-sacrifice').classList.remove('active');
+                if (this.game.audio) this.game.audio.playSingularity();
+            };
+        }
+        const spawnVoidTitanBtn = document.getElementById('btn-spawn-void-titan-now');
+        if (spawnVoidTitanBtn) {
+            spawnVoidTitanBtn.onclick = () => {
+                const ent = this.game.entityManager.spawn('void_titan', this.game.renderer.camera.x, this.game.renderer.camera.y);
+                this.game.possess(ent);
+                document.getElementById('modal-galaxy-sacrifice').classList.remove('active');
+                if (this.game.audio) this.game.audio.playSingularity();
+            };
+        }
+        const selectBladeBtn = document.getElementById('btn-select-blade-now');
+        if (selectBladeBtn) {
+            selectBladeBtn.onclick = () => {
+                this.switchCategory('powers');
+                const bladeTool = CATEGORY_TOOLS.powers.find(t => t.id === 'equip_galaxy_blade');
+                if (bladeTool) this.selectTool(bladeTool);
+                document.getElementById('modal-galaxy-sacrifice').classList.remove('active');
+                if (this.game.audio) this.game.audio.playMagic();
+            };
+        }
     }
 
     updateGalaxyPresetUI() {
+        const isUnlocked = localStorage.getItem('galaxybox_secrets_unlocked') === 'true' || localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
+
         const galaxyBtn = document.getElementById('btn-preset-galaxy');
         const galaxyIcon = document.getElementById('galaxy-preset-icon');
         const galaxyName = document.getElementById('galaxy-preset-name');
-        const isUnlocked = localStorage.getItem('galaxybox_galaxy_unlocked') === 'true';
-
         if (galaxyBtn) {
             if (isUnlocked) {
                 galaxyBtn.classList.remove('locked');
@@ -468,6 +544,36 @@ class UIManager {
                 galaxyBtn.classList.add('locked');
                 if (galaxyIcon) galaxyIcon.textContent = '🔒';
                 if (galaxyName) galaxyName.textContent = 'Spiral Galaxy (Locked)';
+            }
+        }
+
+        const binaryBtn = document.getElementById('btn-preset-binary');
+        const binaryIcon = document.getElementById('binary-preset-icon');
+        const binaryName = document.getElementById('binary-preset-name');
+        if (binaryBtn) {
+            if (isUnlocked) {
+                binaryBtn.classList.remove('locked');
+                if (binaryIcon) binaryIcon.textContent = '⭐';
+                if (binaryName) binaryName.textContent = 'Binary Stars';
+            } else {
+                binaryBtn.classList.add('locked');
+                if (binaryIcon) binaryIcon.textContent = '🔒';
+                if (binaryName) binaryName.textContent = 'Binary Stars (Locked)';
+            }
+        }
+
+        const nebulaBtn = document.getElementById('btn-preset-nebula');
+        const nebulaIcon = document.getElementById('nebula-preset-icon');
+        const nebulaName = document.getElementById('nebula-preset-name');
+        if (nebulaBtn) {
+            if (isUnlocked) {
+                nebulaBtn.classList.remove('locked');
+                if (nebulaIcon) nebulaIcon.textContent = '🔮';
+                if (nebulaName) nebulaName.textContent = 'Deep Nebula';
+            } else {
+                nebulaBtn.classList.add('locked');
+                if (nebulaIcon) nebulaIcon.textContent = '🔒';
+                if (nebulaName) nebulaName.textContent = 'Deep Nebula (Locked)';
             }
         }
     }
@@ -629,6 +735,121 @@ class UIManager {
     hideControlHUD() {
         const hud = document.getElementById('control-hud');
         if (hud) hud.classList.remove('active');
+    }
+
+    setupVirtualMobileControls() {
+        // Virtual D-Pad buttons
+        const dpadButtons = document.querySelectorAll('.dpad-btn');
+        dpadButtons.forEach(btn => {
+            const key = btn.dataset.key;
+            if (!key) return;
+
+            const press = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game && this.game.virtualKeys) {
+                    this.game.virtualKeys[key] = true;
+                }
+                btn.classList.add('pressed');
+            };
+
+            const release = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game && this.game.virtualKeys) {
+                    this.game.virtualKeys[key] = false;
+                }
+                btn.classList.remove('pressed');
+            };
+
+            btn.addEventListener('pointerdown', press);
+            btn.addEventListener('pointerup', release);
+            btn.addEventListener('pointercancel', release);
+            btn.addEventListener('pointerleave', release);
+            btn.addEventListener('touchstart', press, { passive: false });
+            btn.addEventListener('touchend', release);
+            btn.addEventListener('touchcancel', release);
+        });
+
+        // Action: Attack
+        const atkBtn = document.getElementById('btn-touch-atk');
+        if (atkBtn) {
+            const triggerAtk = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game && this.game.controlledEntity && this.game.controlledEntity.active) {
+                    const ent = this.game.controlledEntity;
+                    const aimX = this.game.mouse.worldX || (ent.x + 10);
+                    const aimY = this.game.mouse.worldY || ent.y;
+                    ent.usePrimaryAbility(aimX, aimY, this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio);
+                }
+            };
+            atkBtn.addEventListener('pointerdown', triggerAtk);
+            atkBtn.addEventListener('touchstart', triggerAtk, { passive: false });
+        }
+
+        // Action: Special
+        const specBtn = document.getElementById('btn-touch-spec');
+        if (specBtn) {
+            const triggerSpec = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game && this.game.controlledEntity && this.game.controlledEntity.active) {
+                    this.game.controlledEntity.useSpecialAbility(this.game.world, this.game.entityManager, this.game.disasterManager, this.game.particleSystem, this.game.audio);
+                }
+            };
+            specBtn.addEventListener('pointerdown', triggerSpec);
+            specBtn.addEventListener('touchstart', triggerSpec, { passive: false });
+        }
+
+        // Action: Exit Control
+        const exitTouchBtn = document.getElementById('btn-touch-exit');
+        if (exitTouchBtn) {
+            const triggerExit = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game) this.game.unpossess();
+            };
+            exitTouchBtn.addEventListener('pointerdown', triggerExit);
+            exitTouchBtn.addEventListener('touchstart', triggerExit, { passive: false });
+        }
+
+        const exitCtrlBtn = document.getElementById('btn-exit-control');
+        if (exitCtrlBtn) {
+            exitCtrlBtn.onclick = () => {
+                if (this.game) this.game.unpossess();
+            };
+        }
+    }
+
+    showNotification(text) {
+        let toast = document.getElementById('toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '100px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = 'rgba(15, 23, 42, 0.92)';
+            toast.style.border = '1px solid #38bdf8';
+            toast.style.borderRadius = '8px';
+            toast.style.padding = '8px 16px';
+            toast.style.color = '#ffffff';
+            toast.style.fontSize = '0.85rem';
+            toast.style.fontWeight = 'bold';
+            toast.style.zIndex = '300';
+            toast.style.pointerEvents = 'none';
+            toast.style.boxShadow = '0 0 15px rgba(56, 189, 248, 0.4)';
+            toast.style.transition = 'opacity 0.3s ease';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = text;
+        toast.style.opacity = '1';
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => {
+            if (toast) toast.style.opacity = '0';
+        }, 2200);
     }
 
     showInspector(entity, tile, tx, ty) {

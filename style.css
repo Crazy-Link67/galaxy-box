@@ -44,6 +44,10 @@ body, html {
     height: 100vh;
     overflow: hidden;
     cursor: crosshair;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #game-canvas {
@@ -53,6 +57,10 @@ body, html {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* ==========================================
@@ -796,6 +804,63 @@ body, html {
     letter-spacing: 0.5px;
 }
 
+.sacrifice-secrets-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding-right: 4px;
+}
+
+.sacrifice-secret-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.sacrifice-secret-item .sec-icon {
+    font-size: 1.6rem;
+}
+
+.sacrifice-secret-item strong {
+    color: #c084fc;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.sacrifice-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+
+.sacrifice-actions-row .btn {
+    flex: 1 1 calc(50% - 8px);
+    padding: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.sacrifice-actions-row .btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
 .gen-preset-btn.locked {
     opacity: 0.6;
     border-style: dashed;
@@ -885,6 +950,265 @@ body.cinematic #minimap-container {
     gap: 14px;
     font-size: 0.82rem;
     color: var(--text-secondary);
+}
+
+/* ==========================================
+   MOBILE TOUCH VIRTUAL ON-SCREEN CONTROLLER
+   ========================================== */
+#mobile-virtual-controls {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    left: 0;
+    width: 100vw;
+    padding: 0 24px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 150;
+}
+
+#control-hud.active #mobile-virtual-controls {
+    display: flex;
+}
+
+/* Touch D-Pad */
+#mobile-dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    pointer-events: auto;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(56, 189, 248, 0.4);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.dpad-middle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dpad-btn {
+    width: 48px;
+    height: 48px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    border-radius: 8px;
+    color: #38bdf8;
+    font-size: 1.1rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.dpad-btn:active, .dpad-btn.pressed {
+    background: #38bdf8;
+    color: #0f172a;
+    transform: scale(0.92);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+}
+
+.dpad-center-hub {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(56, 189, 248, 0.3);
+    font-size: 0.8rem;
+}
+
+/* Touch Action Buttons */
+#mobile-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.action-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.action-btn span {
+    font-size: 0.62rem;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+}
+
+.action-atk {
+    background: rgba(239, 68, 68, 0.35);
+    border: 2px solid #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+}
+
+.action-atk:active {
+    background: #ef4444;
+    transform: scale(0.92);
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
+}
+
+.action-spec {
+    background: rgba(168, 85, 247, 0.35);
+    border: 2px solid #a855f7;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+}
+
+.action-spec:active {
+    background: #a855f7;
+    transform: scale(0.92);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
+}
+
+.action-exit {
+    width: 48px;
+    height: 48px;
+    background: rgba(100, 116, 139, 0.35);
+    border: 2px solid #94a3b8;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(148, 163, 184, 0.3);
+}
+
+.action-exit:active {
+    background: #ef4444;
+    border-color: #ef4444;
+    transform: scale(0.92);
+}
+
+/* ==========================================
+   MOBILE & TABLET RESPONSIVE QUERIES
+   ========================================== */
+@media (max-width: 768px) {
+    #top-hud {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        transform: none;
+        width: auto;
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .game-logo span:first-child {
+        font-size: 0.92rem;
+    }
+
+    .stat-tag {
+        font-size: 0.68rem;
+        padding: 2px 5px;
+    }
+
+    #dock-container {
+        bottom: 6px;
+        width: 96vw;
+        max-width: 96vw;
+        padding: 6px 8px;
+    }
+
+    #category-tools {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #category-tools::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tool-btn {
+        min-width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    #category-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #category-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        padding: 6px 10px;
+        font-size: 0.72rem;
+        flex-shrink: 0;
+    }
+
+    #control-hud {
+        top: 55px;
+        width: 94vw;
+        padding: 8px 12px;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .ctrl-center {
+        display: none; /* Instruction badges hidden on mobile in favor of on-screen buttons */
+    }
+
+    .ctrl-hp-bar {
+        width: 85px;
+    }
+
+    .modal-card {
+        width: 96vw;
+        max-width: 96vw;
+        max-height: 88vh;
+        padding: 16px;
+    }
+
+    #minimap-container {
+        bottom: 120px;
+        right: 8px;
+        transform: scale(0.8);
+        transform-origin: bottom right;
+    }
 }
 
 

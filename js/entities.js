@@ -31,7 +31,21 @@ const TRAITS = {
     electrocharged: { name: "Electrocharged", desc: "Discharges electricity to nearby foes", icon: "🌩️" },
     water_walker: { name: "Water Walker", desc: "Walks effortlessly across water and oceans", icon: "🌊" },
     bloodthirsty: { name: "Bloodthirsty", desc: "Frenzied aggression attacking all creatures", icon: "🩸" },
-    peaceful: { name: "Peaceful", desc: "Never starts fights or hurts other creatures", icon: "🕊️" }
+    peaceful: { name: "Peaceful", desc: "Never starts fights or hurts other creatures", icon: "🕊️" },
+    headslammer: { name: "Headslammer", desc: "Leaps and slams head, clearing trees & creating shockwaves", icon: "💥" },
+    pyromaniac: { name: "Pyromaniac", desc: "Ignites terrain, fires spark bursts, immune to flame", icon: "🔥" },
+    cryomancer: { name: "Cryomancer", desc: "Glaciates water to ice and chills attackers", icon: "❄️" },
+    acid_blood: { name: "Acid Blood", desc: "Sprays corrosive acid droplets upon taking damage", icon: "🧪" },
+    necromancer: { name: "Necromancer", desc: "Raises slain nearby enemies as loyal undead", icon: "💀" },
+    vampiric: { name: "Vampiric", desc: "Steals life on attack, restoring health", icon: "🧛" },
+    starlight_aura: { name: "Starlight Aura", desc: "Radiates healing stardust aura to all nearby allies", icon: "✨" },
+    earthshaker: { name: "Earthshaker", desc: "Footsteps shake ground and crack brittle stone", icon: "🌋" },
+    invisibility: { name: "Invisibility", desc: "Translucent stealth cloaking dodging enemy detection", icon: "👻" },
+    thorny: { name: "Thorny Bark", desc: "Reflects 35% of incoming melee damage back to attackers", icon: "🌵" },
+    flying: { name: "Winged Flight", desc: "Flies effortlessly above deep oceans, lava, and chasms", icon: "🪽" },
+    splitter: { name: "Mitosis Splitter", desc: "Splits into two mini clones upon death", icon: "🧬" },
+    teleporter: { name: "Void Teleport", desc: "Instantly warps through space when struck", icon: "🌀" },
+    amphibious: { name: "Amphibious", desc: "Swims freely through water, acid, and lava unharmed", icon: "🦎" }
 };
 
 class Kingdom {
@@ -266,6 +280,83 @@ class Entity {
                 this.traits.add('immortal');
                 this.traits.add('water_walker');
                 this.traits.add('fireproof');
+                break;
+            case 'colossus_mech':
+                this.name = 'Colossus Heavy Walker';
+                this.hp = 3500;
+                this.maxHp = 3500;
+                this.speed = 0.5;
+                this.attack = 135;
+                this.size = 11;
+                this.color = '#334155';
+                this.isVehicle = true;
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                break;
+            case 'seraph_angel':
+                this.name = 'Seraph Celestial Angel';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 0.9;
+                this.attack = 90;
+                this.size = 6.5;
+                this.color = '#fef08a';
+                this.isFlying = true;
+                this.isMythic = true;
+                this.traits.add('immortal');
+                this.traits.add('regenerating');
+                break;
+            case 'dune_leviathan':
+                this.name = 'Dune Sand Leviathan';
+                this.hp = 3400;
+                this.maxHp = 3400;
+                this.speed = 0.6;
+                this.attack = 115;
+                this.size = 11;
+                this.color = '#ca8a04';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('venomous');
+                break;
+            case 'vampire_lord':
+                this.name = 'Vampire Lord';
+                this.hp = 1500;
+                this.maxHp = 1500;
+                this.speed = 1.05;
+                this.attack = 80;
+                this.size = 4;
+                this.color = '#881337';
+                this.isMythic = true;
+                this.traits.add('super_speed');
+                this.traits.add('regenerating');
+                break;
+            case 'void_titan':
+                this.name = 'Cosmic Void Titan';
+                this.hp = 6500;
+                this.maxHp = 6500;
+                this.speed = 0.7;
+                this.attack = 180;
+                this.size = 14;
+                this.color = '#6366f1';
+                this.isBoss = true;
+                this.isCelestial = true;
+                this.traits.add('titan');
+                this.traits.add('immortal');
+                this.traits.add('fireproof');
+                this.traits.add('water_walker');
+                break;
+            case 'evermean':
+                this.name = 'Evermean Treant';
+                this.hp = 1200;
+                this.maxHp = 1200;
+                this.speed = 0.65;
+                this.attack = 55;
+                this.size = 6.5;
+                this.color = '#15803d';
+                this.isMythic = true;
+                this.traits.add('headslammer');
+                this.traits.add('earthshaker');
                 break;
             case 'tank':
                 this.name = 'Battle Tank';
@@ -507,6 +598,11 @@ class Entity {
             this.attack *= 1.5;
         } else if (trait === 'super_speed') {
             this.speed *= 2.0;
+        } else if (trait === 'flying') {
+            this.isFlying = true;
+        } else if (trait === 'amphibious') {
+            this.traits.add('water_walker');
+            this.traits.add('fireproof');
         }
     }
 
@@ -519,6 +615,8 @@ class Entity {
             this.attack = Math.max(1, Math.floor(this.attack / 1.5));
         } else if (trait === 'super_speed') {
             this.speed = Math.max(0.2, this.speed / 2.0);
+        } else if (trait === 'flying') {
+            this.isFlying = false;
         }
     }
 
@@ -542,6 +640,12 @@ class Entity {
             this.attack = Math.max(this.attack, 30) + 15;
         } else if (type === 'staff') {
             this.attack = Math.max(this.attack, 35) + 20;
+        } else if (type === 'void_scythe') {
+            this.attack = Math.max(this.attack, 40) + 25;
+        } else if (type === 'laser_cannon') {
+            this.attack = Math.max(this.attack, 45) + 30;
+        } else if (type === 'galaxy_blade') {
+            this.attack = Math.max(this.attack, 55) + 45;
         }
     }
 
@@ -572,11 +676,51 @@ class Entity {
         if (this.blessed && Math.random() < 0.3) return false;
         if (this.hasTrait('immortal') && Math.random() < 0.5) return false;
 
+        // Thorny: Reflect 35% of incoming melee damage
+        if (this.hasTrait('thorny') && source && source !== this && typeof source.takeDamage === 'function') {
+            source.takeDamage(amount * 0.35);
+        }
+
+        // Acid blood: Spray corrosive acid droplets when wounded
+        if (this.hasTrait('acid_blood') && window.game && window.game.particleSystem) {
+            window.game.particleSystem.burst(this.x, this.y, 6, ['#84cc16', '#a3e635', '#4d7c0f'], 1.5, 3.5, 1, 2, 'acid');
+        }
+
+        // Teleporter: Chance to warp short distance away when hit
+        if (this.hasTrait('teleporter') && Math.random() < 0.4 && window.game && window.game.world) {
+            const w = window.game.world;
+            this.x = Math.max(4, Math.min(w.width - 4, this.x + (Math.random() - 0.5) * 28));
+            this.y = Math.max(4, Math.min(w.height - 4, this.y + (Math.random() - 0.5) * 28));
+            if (window.game.particleSystem) {
+                window.game.particleSystem.burst(this.x, this.y, 10, ['#a855f7', '#6366f1', '#ffffff'], 1.5, 3, 1, 2, 'stardust');
+            }
+        }
+
         this.hp -= amount;
         if (this.hp <= 0) {
             this.hp = 0;
             this.active = false;
             if (source && source.kills !== undefined) source.kills++;
+
+            // Splitter: Spawns 2 smaller miniature clones upon demise
+            if (this.hasTrait('splitter') && this.scale >= 0.7 && window.game && window.game.entityManager) {
+                for (let s = 0; s < 2; s++) {
+                    const clone = window.game.entityManager.clone(this);
+                    if (clone) {
+                        clone.active = true;
+                        clone.scale = this.scale * 0.6;
+                        clone.maxHp = Math.max(30, Math.floor(this.maxHp * 0.5));
+                        clone.hp = clone.maxHp;
+                        clone.traits.delete('splitter'); // Avoid endless cascading splits
+                    }
+                }
+            }
+
+            // Necromancer: Killer raises slain foe as a zombie
+            if (source && source.hasTrait && source.hasTrait('necromancer') && window.game && window.game.entityManager) {
+                window.game.entityManager.spawn('zombie', this.x, this.y);
+            }
+
             return true; // died
         }
         return false;
@@ -617,6 +761,25 @@ class Entity {
             if (audio) audio.playMagic();
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 5.5, dirY * 5.5, 'laser', this.id, this.attack));
             if (particleSystem) particleSystem.burst(this.x, this.y, 10, ['#a855f7', '#38bdf8'], 1, 3, 1, 2, 'stardust');
+            return;
+        } else if (this.weapon === 'void_scythe') {
+            if (audio) audio.playMagic();
+            const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 16)) {
+                target.takeDamage(this.attack * 1.8, this);
+                this.hp = Math.min(this.maxHp, this.hp + this.attack * 0.5);
+                if (particleSystem) particleSystem.burst(target.x, target.y, 14, ['#7e22ce', '#3b0764', '#c084fc'], 2, 4, 1.5, 3, 'stardust');
+            }
+            return;
+        } else if (this.weapon === 'laser_cannon') {
+            if (audio) audio.playLaser();
+            entityManager.projectiles.push(new Projectile(this.x - 3, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.7));
+            entityManager.projectiles.push(new Projectile(this.x + 3, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.7));
+            return;
+        } else if (this.weapon === 'galaxy_blade') {
+            if (audio) audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#38bdf8', '#facc15', '#ffffff'], 2, 4, 1.5, 2.5, 'stardust');
             return;
         }
 
@@ -700,6 +863,87 @@ class Entity {
             if (audio) audio.playMagic();
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 5, dirY * 5, 'laser', this.id, this.attack));
             if (particleSystem) particleSystem.burst(this.x, this.y, 8, ['#818cf8', '#c084fc', '#ffffff'], 1.5, 4, 1.5, 3, 'stardust');
+        } else if (this.type === 'colossus_mech') {
+            // Colossus Dual Railgun Heavy Slugs
+            if (audio) audio.playExplosion(1.4);
+            if (window.game) window.game.shakeCamera(10, 16);
+            entityManager.projectiles.push(new Projectile(this.x - 4, this.y, dirX * 9, dirY * 9, 'fireball', this.id, this.attack * 0.6));
+            entityManager.projectiles.push(new Projectile(this.x + 4, this.y, dirX * 9, dirY * 9, 'fireball', this.id, this.attack * 0.6));
+            if (particleSystem) particleSystem.burst(this.x + dirX * 6, this.y + dirY * 6, 12, ['#38bdf8', '#ffffff', '#475569'], 2, 5, 2, 4);
+        } else if (this.type === 'seraph_angel') {
+            // Seraph Radiant Divine Spear
+            if (audio) audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, 'laser', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 10, ['#fef08a', '#ffffff', '#38bdf8'], 1.5, 4, 1.5, 2.5, 'stardust');
+        } else if (this.type === 'dune_leviathan') {
+            // Sandworm Lunge & Chomp
+            if (audio) audio.playExplosion(1.0);
+            this.x += dirX * 8;
+            this.y += dirY * 8;
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 5, dirY * 5, 'acid', this.id, this.attack * 0.7));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#dec17a', '#854d0e'], 2, 4, 1.5, 3);
+        } else if (this.type === 'vampire_lord') {
+            // Vampire Life-Steal Slash
+            if (audio) audio.playClick();
+            const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 10)) {
+                target.takeDamage(this.attack, this);
+                this.hp = Math.min(this.maxHp, this.hp + this.attack * 0.5);
+                if (particleSystem) particleSystem.burst(target.x, target.y, 8, ['#991b1b', '#ef4444'], 1.5, 3, 1.5, 2, 'blood');
+            }
+        } else if (this.type === 'void_titan') {
+            // Cosmic Void Titan Triple Pulsar Laser Beams
+            if (audio) audio.playLaser();
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.16;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 7.5, Math.sin(ang) * 7.5, 'laser', this.id, this.attack * 0.8));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#6366f1', '#a855f7', '#38bdf8', '#ffffff'], 2, 6, 2, 4, 'stardust');
+        } else if (this.type === 'evermean' || this.hasTrait('headslammer')) {
+            // Evermean Headslam Smash!
+            if (audio) audio.playExplosion(1.2);
+            if (window.game) window.game.shakeCamera(12, 18);
+
+            // Lurch forward towards target
+            this.x += dirX * 6;
+            this.y += dirY * 6;
+            if (world.inBounds(Math.floor(this.x), Math.floor(this.y))) {
+                this.x = Math.max(2, Math.min(world.width - 2, this.x));
+                this.y = Math.max(2, Math.min(world.height - 2, this.y));
+            }
+
+            // Pulverize regular trees into wood ash / cleared grass
+            const smashX = Math.floor(this.x + dirX * 3);
+            const smashY = Math.floor(this.y + dirY * 3);
+            for (let dy = -2; dy <= 2; dy++) {
+                for (let dx = -2; dx <= 2; dx++) {
+                    const tx = smashX + dx;
+                    const ty = smashY + dy;
+                    if (world.inBounds(tx, ty)) {
+                        const tile = world.getTile(tx, ty);
+                        if (tile === TILES.FOREST) {
+                            world.setTile(tx, ty, TILES.GRASS);
+                        }
+                    }
+                }
+            }
+
+            // Shockwave particles (wood splinters, green leaves, dust)
+            if (particleSystem) {
+                particleSystem.burst(this.x + dirX * 3, this.y + dirY * 3, 20, ['#78350f', '#15803d', '#22c55e', '#ffffff'], 2, 5, 2, 4);
+            }
+
+            // Smash foes in range with heavy blunt knockback
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - (this.x + dirX * 3), other.y - (this.y + dirY * 3)) < (this.size * this.scale + 12)) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    other.x += dirX * 10;
+                    other.y += dirY * 10;
+                }
+            }
+            return;
         } else if (this.hasTrait('venomous') || this.type === 'hydra') {
             // Acid / Venom Spit
             if (audio) audio.playSplash();
@@ -710,6 +954,15 @@ class Entity {
             const target = entityManager.findNearestEntity(this, (other) => other.id !== this.id);
             if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 6)) {
                 target.takeDamage(this.attack, this);
+                if (this.hasTrait('vampiric')) {
+                    this.hp = Math.min(this.maxHp, this.hp + this.attack * 0.4);
+                }
+                if (this.hasTrait('pyromaniac') && particleSystem) {
+                    particleSystem.burst(target.x, target.y, 6, ['#f97316', '#ef4444'], 1, 3, 1, 2, 'fire');
+                }
+                if (this.hasTrait('cryomancer')) {
+                    target.frozen = 30;
+                }
                 if (particleSystem) particleSystem.burst(target.x, target.y, 6, ['#ef4444', '#ffffff'], 1, 3, 1, 2);
             }
         }
@@ -856,6 +1109,114 @@ class Entity {
             }
             if (particleSystem) {
                 particleSystem.burst(this.x, this.y, 40, ['#a5f3fc', '#ffffff'], 1.5, 4, 1.5, 3);
+            }
+        } else if (this.type === 'colossus_mech') {
+            // Micro-Missile Barrage (6 homing explosive rockets radially)
+            if (audio) audio.playExplosion(1.2);
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 6, Math.sin(a) * 6, 'fireball', this.id, 75));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 25, ['#f97316', '#475569'], 2, 5, 2, 3);
+        } else if (this.type === 'seraph_angel') {
+            // Divine Aegis & Restoration
+            if (audio) audio.playMagic();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 80, ['#fef08a', '#ffffff', '#38bdf8'], 2.5, 7, 2, 5, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && Math.hypot(other.x - this.x, other.y - this.y) < 40) {
+                    other.hp = other.maxHp;
+                    other.blessed = true;
+                }
+            }
+        } else if (this.type === 'dune_leviathan') {
+            // Subterranean Breach & Sandstorm
+            if (audio) audio.playThunder();
+            if (window.game) window.game.shakeCamera(14, 25);
+            for (let dy = -10; dy <= 10; dy++) {
+                for (let dx = -10; dx <= 10; dx++) {
+                    if (dx * dx + dy * dy <= 100) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                            if (Math.random() < 0.35) world.setTile(tx, ty, TILES.SAND);
+                        }
+                    }
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 50, ['#dec17a', '#ca8a04', '#78350f'], 2, 6, 2, 4);
+        } else if (this.type === 'vampire_lord') {
+            // Bat Swarm Frenzy Dash
+            if (audio) audio.playMagic();
+            const dashAng = Math.random() * Math.PI * 2;
+            const tx = this.x + Math.cos(dashAng) * 25;
+            const ty = this.y + Math.sin(dashAng) * 25;
+            this.x = Math.max(4, Math.min(world.width - 4, tx));
+            this.y = Math.max(4, Math.min(world.height - 4, ty));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 40, ['#881337', '#4c0519', '#ffffff'], 2, 5, 2, 4);
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 22) {
+                    other.takeDamage(110, this);
+                    this.hp = Math.min(this.maxHp, this.hp + 40);
+                }
+            }
+        } else if (this.type === 'void_titan') {
+            // Singularity Collapse Vortex
+            if (audio) audio.playSingularity();
+            if (window.game) window.game.shakeCamera(24, 45);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 150, ['#6366f1', '#a855f7', '#38bdf8', '#000000'], 3, 10, 2, 6, 'stardust');
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 6.5, Math.sin(a) * 6.5, 'laser', this.id, 90));
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 50) {
+                    other.takeDamage(220, this);
+                    const ang = Math.atan2(this.y - other.y, this.x - other.x);
+                    other.x += Math.cos(ang) * 10;
+                    other.y += Math.sin(ang) * 10;
+                }
+            }
+        } else if (this.type === 'evermean') {
+            // Rootquake / Ancient Uprising
+            if (audio) audio.playThunder();
+            if (window.game) window.game.shakeCamera(18, 30);
+            this.hp = Math.min(this.maxHp, this.hp + 250);
+
+            // Sprout fresh nature around root zone
+            const rad = 6;
+            for (let dy = -rad; dy <= rad; dy++) {
+                for (let dx = -rad; dx <= rad; dx++) {
+                    if (dx * dx + dy * dy <= rad * rad) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty)) {
+                            const t = world.getTile(tx, ty);
+                            if (t === TILES.SAND || t === TILES.DIRT || t === TILES.ASH) {
+                                world.setTile(tx, ty, TILES.GRASS);
+                            } else if (t === TILES.GRASS && Math.random() < 0.25) {
+                                world.setTile(tx, ty, TILES.BIOLUMINESCENT_MOSS);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Seismic root shockwave
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 60, ['#15803d', '#22c55e', '#78350f', '#facc15'], 2.5, 7, 2, 5, 'stardust');
+            }
+
+            // Stun and damage surrounding enemies
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 28) {
+                    other.takeDamage(90, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                    other.frozen = 25; // Root stasis / stun
+                }
             }
         } else {
             // Generic Special: Dash Shockwave
@@ -1013,6 +1374,58 @@ class EntityManager {
                 }
             }
 
+            // Pyromaniac Trait
+            if (ent.hasTrait('pyromaniac')) {
+                if (particleSystem && Math.random() < 0.15) {
+                    particleSystem.spawn(ent.x + (Math.random() - 0.5) * 4, ent.y + (Math.random() - 0.5) * 4, 0, -0.3, 1.2, '#f97316', 10, 'fire');
+                }
+                if (Math.random() < 0.02) {
+                    const tx = Math.floor(ent.x);
+                    const ty = Math.floor(ent.y);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) === TILES.GRASS) {
+                        world.ignite(tx, ty, 40);
+                    }
+                }
+            }
+
+            // Cryomancer Trait
+            if (ent.hasTrait('cryomancer')) {
+                if (particleSystem && Math.random() < 0.15) {
+                    particleSystem.spawn(ent.x + (Math.random() - 0.5) * 4, ent.y + (Math.random() - 0.5) * 4, 0, -0.2, 1.2, '#a5f3fc', 10, 'spark');
+                }
+                const tx = Math.floor(ent.x);
+                const ty = Math.floor(ent.y);
+                if (world.inBounds(tx, ty)) {
+                    const t = world.getTile(tx, ty);
+                    if (t === TILES.WATER || t === TILES.DEEP_WATER) {
+                        world.setTile(tx, ty, TILES.ICE);
+                    }
+                }
+            }
+
+            // Starlight Aura Trait
+            if (ent.hasTrait('starlight_aura')) {
+                if (particleSystem && Math.random() < 0.12) {
+                    particleSystem.spawn(ent.x + (Math.random() - 0.5) * 5, ent.y - 2, 0, -0.4, 1.2, '#38bdf8', 12, 'stardust');
+                }
+                if (Math.random() < 0.04) {
+                    for (let j = 0; j < this.entities.length; j++) {
+                        const ally = this.entities[j];
+                        if (ally.active && ally.id !== ent.id && Math.hypot(ally.x - ent.x, ally.y - ent.y) < 18) {
+                            if (ally.hp < ally.maxHp) ally.hp = Math.min(ally.maxHp, ally.hp + 2);
+                        }
+                    }
+                }
+            }
+
+            // Earthshaker Trait
+            if (ent.hasTrait('earthshaker') && Math.hypot(ent.vx, ent.vy) > 0.1 && Math.random() < 0.08) {
+                if (window.game) window.game.shakeCamera(2, 6);
+                if (particleSystem) {
+                    particleSystem.spawn(ent.x, ent.y + 1, (Math.random() - 0.5) * 0.8, -0.2, 1.5, '#78716c', 10, 'smoke');
+                }
+            }
+
             // If grabbed by God's Hand, skip physical AI
             if (ent.grabbed) continue;
 
@@ -1039,11 +1452,20 @@ class EntityManager {
                 }
             }
 
-            // Lava burning check
-            if (tile === TILES.LAVA && !ent.hasTrait('fireproof') && !ent.isFlying) {
-                ent.takeDamage(5);
+            // Lava & Magma Rock burning check
+            if ((tile === TILES.LAVA || tile === TILES.MAGMA_ROCK) && !ent.hasTrait('fireproof') && !ent.isFlying) {
+                ent.takeDamage(tile === TILES.LAVA ? 5 : 2);
                 if (particleSystem) {
                     particleSystem.spawn(ent.x, ent.y, 0, -0.5, 2, '#ff5722', 20, 'fire');
+                }
+            }
+
+            // Quicksand sinking check
+            if (tile === TILES.QUICKSAND && !ent.isFlying && !ent.hasTrait('water_walker')) {
+                ent.speed = Math.max(0.15, ent.speed * 0.4);
+                ent.takeDamage(0.4);
+                if (particleSystem && Math.random() < 0.15) {
+                    particleSystem.spawn(ent.x, ent.y, 0, -0.2, 1.2, '#b49b65', 15, 'smoke');
                 }
             }
 
@@ -1092,6 +1514,61 @@ class EntityManager {
                 }
             }
             if (Math.random() < 0.02) {
+                ent.useSpecialAbility(world, this, disasterManager, particleSystem, audio);
+            }
+            return;
+        }
+
+        // Evermean Treant AI: Wanders, seeks out forests to headslam, or hunts hostile foes
+        if (ent.type === 'evermean') {
+            if (ent.stateTimer <= 0) {
+                ent.stateTimer = 35 + Math.floor(Math.random() * 40);
+                let foundTarget = false;
+                const enemy = this.findNearestEntity(ent, (o) => o.id !== ent.id);
+                if (enemy && Math.hypot(enemy.x - ent.x, enemy.y - ent.y) < 30) {
+                    ent.targetX = enemy.x;
+                    ent.targetY = enemy.y;
+                    foundTarget = true;
+                } else {
+                    const cx = Math.floor(ent.x);
+                    const cy = Math.floor(ent.y);
+                    for (let attempt = 0; attempt < 15; attempt++) {
+                        const fx = cx + Math.floor((Math.random() - 0.5) * 30);
+                        const fy = cy + Math.floor((Math.random() - 0.5) * 30);
+                        if (world.inBounds(fx, fy) && world.getTile(fx, fy) === TILES.FOREST) {
+                            ent.targetX = fx;
+                            ent.targetY = fy;
+                            foundTarget = true;
+                            break;
+                        }
+                    }
+                }
+                if (!foundTarget) {
+                    ent.targetX = ent.x + (Math.random() - 0.5) * 25;
+                    ent.targetY = ent.y + (Math.random() - 0.5) * 25;
+                }
+            }
+
+            const dx = ent.targetX - ent.x;
+            const dy = ent.targetY - ent.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > 2) {
+                ent.vx = (dx / dist) * ent.speed;
+                ent.vy = (dy / dist) * ent.speed;
+                ent.x += ent.vx;
+                ent.y += ent.vy;
+            }
+
+            // Headslam attack when close to target forest or enemy!
+            const nearEnemy = this.findNearestEntity(ent, (o) => o.id !== ent.id && Math.hypot(o.x - ent.x, o.y - ent.y) < 14);
+            const curTile = world.getTile(Math.floor(ent.x), Math.floor(ent.y));
+            if ((nearEnemy || curTile === TILES.FOREST) && Math.random() < 0.12 && ent.abilityCooldown <= 0) {
+                const targetX = nearEnemy ? nearEnemy.x : ent.targetX;
+                const targetY = nearEnemy ? nearEnemy.y : ent.targetY;
+                ent.usePrimaryAbility(targetX, targetY, world, this, particleSystem, audio);
+            }
+            if (Math.random() < 0.015 && ent.specialCooldown <= 0) {
                 ent.useSpecialAbility(world, this, disasterManager, particleSystem, audio);
             }
             return;

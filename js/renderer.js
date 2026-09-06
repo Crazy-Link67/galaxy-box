@@ -39,15 +39,25 @@ class Renderer {
     }
 
     screenToWorld(screenX, screenY) {
-        const x = (screenX - this.canvas.width / 2) / this.camera.zoom + this.camera.x;
-        const y = (screenY - this.canvas.height / 2) / this.camera.zoom + this.camera.y;
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = rect.width > 0 ? (this.canvas.width / rect.width) : 1;
+        const scaleY = rect.height > 0 ? (this.canvas.height / rect.height) : 1;
+        const canvasX = (screenX - rect.left) * scaleX;
+        const canvasY = (screenY - rect.top) * scaleY;
+        const x = (canvasX - this.canvas.width / 2) / this.camera.zoom + this.camera.x;
+        const y = (canvasY - this.canvas.height / 2) / this.camera.zoom + this.camera.y;
         return { x, y };
     }
 
     worldToScreen(worldX, worldY) {
-        const x = (worldX - this.camera.x) * this.camera.zoom + this.canvas.width / 2;
-        const y = (worldY - this.camera.y) * this.camera.zoom + this.canvas.height / 2;
-        return { x, y };
+        const rect = this.canvas.getBoundingClientRect();
+        const canvasX = (worldX - this.camera.x) * this.camera.zoom + this.canvas.width / 2;
+        const canvasY = (worldY - this.camera.y) * this.camera.zoom + this.canvas.height / 2;
+        const scaleX = this.canvas.width > 0 ? (rect.width / this.canvas.width) : 1;
+        const scaleY = this.canvas.height > 0 ? (rect.height / this.canvas.height) : 1;
+        const screenX = rect.left + canvasX * scaleX;
+        const screenY = rect.top + canvasY * scaleY;
+        return { x: screenX, y: screenY };
     }
 
     render(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos) {
@@ -65,7 +75,9 @@ class Renderer {
         ctx.save();
         ctx.translate(w / 2, h / 2);
         ctx.scale(cam.zoom, cam.zoom);
-        ctx.translate(-cam.x, -cam.y);
+        const shakeX = this.shakeX || 0;
+        const shakeY = this.shakeY || 0;
+        ctx.translate(-cam.x + shakeX, -cam.y + shakeY);
 
         // 3. Render World Tiles
         this.renderWorldTiles(world);
@@ -232,6 +244,25 @@ class Renderer {
                             g = 220 + Math.cos(this.animTime * 2.5 + y * 0.3) * 30;
                             b = 255;
                             break;
+                        case TILES.MAGMA_ROCK:
+                            // Dark basalt with glowing red-orange magma veins
+                            r = 75 - varOffset; g = 25 - varOffset; b = 25 - varOffset;
+                            if ((x * 5 + y * 7 + Math.floor(this.animTime * 2)) % 7 === 0) {
+                                r = 245; g = 80 + Math.sin(this.animTime * 3) * 30; b = 15;
+                            }
+                            break;
+                        case TILES.BIOLUMINESCENT_MOSS:
+                            // Glowing electric teal-emerald alien moss
+                            r = 15;
+                            g = 180 - varOffset + Math.sin(this.animTime * 2 + (x + y) * 0.2) * 35;
+                            b = 160 + Math.cos(this.animTime * 2.5 + x * 0.2) * 45;
+                            break;
+                        case TILES.QUICKSAND:
+                            // Shifting dark amber quicksand
+                            r = 185 - varOffset + Math.sin(this.animTime * 1.5 + y * 0.4) * 8;
+                            g = 145 - varOffset;
+                            b = 85 - varOffset;
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
@@ -286,8 +317,17 @@ class Renderer {
             for (let i = 0; i < k.buildings.length; i++) {
                 const b = k.buildings[i];
                 const r = b.type === 'townhall' ? 26 : (b.type === 'tower' ? 20 : 15);
+                const step = Math.floor(r * 0.4);
                 ctx.beginPath();
-                ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+                ctx.moveTo(b.x - r + step, b.y - r);
+                ctx.lineTo(b.x + r - step, b.y - r);
+                ctx.lineTo(b.x + r, b.y - r + step);
+                ctx.lineTo(b.x + r, b.y + r - step);
+                ctx.lineTo(b.x + r - step, b.y + r);
+                ctx.lineTo(b.x - r + step, b.y + r);
+                ctx.lineTo(b.x - r, b.y + r - step);
+                ctx.lineTo(b.x - r, b.y - r + step);
+                ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
             }
@@ -418,11 +458,12 @@ class Renderer {
                 ctx.fillRect(bx - hw, by + hh - 1, 1, 1);
                 ctx.fillRect(bx + hw - 1, by + hh - 1, 1, 1);
             } else if (b.type === 'campfire') {
-                // Ring of river rocks
+                // Stepped square ring of river rocks
                 ctx.fillStyle = '#64748b';
-                ctx.beginPath();
-                ctx.arc(bx, by, 2.5, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.fillRect(bx - 3, by - 1, 1, 2);
+                ctx.fillRect(bx + 2, by - 1, 1, 2);
+                ctx.fillRect(bx - 1, by - 3, 2, 1);
+                ctx.fillRect(bx - 1, by + 2, 2, 1);
                 // Animated dancing flame
                 const fCol = Math.random() < 0.5 ? '#f59e0b' : '#ef4444';
                 ctx.fillStyle = fCol;
@@ -450,24 +491,53 @@ class Renderer {
 
             ctx.save();
 
-            // Status Auras
+            // Status Auras (Stepped retro pixel halos)
             if (ent.blessed) {
                 ctx.strokeStyle = '#facc15';
                 ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(px, py, size + 1.5, 0, Math.PI * 2);
-                ctx.stroke();
+                const r = Math.floor(size + 2);
+                ctx.strokeRect(Math.floor(px - r), Math.floor(py - r), r * 2, r * 2);
             }
             if (ent.cursed) {
                 ctx.strokeStyle = '#7e22ce';
                 ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(px, py, size + 1.5, 0, Math.PI * 2);
-                ctx.stroke();
+                const r = Math.floor(size + 2);
+                ctx.strokeRect(Math.floor(px - r), Math.floor(py - r), r * 2, r * 2);
             }
             if (ent.frozen > 0) {
                 ctx.fillStyle = 'rgba(165, 243, 252, 0.6)';
                 ctx.fillRect(px - size - 0.5, py - size - 0.5, size * 2 + 1, size * 2 + 1);
+            }
+
+            // Invisibility Trait (Ghostly cloaked transparency)
+            if (ent.hasTrait('invisibility')) {
+                ctx.globalAlpha = 0.35;
+            }
+
+            // Thorny Trait (Spiked perimeter pixels)
+            if (ent.hasTrait('thorny')) {
+                ctx.fillStyle = '#15803d';
+                const r = Math.floor(size + 2);
+                ctx.fillRect(px - r, py, 1.5, 1.5);
+                ctx.fillRect(px + r - 1, py, 1.5, 1.5);
+                ctx.fillRect(px, py - r, 1.5, 1.5);
+                ctx.fillRect(px, py + r - 1, 1.5, 1.5);
+            }
+
+            // Cryomancer Trait (Glacial frost diamond aura)
+            if (ent.hasTrait('cryomancer')) {
+                ctx.strokeStyle = '#a5f3fc';
+                ctx.lineWidth = 1;
+                const r = Math.floor(size + 2);
+                ctx.strokeRect(px - r, py - r, r * 2, r * 2);
+            }
+
+            // Starlight Aura Trait (Twinkling cyan stardust halo)
+            if (ent.hasTrait('starlight_aura')) {
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1;
+                const r = Math.floor(size + 3);
+                ctx.strokeRect(px - r, py - r, r * 2, r * 2);
             }
 
             // Dragon rendering (Detailed winged fire drake)
@@ -525,11 +595,10 @@ class Renderer {
                 ctx.closePath();
                 ctx.fill();
 
-                // Scaled Torso
+                // Scaled Torso (Stepped pixel torso)
                 ctx.fillStyle = '#b91c1c';
-                ctx.beginPath();
-                ctx.ellipse(0, 0, s * 0.6, s * 0.85, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(-s * 0.5, -s * 0.7, s, s * 1.4);
+                ctx.fillRect(-s * 0.6, -s * 0.4, s * 1.2, s * 0.8);
 
                 // Ventral chest scales (golden/amber underside)
                 ctx.fillStyle = '#f59e0b';
@@ -590,28 +659,23 @@ class Renderer {
                     ctx.stroke();
                 }
 
-                // Main Shell / Carapace
+                // Main Shell / Carapace (Stepped pixel carapace)
                 ctx.fillStyle = '#ea580c';
-                ctx.beginPath();
-                ctx.ellipse(px, py, s * 1.2, s * 0.9, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(px - s * 1.2, py - s * 0.7, s * 2.4, s * 1.4);
+                ctx.fillRect(px - s * 0.9, py - s * 0.9, s * 1.8, s * 1.8);
                 ctx.strokeStyle = '#9a3412';
                 ctx.lineWidth = 1.5;
-                ctx.stroke();
+                ctx.strokeRect(px - s * 1.2, py - s * 0.7, s * 2.4, s * 1.4);
 
-                // Huge Pincers / Claws
+                // Huge Pincers / Claws (Pixel block pincers)
                 const clawSnap = Math.abs(Math.sin(this.animTime * 3)) * 3;
                 // Left Pincer
                 ctx.fillStyle = '#c2410c';
-                ctx.beginPath();
-                ctx.arc(px - s * 1.4, py - s * 0.6, s * 0.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillRect(px - s * 1.6, py - s * 0.9 - clawSnap, 3, 5);
+                ctx.fillRect(px - s * 1.7, py - s * 0.9, s * 0.8, s * 0.8);
+                ctx.fillRect(px - s * 1.9, py - s * 1.1 - clawSnap, 3, 5);
                 // Right Pincer
-                ctx.beginPath();
-                ctx.arc(px + s * 1.4, py - s * 0.6, s * 0.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillRect(px + s * 1.4, py - s * 0.9 - clawSnap, 3, 5);
+                ctx.fillRect(px + s * 0.9, py - s * 0.9, s * 0.8, s * 0.8);
+                ctx.fillRect(px + s * 1.6, py - s * 1.1 - clawSnap, 3, 5);
 
                 // Twin Glowing Laser Eye Stalks
                 ctx.fillStyle = '#22c55e';
@@ -621,11 +685,10 @@ class Renderer {
             // Kaiju Godzilla rendering
             else if (ent.type === 'kaiju') {
                 const s = size * 0.7;
-                // Reptilian Body
+                // Stepped pixel reptilian body
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath();
-                ctx.ellipse(px, py, s * 0.9, s * 1.2, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(px - s * 0.8, py - s * 1.1, s * 1.6, s * 2.2);
+                ctx.fillRect(px - s * 0.95, py - s * 0.7, s * 1.9, s * 1.4);
 
                 // Glowing Atomic Spines
                 const pulse = Math.sin(this.animTime * 5) > 0 ? '#38bdf8' : '#0284c7';
@@ -689,18 +752,14 @@ class Renderer {
             // Galaxy Guardian rendering
             else if (ent.type === 'galaxy_guardian') {
                 const s = size * 0.7;
-                // Orbiting planetary cosmic rings
+                // Orbiting planetary cosmic pixel rings
                 ctx.strokeStyle = '#c084fc';
-                ctx.lineWidth = 1.6;
-                ctx.beginPath();
-                ctx.ellipse(px, py, s * 1.5, s * 0.55, Math.PI / 6 + Math.sin(this.animTime) * 0.1, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(px - s * 1.3, py - s * 0.45, s * 2.6, s * 0.9);
 
                 ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.ellipse(px, py, s * 1.5, s * 0.55, -Math.PI / 6, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.strokeRect(px - s * 0.9, py - s * 0.65, s * 1.8, s * 1.3);
 
                 // Orbiting celestial stardust satellites
                 for (let k = 0; k < 3; k++) {
@@ -711,16 +770,14 @@ class Renderer {
                     ctx.fillRect(ox - 1, oy - 1, 2.5, 2.5);
                 }
 
-                // Celestial Core
+                // Celestial Core (Stepped pixel celestial core)
                 ctx.fillStyle = '#9333ea';
-                ctx.beginPath();
-                ctx.arc(px, py, s * 0.8, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(px - s * 0.7, py - s * 0.4, s * 1.4, s * 0.8);
+                ctx.fillRect(px - s * 0.4, py - s * 0.7, s * 0.8, s * 1.4);
 
                 ctx.fillStyle = '#f0abfc';
-                ctx.beginPath();
-                ctx.arc(px, py, s * 0.45, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(px - s * 0.4, py - s * 0.25, s * 0.8, s * 0.5);
+                ctx.fillRect(px - s * 0.25, py - s * 0.4, s * 0.5, s * 0.8);
 
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(px - 1.5, py - 1.5, 3, 3);
@@ -751,11 +808,9 @@ class Renderer {
                 // Armored Chassis
                 ctx.fillStyle = '#3f4f38';
                 ctx.fillRect(px - s * 0.8, py - s * 0.45, s * 1.6, s * 0.9);
-                // Turret
+                // Turret (Pixel block turret)
                 ctx.fillStyle = '#2d3b27';
-                ctx.beginPath();
-                ctx.arc(px, py, s * 0.4, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(px - s * 0.4, py - s * 0.4, s * 0.8, s * 0.8);
                 // Cannon Barrel
                 const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
                 ctx.strokeStyle = '#1a2217';
@@ -794,12 +849,12 @@ class Renderer {
                 // Deck superstructure
                 ctx.fillStyle = '#64748b';
                 ctx.fillRect(-s * 0.3, -s * 0.2, s * 0.7, s * 0.4);
-                // Dual gun turrets
+                // Dual gun turrets (Pixel block turrets)
                 ctx.fillStyle = '#475569';
-                ctx.beginPath(); ctx.arc(s * 0.6, 0, s * 0.2, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(s * 0.45, -s * 0.2, s * 0.35, s * 0.4);
                 ctx.fillRect(s * 0.6, -1, s * 0.5, 1);
                 ctx.fillRect(s * 0.6, 0.5, s * 0.5, 1);
-                ctx.beginPath(); ctx.arc(-s * 0.7, 0, s * 0.2, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(-s * 0.8, -s * 0.2, s * 0.35, s * 0.4);
                 ctx.fillRect(-s * 1.1, -0.7, s * 0.5, 1.4);
                 ctx.restore();
             }
@@ -815,12 +870,13 @@ class Renderer {
                 ctx.lineWidth = 1;
                 ctx.beginPath(); ctx.moveTo(-s * 0.6, -s * 0.5); ctx.lineTo(s * 0.6, -s * 0.5); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(-s * 0.6, s * 0.5); ctx.lineTo(s * 0.6, s * 0.5); ctx.stroke();
-                // Fuselage
+                // Fuselage (Stepped pixel cabin)
                 ctx.fillStyle = '#15803d';
-                ctx.beginPath(); ctx.ellipse(0, 0, s * 0.7, s * 0.38, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(-s * 0.6, -s * 0.35, s * 1.2, s * 0.7);
+                ctx.fillRect(-s * 0.7, -s * 0.2, s * 1.4, s * 0.4);
                 // Cockpit Glass
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.ellipse(s * 0.4, 0, s * 0.25, s * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(s * 0.2, -s * 0.2, s * 0.35, s * 0.4);
                 // Tail boom & Tail rotor
                 ctx.strokeStyle = '#166534'; ctx.lineWidth = 2;
                 ctx.beginPath(); ctx.moveTo(-s * 0.6, 0); ctx.lineTo(-s * 1.4, 0); ctx.stroke();
@@ -838,7 +894,8 @@ class Renderer {
                 ctx.lineTo(-Math.cos(bladeAng + Math.PI/2) * s * 1.3, -Math.sin(bladeAng + Math.PI/2) * s * 1.3);
                 ctx.stroke();
                 // Rotor mast
-                ctx.fillStyle = '#0f172a'; ctx.beginPath(); ctx.arc(0, 0, 1.8, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-1.5, -1.5, 3, 3);
                 ctx.restore();
             }
             // Cosmic Starfighter rendering
@@ -872,9 +929,10 @@ class Renderer {
             // Kraken rendering
             else if (ent.type === 'kraken') {
                 const s = size * 0.7;
-                // Mantle
+                // Mantle (Stepped pixel dome)
                 ctx.fillStyle = '#0d9488';
-                ctx.beginPath(); ctx.ellipse(px, py - 2, s * 0.8, s * 1.1, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(px - s * 0.6, py - 2 - s * 0.9, s * 1.2, s * 1.8);
+                ctx.fillRect(px - s * 0.8, py - 2 - s * 0.5, s * 1.6, s * 1.0);
                 // Tentacles
                 ctx.strokeStyle = '#14b8a6'; ctx.lineWidth = 1.8;
                 for (let t = -3; t <= 3; t += 2) {
@@ -891,9 +949,10 @@ class Renderer {
             // Hydra rendering
             else if (ent.type === 'hydra') {
                 const s = size * 0.7;
-                // Main Serpent Body
+                // Main Serpent Body (Stepped pixel coil)
                 ctx.fillStyle = '#15803d';
-                ctx.beginPath(); ctx.ellipse(px, py + 2, s * 0.9, s * 0.6, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillRect(px - s * 0.8, py + 2 - s * 0.4, s * 1.6, s * 0.8);
+                ctx.fillRect(px - s * 0.5, py + 2 - s * 0.6, s * 1.0, s * 1.2);
                 // 3 Serpent Heads
                 for (let h = -1; h <= 1; h++) {
                     const hWave = Math.sin(this.animTime * 3 + h * 2) * 2.5;
@@ -961,9 +1020,209 @@ class Renderer {
                 ctx.fillStyle = '#78350f';
                 ctx.fillRect(s * 0.6, -s * 1.2, 1.2, s * 2.2);
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath();
-                ctx.arc(s * 0.6 + 0.6, -s * 1.3, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(s * 0.6 - 1, -s * 1.3 - 2, 3, 3);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(s * 0.6, -s * 1.3 - 1, 1, 1);
+                ctx.restore();
+            }
+            // Colossus Mech Walker Titan
+            else if (ent.type === 'colossus_mech') {
+                const s = size * 1.1;
+                ctx.save();
+                ctx.translate(px, py);
+                const legSwing = Math.sin(this.animTime * 5) * 3;
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-s * 0.8, s * 0.2 + legSwing, 3, s * 0.9);
+                ctx.fillRect(s * 0.5, s * 0.2 - legSwing, 3, s * 0.9);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-s * 0.9, s * 1.0 + legSwing, 5, 2.5);
+                ctx.fillRect(s * 0.4, s * 1.0 - legSwing, 5, 2.5);
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(-s * 0.9, -s * 0.8, s * 1.8, s * 1.2);
+                ctx.fillStyle = '#e11d48';
+                ctx.fillRect(-s * 0.8, -s * 0.7, s * 1.6, 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-2, -s * 0.3, 4, 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-s * 1.1, -s * 1.2, 4, s * 0.6);
+                ctx.fillRect(s * 0.8, -s * 1.2, 4, s * 0.6);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(-s * 1.0, -s * 1.1, 2, 2);
+                ctx.fillRect(s * 0.9, -s * 1.1, 2, 2);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(-s * 1.2, -s * 0.2, 3, s * 0.8);
+                ctx.fillRect(s * 0.9, -s * 0.2, s * 0.8, 3.5);
+                ctx.restore();
+            }
+            // Seraph Angel Celestial
+            else if (ent.type === 'seraph_angel') {
+                const s = size * 0.8;
+                ctx.save();
+                ctx.translate(px, py);
+                const wingFlap = Math.sin(this.animTime * 7) * 3;
+                ctx.fillStyle = '#fef08a';
+                for (let w = -1; w <= 1; w += 2) {
+                    ctx.fillRect(w * 2, -s * 1.1 + wingFlap * w, w * s * 1.4, 2);
+                    ctx.fillRect(w * 4, -s * 1.3 + wingFlap * w, w * s * 1.0, 2);
+                    ctx.fillRect(w * 2, -s * 0.5, w * s * 1.6, 2.2);
+                    ctx.fillRect(w * 5, -s * 0.6, w * s * 0.9, 1.8);
+                    ctx.fillRect(w * 2, s * 0.2 - wingFlap * w, w * s * 1.2, 2);
+                }
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(-s * 0.6, -s * 0.4, s * 1.2, s * 1.3);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-s * 0.4, -s * 0.3, s * 0.8, 2);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(-2, -s * 0.9, 4, 3);
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 1.2;
+                ctx.strokeRect(-3, -s * 1.4, 6, 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-1.5, -s * 0.8, 1, 1);
+                ctx.fillRect(0.5, -s * 0.8, 1, 1);
+                ctx.restore();
+            }
+            // Dune Leviathan Sandworm
+            else if (ent.type === 'dune_leviathan') {
+                const s = size * 0.8;
+                for (let seg = 4; seg >= 0; seg--) {
+                    const wave = Math.sin(this.animTime * 4 + seg * 0.8) * 4;
+                    const segX = px - seg * 3.5 + wave * 0.4;
+                    const segY = py + wave;
+                    const segScale = 1 - seg * 0.12;
+                    ctx.fillStyle = seg % 2 === 0 ? '#b45309' : '#d97706';
+                    ctx.fillRect(segX - s * segScale, segY - s * segScale * 0.7, s * 2 * segScale, s * 1.4 * segScale);
+                    ctx.fillStyle = '#78350f';
+                    ctx.fillRect(segX - 1, segY - s * segScale * 0.9, 2, 2);
+                }
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(px + s * 0.8, py - 3, 3, 2);
+                ctx.fillRect(px + s * 0.8, py + 1, 3, 2);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(px + s * 0.5, py - 2, 1.5, 1.5);
+                ctx.fillRect(px + s * 0.5, py + 0.5, 1.5, 1.5);
+            }
+            // Vampire Lord
+            else if (ent.type === 'vampire_lord') {
+                const s = size * 0.8;
+                ctx.save();
+                ctx.translate(px, py);
+                const capeWave = Math.sin(this.animTime * 5) * 2;
+                ctx.fillStyle = '#7f1d1d';
+                ctx.fillRect(-s * 1.0, -s * 0.4, s * 2.0, s * 1.2 + capeWave);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-s * 0.9, -s * 0.3, s * 1.8, s * 1.1 + capeWave);
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(-s * 0.5, -s * 0.4, s * 1.0, s * 1.0);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(-1.5, -s * 0.3, 3, 3);
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(-2, -s * 0.9, 4, 3.5);
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(-2.5, -s * 1.1, 5, 2);
+                ctx.fillRect(-0.5, -s * 0.9, 1, 1);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(-1.5, -s * 0.7, 1, 1);
+                ctx.fillRect(0.5, -s * 0.7, 1, 1);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(-0.5, -s * 0.1, 1, 1);
+                ctx.restore();
+            }
+            // Cosmic Void Titan (Secret Apocalypse Boss)
+            else if (ent.type === 'void_titan') {
+                const s = size * 0.9;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.fillStyle = '#030712';
+                ctx.fillRect(-s * 0.9, -s * 0.9, s * 1.8, s * 1.8);
+                ctx.fillStyle = '#581c87';
+                ctx.fillRect(-s * 0.7, -s * 0.7, s * 1.4, s * 1.4);
+                const rot = this.animTime * 4;
+                ctx.fillStyle = '#c084fc';
+                for (let spk = 0; spk < 4; spk++) {
+                    const ang = rot + spk * (Math.PI / 2);
+                    ctx.fillRect(Math.cos(ang) * s * 1.2 - 1, Math.sin(ang) * s * 1.2 - 1, 2.5, 2.5);
+                }
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(-s * 1.0, -s * 1.4, 3, s * 0.7);
+                ctx.fillRect(s * 0.7, -s * 1.4, 3, s * 0.7);
+                ctx.fillRect(-s * 1.2, -s * 1.6, 2, s * 0.4);
+                ctx.fillRect(s * 1.0, -s * 1.6, 2, s * 0.4);
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(-3, -s * 0.4, 2, 2);
+                ctx.fillRect(1, -s * 0.4, 2, 2);
+                ctx.fillStyle = '#7e22ce';
+                ctx.fillRect(-s * 1.4, -s * 0.2, s * 0.6, 4);
+                ctx.fillRect(s * 0.8, -s * 0.2, s * 0.6, 4);
+                ctx.restore();
+            }
+            // Evermean Treant (Walking living sentient tree)
+            else if (ent.type === 'evermean') {
+                const s = size * 0.9;
+                ctx.save();
+                ctx.translate(px, py);
+
+                // Headslam attack animation tilt & plunge
+                const isHeadslamming = ent.abilityCooldown > 4;
+                if (isHeadslamming) {
+                    ctx.rotate(Math.sin(this.animTime * 14) * 0.3);
+                    ctx.translate(0, 3);
+                }
+
+                const legStep = Math.sin(this.animTime * 5) * 2.5;
+
+                // Root Legs / Moving Feet
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(-s * 0.7, s * 0.4 + legStep, 3, s * 0.7);
+                ctx.fillRect(s * 0.3, s * 0.4 - legStep, 3, s * 0.7);
+                // Root toes grasping soil
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-s * 0.9, s * 0.9 + legStep, 4.5, 2.5);
+                ctx.fillRect(s * 0.2, s * 0.9 - legStep, 4.5, 2.5);
+
+                // Gnarled Wooden Trunk
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(-s * 0.6, -s * 0.6, s * 1.2, s * 1.2);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-s * 0.5, -s * 0.55, s * 1.0, s * 1.1);
+                ctx.fillStyle = '#92400e';
+                ctx.fillRect(-s * 0.4, -s * 0.4, 2, s * 0.8);
+                ctx.fillRect(s * 0.2, -s * 0.3, 2, s * 0.7);
+
+                // Ancient Hollow Face & Amber Eyes
+                ctx.fillStyle = '#1c0a00';
+                ctx.fillRect(-2.5, -s * 0.3, 5, 4);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-2, -s * 0.25, 1.5, 1.5);
+                ctx.fillRect(0.5, -s * 0.25, 1.5, 1.5);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-1.5, -s * 0.25, 0.8, 0.8);
+                ctx.fillRect(1.0, -s * 0.25, 0.8, 0.8);
+
+                // Leafy Foliage Canopy (Crown of Living Oak)
+                ctx.fillStyle = '#14532d';
+                ctx.fillRect(-s * 1.2, -s * 1.2, s * 2.4, s * 0.8);
+                ctx.fillRect(-s * 0.9, -s * 1.5, s * 1.8, s * 0.6);
+                ctx.fillRect(-s * 0.6, -s * 1.7, s * 1.2, s * 0.4);
+
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(-s * 1.0, -s * 1.1, s * 2.0, s * 0.6);
+                ctx.fillRect(-s * 0.7, -s * 1.4, s * 1.4, s * 0.5);
+
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(-s * 0.6, -s * 1.0, 3, 3);
+                ctx.fillRect(s * 0.2, -s * 1.2, 3, 3);
+                ctx.fillRect(-2, -s * 1.5, 3, 2.5);
+
+                // Headslam dust & wood debris
+                if (isHeadslamming) {
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.fillRect(-s * 0.8, s * 0.9, 3, 2);
+                    ctx.fillRect(s * 0.5, s * 0.9, 3, 2);
+                    ctx.fillStyle = '#86efac';
+                    ctx.fillRect(-2, s * 0.8, 2, 2);
+                }
+
                 ctx.restore();
             }
             // Human race rendering
@@ -1139,13 +1398,16 @@ class Renderer {
                 ctx.strokeStyle = '#b45309';
                 ctx.lineWidth = 1.2;
                 ctx.beginPath();
-                ctx.arc(0, 0, size * 0.8, -Math.PI * 0.4, Math.PI * 0.4);
+                ctx.moveTo(0, -size * 0.8);
+                ctx.lineTo(size * 0.5, -size * 0.4);
+                ctx.lineTo(size * 0.5, size * 0.4);
+                ctx.lineTo(0, size * 0.8);
                 ctx.stroke();
                 ctx.strokeStyle = '#f8fafc';
                 ctx.lineWidth = 0.8;
                 ctx.beginPath();
-                ctx.moveTo(Math.cos(-Math.PI * 0.4) * size * 0.8, Math.sin(-Math.PI * 0.4) * size * 0.8);
-                ctx.lineTo(Math.cos(Math.PI * 0.4) * size * 0.8, Math.sin(Math.PI * 0.4) * size * 0.8);
+                ctx.moveTo(0, -size * 0.8);
+                ctx.lineTo(0, size * 0.8);
                 ctx.stroke();
                 ctx.restore();
             } else if (ent.weapon === 'blaster') {
@@ -1162,11 +1424,49 @@ class Renderer {
                 ctx.fillStyle = '#78350f';
                 ctx.fillRect(-0.6, -size * 1.4, 1.2, size * 1.8);
                 ctx.fillStyle = '#c084fc';
-                ctx.beginPath();
-                ctx.arc(0, -size * 1.5, 1.8, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(-1.5, -size * 1.5 - 1.5, 3, 3);
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(-0.5, -size * 1.5 - 0.5, 1, 1);
+                ctx.restore();
+            } else if (ent.weapon === 'void_scythe') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slash = ent.attackCooldown > 12 ? Math.sin(this.animTime * 20) * 0.8 : 0.3;
+                ctx.rotate(slash * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(-0.8, -size * 1.6, 1.6, size * 2.0);
+                ctx.fillStyle = '#9333ea';
+                ctx.fillRect(-size * 1.2, -size * 1.6, size * 1.4, 1.8);
+                ctx.fillRect(-size * 1.5, -size * 1.4, size * 0.6, 1.8);
+                ctx.fillStyle = '#c084fc';
+                ctx.fillRect(-size * 1.1, -size * 1.5, size * 1.0, 1.0);
+                ctx.restore();
+            } else if (ent.weapon === 'laser_cannon') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(ent.vx < 0 ? -6 : 0, -2, 6, 4);
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(ent.vx < 0 ? -7 : 5, -1.5, 2, 1.2);
+                ctx.fillRect(ent.vx < 0 ? -7 : 5, 0.3, 2, 1.2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(ent.vx < 0 ? -3 : 2, -0.5, 2, 1);
+                ctx.restore();
+            } else if (ent.weapon === 'galaxy_blade') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slash = ent.attackCooldown > 12 ? Math.sin(this.animTime * 22) * 0.9 : 0.35;
+                ctx.rotate(slash * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-2, 0, 4, 1.5);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-0.7, 1.5, 1.4, 2.5);
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(-1.0, -size * 1.6, 2.0, size * 1.6);
+                ctx.fillStyle = '#67e8f9';
+                ctx.fillRect(-0.5, -size * 1.7, 1.0, size * 1.7);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-0.3, -size * 1.5, 0.6, size * 1.2);
                 ctx.restore();
             }
 
@@ -1181,12 +1481,17 @@ class Renderer {
                 ctx.stroke();
             }
 
-            // Player Controlled Marker / Halo
+            // Player Controlled Marker / Retro Reticle
             if (ent.isControlled) {
                 ctx.strokeStyle = '#facc15';
-                ctx.lineWidth = 1.5;
+                ctx.lineWidth = 1.2;
+                const br = size + 3;
+                const cl = 3;
                 ctx.beginPath();
-                ctx.arc(px, py + size * 0.4, size + 2, 0, Math.PI * 2);
+                ctx.moveTo(px - br, py - br + cl); ctx.lineTo(px - br, py - br); ctx.lineTo(px - br + cl, py - br);
+                ctx.moveTo(px + br - cl, py - br); ctx.lineTo(px + br, py - br); ctx.lineTo(px + br, py - br + cl);
+                ctx.moveTo(px + br, py + br - cl); ctx.lineTo(px + br, py + br); ctx.lineTo(px + br - cl, py + br);
+                ctx.moveTo(px - br + cl, py + br); ctx.lineTo(px - br, py + br); ctx.lineTo(px - br, py + br - cl);
                 ctx.stroke();
 
                 const bounce = Math.sin(this.animTime * 5) * 2;
@@ -1200,7 +1505,15 @@ class Renderer {
 
                 // Direct Control HUD Key Banner
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-                const tagText = ent.type === 'dragon' ? 'DRAGON [WASD / SPACE / Q]' : (ent.type === 'mech' ? 'MECH [WASD / SPACE / Q]' : 'HERO [WASD / SPACE]');
+                const tagText = ent.type === 'dragon' ? 'DRAGON [WASD / SPACE / Q]' :
+                               (ent.type === 'evermean' ? 'EVERMEAN [WASD / SPACE / Q]' :
+                               (ent.type === 'mech' ? 'MECH [WASD / SPACE / Q]' :
+                               (ent.type === 'colossus_mech' ? 'COLOSSUS [WASD / SPACE / Q]' :
+                               (ent.type === 'seraph_angel' ? 'SERAPH [WASD / SPACE / Q]' :
+                               (ent.type === 'dune_leviathan' ? 'LEVIATHAN [WASD / SPACE / Q]' :
+                               (ent.type === 'vampire_lord' ? 'VAMPIRE [WASD / SPACE / Q]' :
+                               (ent.type === 'void_titan' ? 'VOID TITAN [WASD / SPACE / Q]' :
+                               'HERO [WASD / SPACE]')))))));
                 ctx.font = 'bold 3px monospace';
                 const textWidth = ctx.measureText(tagText).width;
                 ctx.fillRect(px - textWidth / 2 - 1, py - size - 12, textWidth + 2, 4.2);
@@ -1234,23 +1547,23 @@ class Renderer {
                 ctx.lineTo(p.x - p.vx * 1.5, p.y - p.vy * 1.5);
                 ctx.stroke();
             } else if (p.type === 'fireball') {
-                ctx.fillStyle = '#ff5722';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = '#ea580c';
+                ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(p.x - 0.7, p.y - 0.7, 1.4, 1.4);
             } else if (p.type === 'laser') {
                 ctx.fillStyle = '#00e5ff';
                 ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
             } else if (p.type === 'frost') {
                 ctx.fillStyle = '#a5f3fc';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(p.x - 1.5, p.y - 0.5, 3, 1);
+                ctx.fillRect(p.x - 0.5, p.y - 1.5, 1, 3);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(p.x - 0.5, p.y - 0.5, 1, 1);
             } else if (p.type === 'acid') {
                 ctx.fillStyle = '#84cc16';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(p.x - 1.5, p.y - 1, 3, 2);
+                ctx.fillRect(p.x - 1, p.y - 1.5, 2, 3);
             } else if (p.type === 'blaster') {
                 ctx.fillStyle = '#22d3ee';
                 ctx.fillRect(p.x - 1.5, p.y - 1, 3, 2);
@@ -1258,9 +1571,8 @@ class Renderer {
                 ctx.fillRect(p.x - 0.5, p.y - 0.5, 1, 1);
             } else if (p.type === 'magic_missile') {
                 ctx.fillStyle = '#c084fc';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(p.x - 1.5, p.y - 1, 3, 2);
+                ctx.fillRect(p.x - 1, p.y - 1.5, 2, 3);
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(p.x - 0.5, p.y - 0.5, 1, 1);
             }
@@ -1269,11 +1581,43 @@ class Renderer {
 
     renderBrushCursor(wx, wy, radius, activeTool) {
         const ctx = this.ctx;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.arc(wx, wy, radius, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        const cx = Math.floor(wx);
+        const cy = Math.floor(wy);
+        const r = Math.max(1, Math.floor(radius));
+
+        if (r <= 2) {
+            ctx.strokeRect(cx - r, cy - r, r * 2 + 1, r * 2 + 1);
+            ctx.fillRect(cx - r, cy - r, r * 2 + 1, r * 2 + 1);
+            return;
+        }
+
+        // Stepped discrete pixel perimeter
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        let x = r;
+        let y = 0;
+        let err = 0;
+        while (x >= y) {
+            ctx.fillRect(cx + x, cy + y, 1, 1);
+            ctx.fillRect(cx + y, cy + x, 1, 1);
+            ctx.fillRect(cx - y, cy + x, 1, 1);
+            ctx.fillRect(cx - x, cy + y, 1, 1);
+            ctx.fillRect(cx - x, cy - y, 1, 1);
+            ctx.fillRect(cx - y, cy - x, 1, 1);
+            ctx.fillRect(cx + y, cy - x, 1, 1);
+            ctx.fillRect(cx + x, cy - y, 1, 1);
+            if (err <= 0) {
+                y += 1;
+                err += 2 * y + 1;
+            }
+            if (err > 0) {
+                x -= 1;
+                err -= 2 * x + 1;
+            }
+        }
+        ctx.restore();
     }
 
     renderMinimap(world, entityManager) {

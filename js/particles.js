@@ -205,16 +205,50 @@ class ParticleSystem {
             ctx.globalAlpha = p.alpha;
 
             if (p.type === 'shockwave') {
-                ctx.strokeStyle = p.color;
-                ctx.lineWidth = Math.max(1, 4 * p.alpha);
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.fillStyle = p.color;
+                const r = Math.floor(p.size);
+                const cx = Math.floor(p.x);
+                const cy = Math.floor(p.y);
+                if (r <= 2) {
+                    ctx.fillRect(cx - 1, cy - 1, 3, 3);
+                } else {
+                    // Stepped retro pixel ring (Midpoint / Bresenham raster circle outline)
+                    let x = r;
+                    let y = 0;
+                    let err = 0;
+                    const thick = Math.max(1, Math.min(3, Math.round(3 * p.alpha)));
+                    while (x >= y) {
+                        ctx.fillRect(cx + x - thick + 1, cy + y, thick, 1);
+                        ctx.fillRect(cx + y, cy + x - thick + 1, 1, thick);
+                        ctx.fillRect(cx - x, cy + y, thick, 1);
+                        ctx.fillRect(cx - y, cy + x - thick + 1, 1, thick);
+                        ctx.fillRect(cx - x, cy - y, thick, 1);
+                        ctx.fillRect(cx - y, cy - x, 1, thick);
+                        ctx.fillRect(cx + x - thick + 1, cy - y, thick, 1);
+                        ctx.fillRect(cx + y, cy - x, 1, thick);
+
+                        if (err <= 0) {
+                            y += 1;
+                            err += 2 * y + 1;
+                        }
+                        if (err > 0) {
+                            x -= 1;
+                            err -= 2 * x + 1;
+                        }
+                    }
+                }
             } else if (p.type === 'smoke') {
                 ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
+                const s = Math.max(1, Math.floor(p.size));
+                const px = Math.floor(p.x - s * 0.5);
+                const py = Math.floor(p.y - s * 0.5);
+                if (s <= 2) {
+                    ctx.fillRect(px, py, s, s);
+                } else {
+                    // Stepped cross-shaped pixel puff
+                    ctx.fillRect(px + 1, py, Math.max(1, s - 2), s);
+                    ctx.fillRect(px, py + 1, s, Math.max(1, s - 2));
+                }
             } else {
                 // Pixel / square particle for retro crisp look
                 ctx.fillStyle = p.color;
