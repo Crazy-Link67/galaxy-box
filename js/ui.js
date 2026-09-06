@@ -21,6 +21,13 @@ const CATEGORY_TOOLS = {
         { id: 'napalm_strike', name: 'Napalm Airstrike', icon: '🔥', desc: 'Air carpet-bombing releasing blazing sea of continuous fire.' },
         { id: 'kinetic_strike', name: 'Kinetic Rod Strike', icon: '☄️', desc: 'Dense tungsten telephone pole dropped from orbit piercing bedrock.' },
         { id: 'void_implosion', name: 'Void Implosion', icon: '🌌', desc: 'Inverted cosmic shockwave pulling surrounding land into singularity.' },
+        { id: 'antimatter_missile', name: 'Antimatter ICBM', icon: '🚀', desc: 'Cosmic warhead triggering a devastating void annihilation shockwave.' },
+        { id: 'orbital_strike', name: 'Hammer of Dawn', icon: '🛰️', desc: 'Devastating satellite beam vaporizing terrain with searing plasma.' },
+        { id: 'emp_blast', name: 'High-Altitude EMP', icon: '⚡', desc: 'Electromagnetic pulse short-circuiting mechs and disintegrating projectiles.' },
+        { id: 'hellfire_missile', name: 'Hellfire Warhead', icon: '🔥', desc: 'Incendiary tactical missile unleashing waves of raging wildfire.' },
+        { id: 'tsar_bomba', name: 'Tsar Bomba 100MT', icon: '💣', desc: 'Megaton thermonuclear device crushing half the globe in nuclear fallout.' },
+        { id: 'toxic_cloud', name: 'Toxic Gas Cloud', icon: '☣️', desc: 'Spreads expanding noxious choking green gas clouds dissolving biologicals.' },
+        { id: 'acid_missile', name: 'Corrosive Acid Warhead', icon: '🧪', desc: 'Splashes massive pools of concentrated bubbling acid melting mountains.' },
         { id: 'nuke_missile', name: 'Apocalypse Nuke Missile', icon: '🚀', desc: 'World-destroying ICBM: Vaporizes all kingdoms, incinerates continents into ash, and wipes out the whole planet!' },
         { id: 'ion_cannon', name: 'Orbital Ion Cannon', icon: '🛰️', desc: 'Targeting grid summoning an orbital death beam from space.' },
         { id: 'rift', name: 'Dimension Rift', icon: '🌀', desc: 'Cosmic tear pulling land in and spawning nether demons.' },
@@ -44,6 +51,13 @@ const CATEGORY_TOOLS = {
         { id: 'tornado', name: 'Tornado', icon: '🌪️', desc: 'Wandering twister flinging trees and creatures.' },
         { id: 'fire_tornado', name: 'Fire Tornado', icon: '🌪️', desc: 'Vortex of spinning fire incinerating everything in its path.' },
         { id: 'meteor_shower', name: 'Meteor Shower', icon: '🌠', desc: 'Torrential barrage of celestial meteors pounding the realm.' },
+        { id: 'meteor_rain', name: 'Meteor Rain', icon: '☄️', desc: 'Continuous celestial meteor shower pelting the ground with flaming boulders.' },
+        { id: 'lightning_storm', name: 'Supercell Storm', icon: '⛈️', desc: 'Violent thunderstorm firing cascading lightning bolts across the skies.' },
+        { id: 'blizzard_vortex', name: 'Blizzard Vortex', icon: '🌀', desc: 'Howling arctic blizzard hurricane instantly glaciating oceans and land.' },
+        { id: 'sand_typhoon', name: 'Sand Typhoon', icon: '🌪️', desc: 'Vicious desert cyclone tearing up terrain into dunes and dust.' },
+        { id: 'magma_surge', name: 'Magma Surge', icon: '🌋', desc: 'Underground tectonic rupture venting molten lava geysers.' },
+        { id: 'spore_bloom', name: 'Spore Bloom', icon: '🍄', desc: 'Releases infectious fungal spores mutating land into mushroom mycelium.' },
+        { id: 'whirlpool', name: 'Oceanic Maelstrom', icon: '🌀', desc: 'Swirling oceanic vortex dragging ships, creatures, and debris into the depths.' },
         { id: 'geyser', name: 'Thermal Geyser', icon: '⛲', desc: 'High-pressure thermal water eruption bursting from ground.' },
         { id: 'earthquake', name: 'Earthquake', icon: '⚡', desc: 'Tears jagged magma chasms through the terrain.' },
         { id: 'lightning', name: 'Lightning Strike', icon: '🌩️', desc: 'Electric strike that burns or empowers.' },
@@ -64,6 +78,12 @@ const CATEGORY_TOOLS = {
         { id: 'grass', name: 'Grassland', icon: '🌱', desc: 'Lush green grass for grazing.' },
         { id: 'forest', name: 'Dense Forest', icon: '🌲', desc: 'Lush woodland providing timber.' },
         { id: 'bioluminescent_moss', name: 'Bioluminescent Moss', icon: '🌿', desc: 'Alien glowing moss spreading across moisture and illuminating land.' },
+        { id: 'gold_ore', name: 'Gold Vein', icon: '🪙', desc: 'Gleaming mineral deposit mined by kingdoms for wealth.' },
+        { id: 'mushroom_spore', name: 'Mushroom Spore Soil', icon: '🍄', desc: 'Living fungal earth spreading giant bioluminescent toadstools.' },
+        { id: 'honey_comb', name: 'Honeycomb Amber', icon: '🍯', desc: 'Golden sweet hive biome preserving organic matter.' },
+        { id: 'holy_ground', name: 'Consecrated Ground', icon: '✨', desc: 'Blessed radiant tiles purging corruption, fire, and curing diseases.' },
+        { id: 'blood_river', name: 'Blood River', icon: '🩸', desc: 'Sinister cursed visceral fluid empowering demons and vampires.' },
+        { id: 'poison_swamp', name: 'Poison Swamp', icon: '☣️', desc: 'Fetid toxic mire slowing creatures and inflicting venom.' },
         { id: 'stone', name: 'Rock / Mountain', icon: '⛰️', desc: 'Durable stone and mineral hills.' },
         { id: 'mountain', name: 'High Peak', icon: '🏔️', desc: 'Towering mountain summit.' },
         { id: 'snow', name: 'Snow Blanket', icon: '🌨️', desc: 'Frigid snowy terrain.' },
@@ -76,6 +96,10 @@ const CATEGORY_TOOLS = {
         { id: 'bedrock', name: 'Bedrock Wall', icon: '🧱', desc: 'Indestructible barrier to contain chaos.' },
         { id: 'nebula', name: 'Cosmic Nebula', icon: '🌌', desc: 'Swirling luminous interstellar fluid nebula.' },
         { id: 'stardust', name: 'Stardust Land', icon: '✨', desc: 'Gleaming celestial stardust soil.' },
+        { id: 'biome_savanna', name: 'Biome: Savanna', icon: '🌾', desc: 'Paints arid golden plains, acacia trees, and dry grass.' },
+        { id: 'biome_tundra', name: 'Biome: Tundra', icon: '❄️', desc: 'Paints permafrost, snowbanks, and ice formations.' },
+        { id: 'biome_jungle', name: 'Biome: Jungle', icon: '🌴', desc: 'Paints dense rainforest canopy, vines, and fertile mud.' },
+        { id: 'deforest', name: 'Deforestation Axe', icon: '🪓', desc: 'Clears dense forests and overgrowth back to bare soil.' },
         { id: 'level_terrain', name: 'Plateau / Level', icon: '📐', desc: 'Flattens surrounding terrain to match clicked elevation and tile.' },
         { id: 'raise', name: 'Shovel (Raise)', icon: '⬆️', desc: 'Elevates terrain towards mountains.' },
         { id: 'lower', name: 'Shovel (Lower)', icon: '⬇️', desc: 'Carves valleys and ocean trenches.' },
@@ -95,7 +119,19 @@ const CATEGORY_TOOLS = {
         { id: 'overclock', name: 'Overclock Surge', icon: '⚡', desc: 'Infuses creatures with 2.5x speed, power, and electric aura.' },
         { id: 'chronos_stasis', name: 'Chronos Stasis', icon: '⏱️', desc: 'Freeze time and motion for all nearby creatures.' },
         { id: 'teleport', name: 'Cosmic Teleport', icon: '✨', desc: 'Instantly warp controlled hero or selected creature to clicked position.' },
+        { id: 'resurrection_ray', name: 'Resurrection Miracle', icon: '🌟', desc: 'Raise fallen creatures and skeletons back to life in divine light.' },
+        { id: 'invisibility', name: 'Cloak of Shadows', icon: '👻', desc: 'Bestow phantom invisibility on nearby creatures for 15 seconds.' },
+        { id: 'divine_smite', name: 'Divine Smite', icon: '⚡', desc: 'Targeted heavenly golden thunderbolt instantly executing sinners.' },
+        { id: 'curse_frog', name: 'Frog Polymorph', icon: '🐸', desc: 'Magically transfigure creatures into helpless croaking frogs!' },
+        { id: 'speed_boost', name: 'Hyper Velocity', icon: '💨', desc: 'Infuse creatures with 3x movement speed and agility.' },
+        { id: 'giant_growth', name: 'Gigantification', icon: '🆙', desc: 'Massively swell creature into a colossal behemoth with 4x HP!' },
         { id: 'necromancy', name: 'Necromancy', icon: '☠️', desc: 'Summon an undead skeleton army out of the earth.' },
+        { id: 'equip_plasma_rifle', name: 'Equip: Plasma Rifle', icon: '🔫', desc: 'Arm creature with high-tech rapid plasma rifle (+30 Atk).' },
+        { id: 'equip_energy_shield', name: 'Equip: Energy Shield', icon: '🛡️', desc: 'Give creature kinetic energy buckler granting barrier protection.' },
+        { id: 'equip_poison_dagger', name: 'Equip: Venom Dagger', icon: '🗡️', desc: 'Arm creature with deadly venom blade inflicting continuous poison (+20 Atk).' },
+        { id: 'equip_gravity_hammer', name: 'Equip: Gravity Hammer', icon: '🔨', desc: 'Arm creature with crushing gravitational warhammer launching shockwaves (+40 Atk).' },
+        { id: 'equip_storm_staff', name: 'Equip: Storm Staff', icon: '⚡', desc: 'Arm creature with tempest staff summoning targeted lightning strikes (+30 Atk).' },
+        { id: 'equip_grenade_launcher', name: 'Equip: Grenade Launcher', icon: '💣', desc: 'Arm creature with explosive ordnance launcher (+35 Atk).' },
         { id: 'equip_thunder_hammer', name: 'Equip: Thunder Hammer', icon: '⚡', desc: 'Arm creature with lightning hammer causing thunderous ground slams (+35 Atk).' },
         { id: 'equip_flamethrower', name: 'Equip: Flamethrower', icon: '🔥', desc: 'Arm creature with heavy flamethrower unleashing continuous fiery streams (+20 Atk).' },
         { id: 'equip_frost_wand', name: 'Equip: Frost Wand', icon: '❄️', desc: 'Arm creature with glacial wand casting freezing projectile bolts (+20 Atk).' },
@@ -128,6 +164,19 @@ const CATEGORY_TOOLS = {
         { id: 'creator', name: 'Creature Creator', icon: '🎨', desc: 'Design, customize, and build your own custom monsters!' },
         { id: 'duck', name: 'Exploding Duck', icon: '🦆', desc: 'Quacking aquatic fowl that lays ticking explosive eggs and detonates upon death!' },
         { id: 'evermean', name: 'Evermean Treant', icon: '🌲', desc: 'Eyeless walking tree with sharp needle legs that headslams foes and forest trees!' },
+        { id: 'frog', name: 'Poison Dart Frog', icon: '🐸', desc: 'Agile amphibious hopper that spits venom darts and tongue-snatches prey.' },
+        { id: 'cyber_ninja', name: 'Cyber Ninja', icon: '🥷', desc: 'Augmented shinobi with shuriken fan attacks and supersonic shadow dash.' },
+        { id: 'laser_shark', name: 'Laser Shark', icon: '🦈', desc: 'Ferocious apex ocean predator equipped with high-tech head-mounted laser!' },
+        { id: 'frost_wolf', name: 'Frost Wolf', icon: '🐺', desc: 'Frigid pack hunter howling glacial frost novae that freeze prey.' },
+        { id: 'sand_scorpion', name: 'Giant Sand Scorpion', icon: '🦂', desc: 'Armored desert arachnid with crushing pincer crush and burrow ambush.' },
+        { id: 'necromancer', name: 'Lich Necromancer', icon: '🧙‍♂️', desc: 'Dark sorcerer raising armies of undead skeletons and soul drain.' },
+        { id: 'valkyrie', name: 'Valkyrie of Valhalla', icon: '⚔️', desc: 'Golden winged divine warrior hurling holy spears and sacred healing.' },
+        { id: 'gargoyle', name: 'Obsidian Gargoyle', icon: '🦇', desc: 'Living stone demon with wing gust shockwaves and stone armor stasis.' },
+        { id: 'mecha_rex', name: 'Mecha T-Rex', icon: '🦖', desc: 'Cybernetic bipedal titan armed with dual plasma cannons and tail whip.' },
+        { id: 'golden_dragon', name: 'Golden Sun Dragon', icon: '🐲', desc: 'Controllable mythic deity unleashing sunbeam breath & divine flare burst!' },
+        { id: 'space_worm', name: 'Cosmic Starworm', icon: '🐛', desc: 'Interstellar abyssal serpent eating terrain and firing cosmic singularity rays.' },
+        { id: 'goblin', name: 'Goblin Raider', icon: '👺', desc: 'Crafty marauder raiding kingdoms and tossing explosive gunpowder bomb bundles.' },
+        { id: 'pirate_ship', name: 'Pirate Galleon', icon: '🏴‍☠️', desc: 'Waterborne pirate corsair firing full broadside cannon salvos & boarding crews.' },
         { id: 'crystal_golem', name: 'Crystal Golem', icon: '💎', desc: 'Living prism colossus firing refracting light beams and raising crystals.' },
         { id: 'shadow_assassin', name: 'Shadow Assassin', icon: '🥷', desc: 'Stealthy rogue executing rapid shadow-strike dashes and smoke evasions.' },
         { id: 'dragon', name: 'Fire Dragon', icon: '🐉', desc: 'Controllable winged titan with flamethrower breath & dive-bomb firestorm!' },
@@ -169,6 +218,9 @@ const CATEGORY_TOOLS = {
         { id: 'btn_gen', name: 'World Generator', icon: '🌍', desc: 'Procedural continents, islands, seeds.' },
         { id: 'btn_secrets', name: 'Cosmic Vault', icon: '🔮', desc: 'View unlocked secrets from The Great Galaxy Sacrifice.' },
         { id: 'btn_diplomacy', name: 'Kingdom Ledger', icon: '👑', desc: 'Inspect all sovereign empires, populations, and wars.' },
+        { id: 'btn_soundboard', name: 'SFX Soundboard', icon: '🔊', desc: 'Procedural Web Audio sound generator testing audio frequencies.' },
+        { id: 'btn_weather', name: 'Atmosphere Console', icon: '🌦️', desc: 'Master climate controls for global storms and wind.' },
+        { id: 'btn_stats', name: 'Cosmic Analytics', icon: '📊', desc: 'Detailed population demographics, tile census, and world metrics.' },
         { id: 'btn_save', name: 'Save / Load', icon: '💾', desc: 'Local slots and JSON world export.' },
         { id: 'btn_settings', name: 'Settings', icon: '⚙️', desc: 'Audio volume, display toggles, FPS.' },
         { id: 'btn_codex', name: "God's Codex", icon: '📖', desc: 'Complete encyclopedia and guides.' },
@@ -270,6 +322,18 @@ class UIManager {
             return;
         } else if (tool.id === 'btn_codex') {
             this.showModal('modal-codex');
+            return;
+        } else if (tool.id === 'btn_soundboard') {
+            this.showModal('modal-soundboard');
+            this.populateSoundboard();
+            return;
+        } else if (tool.id === 'btn_weather') {
+            this.showModal('modal-weather');
+            this.populateWeatherConsole();
+            return;
+        } else if (tool.id === 'btn_stats') {
+            this.showModal('modal-stats');
+            this.populateStats();
             return;
         } else if (tool.id === 'btn_secrets') {
             this.showGalaxyUnlockModal();
@@ -611,6 +675,197 @@ class UIManager {
             `;
             listEl.appendChild(row);
         });
+    }
+
+    populateSoundboard() {
+        const grid = document.getElementById('soundboard-grid');
+        if (!grid) return;
+        const sfxList = [
+            { name: 'Atomic Nuke', icon: '☢️', play: () => this.game.audio.playExplosion(1.8) },
+            { name: 'Singularity', icon: '🌌', play: () => this.game.audio.playSingularity() },
+            { name: 'EMP Pulse', icon: '⚡', play: () => this.game.audio.playEmpSound() },
+            { name: 'Hammer of Dawn', icon: '🛰️', play: () => this.game.audio.playHammerOfDawn() },
+            { name: 'Ocean Maelstrom', icon: '🌀', play: () => this.game.audio.playMaelstrom() },
+            { name: 'Shark Crunch', icon: '🦈', play: () => this.game.audio.playSharkBite() },
+            { name: 'Resurrection', icon: '🌟', play: () => this.game.audio.playResurrection() },
+            { name: 'Frog Polymorph', icon: '🐸', play: () => this.game.audio.playPolymorphCroak() },
+            { name: 'Photon Laser', icon: '⚡', play: () => this.game.audio.playLaser() },
+            { name: 'Thunderclap', icon: '🌩️', play: () => this.game.audio.playThunder() },
+            { name: 'Kaiju Roar', icon: '🦖', play: () => this.game.audio.playRoar() },
+            { name: 'Duck Quack', icon: '🦆', play: () => this.game.audio.playQuack() },
+            { name: 'Melee Slash', icon: '⚔️', play: () => this.game.audio.playSlash() },
+            { name: 'Recurve Bow', icon: '🏹', play: () => this.game.audio.playBow() },
+            { name: 'Vulcan MG', icon: '🔫', play: () => this.game.audio.playMachineGun() },
+            { name: 'Rocket Launch', icon: '🚀', play: () => this.game.audio.playRocketLaunch() },
+            { name: 'Acid Sizzle', icon: '🧪', play: () => this.game.audio.playSplatter() },
+            { name: 'Magic Chimes', icon: '✨', play: () => this.game.audio.playMagic() },
+            { name: 'Chrono Stasis', icon: '⌛', play: () => this.game.audio.playChronoFreeze() },
+            { name: 'Bldg Collapse', icon: '🏰', play: () => this.game.audio.playBuildingCollapse() }
+        ];
+
+        grid.innerHTML = '';
+        sfxList.forEach(sfx => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.style.cssText = 'display:flex; align-items:center; gap:8px; padding:10px 12px; font-size:0.85rem; justify-content:flex-start;';
+            btn.innerHTML = `<span style="font-size:1.3rem;">${sfx.icon}</span> <span>${sfx.name}</span>`;
+            btn.onclick = () => {
+                this.game.audio.ensureContext();
+                sfx.play();
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => btn.style.transform = '', 100);
+            };
+            grid.appendChild(btn);
+        });
+    }
+
+    populateWeatherConsole() {
+        const container = document.getElementById('weather-controls-content');
+        if (!container) return;
+        const dm = this.game.disasterManager;
+        const curWeather = dm.weather || 'clear';
+        const curTimer = Math.max(0, Math.round((dm.weatherTimer || 0) / 60));
+
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:8px; margin-bottom:14px; border:1px solid rgba(255,255,255,0.1);">
+                <div>
+                    <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Active Global Climate</div>
+                    <div style="font-size:1.1rem; font-weight:700; color:#38bdf8;">${curWeather.toUpperCase()}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.75rem; color:#94a3b8;">Duration Left</div>
+                    <div style="font-size:1.1rem; font-weight:700; color:#facc15;">${curTimer}s</div>
+                </div>
+            </div>
+
+            <h4 style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px;">Change Global Weather</h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:16px;">
+                <button class="btn" id="w-btn-clear" style="padding:10px 8px; font-size:0.8rem;">☀️ Clear Sky</button>
+                <button class="btn" id="w-btn-rain" style="padding:10px 8px; font-size:0.8rem; background:rgba(59,130,246,0.25);">🌧️ Reviving Rain</button>
+                <button class="btn" id="w-btn-snow" style="padding:10px 8px; font-size:0.8rem; background:rgba(147,197,253,0.2);">❄️ Arctic Blizzard</button>
+                <button class="btn" id="w-btn-acid" style="padding:10px 8px; font-size:0.8rem; background:rgba(34,197,94,0.2);">☣️ Toxic Acid</button>
+                <button class="btn" id="w-btn-sand" style="padding:10px 8px; font-size:0.8rem; background:rgba(234,179,8,0.2);">🏜️ Sandstorm</button>
+                <button class="btn" id="w-btn-clone" style="padding:10px 8px; font-size:0.8rem; background:rgba(168,85,247,0.2);">🔮 Clone Rain</button>
+            </div>
+
+            <h4 style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px;">Instant Atmospheric Disasters</h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+                <button class="btn" id="w-btn-tornado" style="padding:10px 8px; font-size:0.8rem;">🌪️ Tornado</button>
+                <button class="btn" id="w-btn-vortex" style="padding:10px 8px; font-size:0.8rem;">🌀 Blizzard Vortex</button>
+                <button class="btn" id="w-btn-storm" style="padding:10px 8px; font-size:0.8rem;">⛈️ Supercell</button>
+                <button class="btn" id="w-btn-meteors" style="padding:10px 8px; font-size:0.8rem;">☄️ Meteor Rain</button>
+                <button class="btn" id="w-btn-whirlpool" style="padding:10px 8px; font-size:0.8rem;">🌀 Maelstrom</button>
+                <button class="btn" id="w-btn-magma" style="padding:10px 8px; font-size:0.8rem;">🌋 Magma Surge</button>
+            </div>
+        `;
+
+        const cam = this.game.renderer.camera;
+        document.getElementById('w-btn-clear').onclick = () => { dm.weather = 'clear'; dm.weatherTimer = 0; this.populateWeatherConsole(); };
+        document.getElementById('w-btn-rain').onclick = () => { dm.startStorm('rain', 1200); this.populateWeatherConsole(); };
+        document.getElementById('w-btn-snow').onclick = () => { dm.startStorm('snow', 1200); this.populateWeatherConsole(); };
+        document.getElementById('w-btn-acid').onclick = () => { dm.startStorm('acid', 1200); this.populateWeatherConsole(); };
+        document.getElementById('w-btn-sand').onclick = () => { dm.startStorm('sandstorm', 1200); this.populateWeatherConsole(); };
+        document.getElementById('w-btn-clone').onclick = () => { dm.triggerCloneRain(1200); this.populateWeatherConsole(); };
+
+        document.getElementById('w-btn-tornado').onclick = () => { dm.spawnTornado(cam.x, cam.y); if (this.game.audio) this.game.audio.playThunder(); };
+        document.getElementById('w-btn-vortex').onclick = () => { dm.triggerBlizzardVortex(cam.x, cam.y, this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio); };
+        document.getElementById('w-btn-storm').onclick = () => { dm.triggerLightningStorm(cam.x, cam.y, this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio); };
+        document.getElementById('w-btn-meteors').onclick = () => { dm.triggerMeteorRain(cam.x, cam.y, this.game.audio); };
+        document.getElementById('w-btn-whirlpool').onclick = () => { dm.spawnWhirlpool(cam.x, cam.y, this.game.audio); };
+        document.getElementById('w-btn-magma').onclick = () => { dm.triggerMagmaSurge(cam.x, cam.y, this.game.world, this.game.particleSystem, this.game.audio); };
+    }
+
+    populateStats() {
+        const container = document.getElementById('stats-analytics-content');
+        if (!container) return;
+
+        const w = this.game.world.width;
+        const h = this.game.world.height;
+        const totalTiles = w * h;
+        const ents = this.game.entityManager.entities;
+        const pop = ents.length;
+
+        let humans = 0, elves = 0, dwarves = 0, orcs = 0, beasts = 0, titans = 0, vehicles = 0, undead = 0;
+        ents.forEach(e => {
+            if (e.species === 'human') humans++;
+            else if (e.species === 'elf') elves++;
+            else if (e.species === 'dwarf') dwarves++;
+            else if (e.species === 'orc') orcs++;
+            else if (['dragon', 'crabzilla', 'kaiju', 'void_titan', 'galaxy_guardian', 'frost_titan', 'colossus_mech', 'golden_dragon', 'space_worm', 'mecha_rex'].includes(e.species)) titans++;
+            else if (['tank', 'warship', 'helicopter', 'starfighter', 'pirate_ship', 'mech'].includes(e.species)) vehicles++;
+            else if (['zombie', 'skeleton', 'demon', 'necromancer'].includes(e.species)) undead++;
+            else beasts++;
+        });
+
+        const kingdomsCount = this.game.entityManager.kingdoms.size;
+        const corpsesCount = this.game.entityManager.corpses.length;
+        const particlesActive = this.game.particleSystem.particles.filter(p => p.active).length;
+
+        // Approximate terrain sampling
+        let waterTiles = 0, landTiles = 0, mountainTiles = 0, lavaTiles = 0, snowTiles = 0, otherTiles = 0;
+        const sampleStep = 8;
+        let samples = 0;
+        for (let y = 0; y < h; y += sampleStep) {
+            for (let x = 0; x < w; x += sampleStep) {
+                samples++;
+                const t = this.game.world.getTile(x, y);
+                if (t === TILES.WATER || t === TILES.DEEP_WATER) waterTiles++;
+                else if (t === TILES.GRASS || t === TILES.SOIL || t === TILES.FOREST) landTiles++;
+                else if (t === TILES.STONE || t === TILES.HIGH_MOUNTAIN) mountainTiles++;
+                else if (t === TILES.LAVA || t === TILES.MAGMA_ROCK) lavaTiles++;
+                else if (t === TILES.SNOW || t === TILES.ICE) snowTiles++;
+                else otherTiles++;
+            }
+        }
+
+        const pct = (val) => Math.round((val / samples) * 100);
+
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+                <div class="stat-card" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:0.75rem; color:#94a3b8;">Total Population</div>
+                    <div style="font-size:1.3rem; font-weight:700; color:#38bdf8;">${pop.toLocaleString()}</div>
+                    <small style="color:#64748b;">${corpsesCount} corpses</small>
+                </div>
+                <div class="stat-card" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:0.75rem; color:#94a3b8;">Sovereign Kingdoms</div>
+                    <div style="font-size:1.3rem; font-weight:700; color:#facc15;">${kingdomsCount}</div>
+                    <small style="color:#64748b;">${this.game.entityManager.worldWar ? 'World War' : (this.game.entityManager.forcePeace ? 'Enforced Peace' : 'Peaceful')}</small>
+                </div>
+                <div class="stat-card" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:0.75rem; color:#94a3b8;">Simulation Speed</div>
+                    <div style="font-size:1.3rem; font-weight:700; color:#4ade80;">${this.game.timeScale}x</div>
+                    <small style="color:#64748b;">${this.game.fps} FPS</small>
+                </div>
+            </div>
+
+            <h4 style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px;">Demographic Census</h4>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:8px; margin-bottom:14px; font-size:0.8rem;">
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🧑 Humans: <strong>${humans}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🧝 Elves: <strong>${elves}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🧔 Dwarves: <strong>${dwarves}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">👹 Orcs: <strong>${orcs}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🐺 Beasts: <strong>${beasts}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🗿 Titans: <strong>${titans}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🚢 Vehicles: <strong>${vehicles}</strong></div>
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px;">🧟 Undead: <strong>${undead}</strong></div>
+            </div>
+
+            <h4 style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px;">Planetary Geography & Land Coverage</h4>
+            <div style="display:flex; flex-direction:column; gap:6px; font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between;"><span>🌊 Water & Oceans:</span> <strong>${pct(waterTiles)}%</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>🌱 Grass & Forests:</span> <strong>${pct(landTiles)}%</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>⛰️ Mountains & Stone:</span> <strong>${pct(mountainTiles)}%</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>❄️ Snow & Glaciers:</span> <strong>${pct(snowTiles)}%</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>🔥 Lava & Magma:</span> <strong>${pct(lavaTiles)}%</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>🔮 Minerals & Biomes:</span> <strong>${pct(otherTiles)}%</strong></div>
+            </div>
+
+            <div style="margin-top:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; font-size:0.75rem; color:#94a3b8; display:flex; justify-content:space-between;">
+                <span>Grid: ${w}x${h} (${totalTiles.toLocaleString()} tiles)</span>
+                <span>Particles: ${particlesActive} / ${this.game.particleSystem.maxParticles}</span>
+            </div>
+        `;
     }
 
     refreshSaveSlots() {

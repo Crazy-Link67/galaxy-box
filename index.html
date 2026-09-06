@@ -684,6 +684,54 @@
         </div>
     </div>
 
+    <!-- 8. Procedural SFX Soundboard Modal -->
+    <div class="modal-overlay" id="modal-soundboard">
+        <div class="modal-card" style="max-width: 620px;">
+            <div class="modal-header">
+                <h2>🔊 Procedural Web Audio Soundboard</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                    Test and trigger real-time Web Audio API procedural synthesizers (oscillators, noise generators, biquad filters). Zero audio files required!
+                </p>
+                <div id="soundboard-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 8px; max-height: 380px; overflow-y: auto;">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. Atmosphere & Weather Console Modal -->
+    <div class="modal-overlay" id="modal-weather">
+        <div class="modal-card" style="max-width: 580px;">
+            <div class="modal-header">
+                <h2>🌦️ Atmosphere & Climate Console</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="weather-controls-content">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. Cosmic Analytics & Demographics Modal -->
+    <div class="modal-overlay" id="modal-stats">
+        <div class="modal-card" style="max-width: 620px;">
+            <div class="modal-header">
+                <h2>📊 Cosmic Analytics & Demographics</h2>
+                <button class="close-btn modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="stats-analytics-content">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Game Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>

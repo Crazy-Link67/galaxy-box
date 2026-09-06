@@ -825,6 +825,316 @@ class DuckBarrage {
     }
 }
 
+class AntimatterMissile {
+    constructor(targetX, targetY) {
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.x = targetX + (Math.random() - 0.5) * 60;
+        this.y = -150;
+        this.speed = 4.5;
+        this.active = true;
+        this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+        this.animTimer = 0;
+    }
+
+    update(world, entityManager, disasterManager, particleSystem, audio) {
+        this.animTimer++;
+        const dx = this.targetX - this.x;
+        const dy = this.targetY - this.y;
+        const dist = Math.hypot(dx, dy);
+
+        this.angle = Math.atan2(dy, dx);
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.speed = Math.min(12.0, this.speed + 0.25);
+
+        if (particleSystem) {
+            const exX = this.x - Math.cos(this.angle) * 10;
+            const exY = this.y - Math.sin(this.angle) * 10;
+            particleSystem.spawn(exX, exY, -Math.cos(this.angle) * 2, -Math.sin(this.angle) * 2, 3, '#a855f7', 20, 'stardust');
+            particleSystem.spawn(exX, exY, (Math.random() - 0.5), (Math.random() - 0.5), 2.5, '#6366f1', 15, 'stardust');
+        }
+
+        if (dist <= Math.max(12, this.speed * 1.5) || (this.y >= this.targetY && Math.abs(dx) <= 15)) {
+            this.active = false;
+            disasterManager.triggerAntimatter(this.targetX, this.targetY, world, entityManager, particleSystem, audio);
+        }
+    }
+
+    render(ctx) {
+        ctx.save();
+        const tx = Math.floor(this.targetX);
+        const ty = Math.floor(this.targetY);
+        const pulse = Math.sin(this.animTimer * 0.2) * 4;
+        const r = Math.floor(20 + pulse);
+
+        // Purple targeting ring
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(tx - r, ty - r, r * 2, r * 2);
+        ctx.fillStyle = '#c084fc';
+        ctx.fillRect(tx - 1, ty - 1, 2, 2);
+
+        // Missile body
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + Math.PI / 2);
+        ctx.fillStyle = '#312e81';
+        ctx.fillRect(-3, -10, 6, 20);
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(-2, -12, 4, 3);
+        ctx.fillStyle = '#6366f1';
+        ctx.fillRect(-4, 6, 8, 4);
+        ctx.restore();
+    }
+}
+
+class OrbitalDeathRay {
+    constructor(x, y, duration = 180) {
+        this.x = x;
+        this.y = y;
+        this.targetX = x;
+        this.targetY = y;
+        this.life = duration;
+        this.maxLife = duration;
+        this.active = true;
+    }
+
+    update(world, entityManager, particleSystem, audio) {
+        this.life--;
+        if (this.life <= 0) {
+            this.active = false;
+            return;
+        }
+
+        // Smoothly steer towards target
+        this.x += (this.targetX - this.x) * 0.12;
+        this.y += (this.targetY - this.y) * 0.12;
+
+        if (this.life % 25 === 0 && audio) {
+            if (typeof audio.playHammerOfDawn === 'function') audio.playHammerOfDawn();
+            else if (typeof audio.playLaser === 'function') audio.playLaser();
+        }
+
+        if (window.game && Math.random() < 0.3) {
+            window.game.shakeCamera(6, 8);
+        }
+
+        // Searing orbital beam particles
+        if (particleSystem) {
+            for (let ly = -200; ly < this.y; ly += 10) {
+                particleSystem.spawn(this.x + (Math.random() - 0.5) * 6, ly, 0, 8, 2.5, '#f59e0b', 10, 'spark');
+                particleSystem.spawn(this.x + (Math.random() - 0.5) * 3, ly, 0, 9, 2, '#ffffff', 8, 'spark');
+            }
+            particleSystem.burst(this.x, this.y, 12, ['#ffffff', '#facc15', '#ef4444'], 2, 6, 1.5, 3, 'fire');
+        }
+
+        // Carve burning trenches in radius 7
+        const r = 7;
+        for (let dy = -r; dy <= r; dy++) {
+            for (let dx = -r; dx <= r; dx++) {
+                if (dx * dx + dy * dy <= r * r) {
+                    const tx = Math.floor(this.x + dx);
+                    const ty = Math.floor(this.y + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (dx * dx + dy * dy < 9) {
+                            world.setTile(tx, ty, TILES.LAVA);
+                        } else if (Math.random() < 0.4) {
+                            world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                            world.ignite(tx, ty, 100);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Incinerate entities
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - this.x, ent.y - this.y) <= 12) {
+                ent.takeDamage(18);
+            }
+        }
+    }
+
+    render(ctx) {
+        ctx.save();
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
+
+        // Sweeping golden searing beam
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+        ctx.fillRect(cx - 8, -500, 16, cy + 500);
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.8)';
+        ctx.fillRect(cx - 3, -500, 6, cy + 500);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 1, -500, 2, cy + 500);
+
+        // Ground searing flare
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(cx - 12, cy - 3, 24, 6);
+        ctx.fillRect(cx - 3, cy - 12, 6, 24);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 6, cy - 2, 12, 4);
+
+        ctx.restore();
+    }
+}
+
+class Whirlpool {
+    constructor(x, y, duration = 500) {
+        this.x = x;
+        this.y = y;
+        this.life = duration;
+        this.maxLife = duration;
+        this.radius = 24;
+        this.active = true;
+    }
+
+    update(world, entityManager, particleSystem, audio) {
+        this.life--;
+        if (this.life <= 0) {
+            this.active = false;
+            return;
+        }
+
+        if (this.life % 60 === 0 && audio && typeof audio.playMaelstrom === 'function') {
+            audio.playMaelstrom();
+        }
+
+        // Swirling water particles
+        if (particleSystem) {
+            for (let i = 0; i < 4; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 4 + Math.random() * this.radius;
+                const px = this.x + Math.cos(angle) * dist;
+                const py = this.y + Math.sin(angle) * dist;
+                const vx = -Math.sin(angle) * 2.2 - Math.cos(angle) * 1.2;
+                const vy = Math.cos(angle) * 2.2 - Math.sin(angle) * 1.2;
+                particleSystem.spawn(px, py, vx, vy, 1.5, Math.random() < 0.5 ? '#38bdf8' : '#ffffff', 14, 'water');
+            }
+        }
+
+        // Deepen and erode water tiles
+        const rad = Math.floor(this.radius);
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 > rad * rad) continue;
+                const tx = Math.floor(this.x + dx);
+                const ty = Math.floor(this.y + dy);
+                if (!world.inBounds(tx, ty)) continue;
+
+                const t = world.getTile(tx, ty);
+                if (t === TILES.WATER && dist2 < 36 && Math.random() < 0.05) {
+                    world.setTile(tx, ty, TILES.DEEP_WATER);
+                } else if ((t === TILES.SAND || t === TILES.SOIL) && Math.random() < 0.04) {
+                    world.setTile(tx, ty, TILES.WATER);
+                }
+            }
+        }
+
+        // Drag entities & ships inward
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(this.x - ent.x, this.y - ent.y);
+            if (dist < this.radius) {
+                const angle = Math.atan2(this.y - ent.y, this.x - ent.x);
+                ent.x += Math.cos(angle) * 1.4;
+                ent.y += Math.sin(angle) * 1.4;
+                if (dist < 5) {
+                    ent.takeDamage(8);
+                }
+            }
+        }
+    }
+
+    render(ctx) {
+        ctx.save();
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
+        ctx.fillStyle = '#0369a1';
+        // Stepped pixel swirling spiral
+        for (let a = 0; a < 6; a++) {
+            const ang = Date.now() * 0.006 + a * (Math.PI / 3);
+            const r1 = 6 + (a % 3) * 3;
+            const r2 = 14 + (a % 3) * 4;
+            ctx.fillRect(Math.floor(cx + Math.cos(ang) * r1), Math.floor(cy + Math.sin(ang) * r1 * 0.6), 2, 2);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(Math.floor(cx + Math.cos(ang + 0.3) * r2), Math.floor(cy + Math.sin(ang + 0.3) * r2 * 0.6), 2, 2);
+        }
+        // Center vortex void
+        ctx.fillStyle = '#082f49';
+        ctx.fillRect(cx - 2, cy - 2, 4, 4);
+        ctx.restore();
+    }
+}
+
+class ToxicGasCloud {
+    constructor(x, y, duration = 350) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.life = duration;
+        this.maxLife = duration;
+        this.radius = 20;
+        this.active = true;
+    }
+
+    update(world, entityManager, particleSystem) {
+        this.life--;
+        if (this.life <= 0) {
+            this.active = false;
+            return;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (particleSystem && Math.random() < 0.6) {
+            const ang = Math.random() * Math.PI * 2;
+            const d = Math.random() * this.radius;
+            particleSystem.spawn(this.x + Math.cos(ang) * d, this.y + Math.sin(ang) * d, (Math.random() - 0.5) * 0.3, -0.3, 2.5, '#84cc16', 25, 'acid');
+        }
+
+        // Wither vegetation and poison creatures
+        const rad = Math.floor(this.radius);
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad && Math.random() < 0.03) {
+                    const tx = Math.floor(this.x + dx);
+                    const ty = Math.floor(this.y + dy);
+                    if (world.inBounds(tx, ty)) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.FOREST || t === TILES.GRASS) {
+                            world.setTile(tx, ty, TILES.ASH);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - this.x, ent.y - this.y) < this.radius) {
+                ent.takeDamage(2);
+                ent.applyInfection();
+            }
+        }
+    }
+
+    render(ctx) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(132, 204, 22, 0.25)';
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
+        ctx.fillRect(cx - 14, cy - 10, 28, 20);
+        ctx.fillRect(cx - 10, cy - 14, 20, 28);
+        ctx.restore();
+    }
+}
+
 class DisasterManager {
     constructor() {
         this.blackHoles = [];
@@ -837,6 +1147,10 @@ class DisasterManager {
         this.ionCannons = [];
         this.nukeMissiles = [];
         this.duckBarrages = [];
+        this.antimatterMissiles = [];
+        this.orbitalBeams = [];
+        this.toxicClouds = [];
+        this.whirlpools = [];
         this.activeStorm = null; // rain, snow, acid, sandstorm, clone_rain
         this.stormTimer = 0;
         this.nuclearFlashTimer = 0;
@@ -928,6 +1242,34 @@ class DisasterManager {
             const db = this.duckBarrages[i];
             db.update(world, entityManager, particleSystem, audio, this);
             if (!db.active) this.duckBarrages.splice(i, 1);
+        }
+
+        // Update Antimatter Missiles
+        for (let i = this.antimatterMissiles.length - 1; i >= 0; i--) {
+            const am = this.antimatterMissiles[i];
+            am.update(world, entityManager, this, particleSystem, audio);
+            if (!am.active) this.antimatterMissiles.splice(i, 1);
+        }
+
+        // Update Orbital Death Ray Beams
+        for (let i = this.orbitalBeams.length - 1; i >= 0; i--) {
+            const ob = this.orbitalBeams[i];
+            ob.update(world, entityManager, particleSystem, audio);
+            if (!ob.active) this.orbitalBeams.splice(i, 1);
+        }
+
+        // Update Toxic Clouds
+        for (let i = this.toxicClouds.length - 1; i >= 0; i--) {
+            const tc = this.toxicClouds[i];
+            tc.update(world, entityManager, particleSystem);
+            if (!tc.active) this.toxicClouds.splice(i, 1);
+        }
+
+        // Update Whirlpools
+        for (let i = this.whirlpools.length - 1; i >= 0; i--) {
+            const wp = this.whirlpools[i];
+            wp.update(world, entityManager, particleSystem, audio);
+            if (!wp.active) this.whirlpools.splice(i, 1);
         }
 
         // Weather Storms
@@ -2255,6 +2597,253 @@ class DisasterManager {
         }
     }
 
+    // Antimatter Guided Missile
+    triggerAntimatterMissile(targetX, targetY, audio = null) {
+        if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        this.antimatterMissiles.push(new AntimatterMissile(targetX, targetY));
+    }
+
+    // Orbital Death Ray / Hammer of Dawn
+    triggerOrbitalStrike(targetX, targetY, audio = null) {
+        if (audio && typeof audio.playHammerOfDawn === 'function') audio.playHammerOfDawn();
+        else if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        this.orbitalBeams.push(new OrbitalDeathRay(targetX, targetY));
+    }
+
+    // EMP Shockwave Blast
+    triggerEmpBlast(cx, cy, world, entityManager, particleSystem, audio = null) {
+        if (audio && typeof audio.playEmpSound === 'function') audio.playEmpSound();
+        else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 25);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 60, ['#00e5ff', '#38bdf8', '#ffffff'], 3, 9, 2, 5, 'spark');
+            const sw = particleSystem.spawn(cx, cy, 0, 0, 8, '#00e5ff', 50, 'shockwave', 0, 1);
+            if (sw) sw.extra = 80;
+        }
+        this.forcefields = [];
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (!ent.active) continue;
+            const dist = Math.hypot(ent.x - cx, ent.y - cy);
+            if (dist < 60) {
+                if (ent.isVehicle || ent.type === 'mech' || ent.type === 'colossus_mech' || ent.type === 'tank' || ent.type === 'helicopter' || ent.type === 'starfighter') {
+                    ent.frozen = 300;
+                }
+                ent.takeDamage(45);
+            }
+        }
+    }
+
+    // Hellfire Missile Salvo
+    triggerHellfireMissile(cx, cy, world, entityManager, particleSystem, audio = null) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+        for (let i = 0; i < 6; i++) {
+            setTimeout(() => {
+                const ox = (Math.random() - 0.5) * 45;
+                const oy = (Math.random() - 0.5) * 45;
+                this.triggerExplosion(cx + ox, cy + oy, 16, 1.4, world, entityManager, particleSystem, audio);
+                for (let fy = -5; fy <= 5; fy++) {
+                    for (let fx = -5; fx <= 5; fx++) {
+                        const tx = Math.floor(cx + ox + fx);
+                        const ty = Math.floor(cy + oy + fy);
+                        if (world.inBounds(tx, ty) && Math.random() < 0.3) {
+                            world.ignite(tx, ty, 120);
+                        }
+                    }
+                }
+            }, i * 90);
+        }
+    }
+
+    // Tsar Bomba Multistage Detonation
+    triggerTsarBomba(cx, cy, world, entityManager, particleSystem, audio = null) {
+        if (audio && typeof audio.playWorldEnderNuke === 'function') audio.playWorldEnderNuke();
+        else if (audio && typeof audio.playNuke === 'function') audio.playNuke();
+        this.nuclearFlashTimer = 45;
+        if (window.game) window.game.shakeCamera(40, 75);
+        if (particleSystem) {
+            particleSystem.nukeMushroom(cx, cy, 3.5);
+            particleSystem.burst(cx, cy, 400, ['#ffffff', '#fef08a', '#f97316', '#ef4444'], 5, 22, 2, 8, 'fire');
+        }
+        const radius = 80;
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const d2 = dx * dx + dy * dy;
+                if (d2 <= radius * radius) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (d2 < 600) world.setTile(tx, ty, TILES.VOID);
+                        else if (d2 < 2000) world.setTile(tx, ty, TILES.FALLOUT);
+                        else if (d2 < 4500) world.setTile(tx, ty, Math.random() < 0.4 ? TILES.MAGMA_ROCK : TILES.ASH);
+                        else if (Math.random() < 0.3) world.ignite(tx, ty, 150);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= radius * 1.3) {
+                ent.takeDamage(3500);
+            }
+        }
+        if (entityManager && typeof entityManager.damageBuildingsInRadius === 'function') {
+            entityManager.damageBuildingsInRadius(cx, cy, radius * 1.1, 5000, world, particleSystem, audio);
+        }
+    }
+
+    // Drifting Toxic Gas Cloud
+    triggerToxicCloud(cx, cy) {
+        this.toxicClouds.push(new ToxicGasCloud(cx, cy));
+    }
+
+    // Corrosive Acid Missile
+    triggerAcidMissile(cx, cy, world, entityManager, particleSystem, audio = null) {
+        if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+        if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 25);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 90, ['#84cc16', '#4ade80', '#15803d', '#ffffff'], 2, 6, 2, 4, 'acid');
+        }
+        const rad = 25;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.ACID);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= rad * 1.2) {
+                ent.takeDamage(220);
+                ent.infected = true;
+            }
+        }
+    }
+
+    // Continuous Meteor Rain
+    triggerMeteorRain(world) {
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const rx = Math.random() * (world ? world.width : 200);
+                const ry = Math.random() * (world ? world.height : 200);
+                this.spawnMeteor(rx, ry);
+            }, i * 180);
+        }
+    }
+
+    // Global Lightning Storm
+    triggerLightningStorm(world, entityManager, particleSystem, audio) {
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => {
+                const rx = Math.random() * (world ? world.width : 200);
+                const ry = Math.random() * (world ? world.height : 200);
+                this.triggerLightning(rx, ry, world, entityManager, particleSystem, audio);
+            }, i * 220);
+        }
+    }
+
+    // Glacial Blizzard Vortex
+    triggerBlizzardVortex(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 40, ['#a5f3fc', '#ffffff', '#38bdf8'], 2, 6, 2, 4, 'snow');
+        }
+        const rad = 28;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty)) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.WATER || t === TILES.DEEP_WATER) world.setTile(tx, ty, TILES.ICE);
+                        else if (t === TILES.GRASS || t === TILES.SOIL) world.setTile(tx, ty, TILES.SNOW);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < entityManager.entities.length; i++) {
+            const ent = entityManager.entities[i];
+            if (ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= rad) {
+                ent.frozen = 250;
+            }
+        }
+    }
+
+    // Desert Sand Typhoon
+    triggerSandTyphoon(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        this.tornadoes.push(new Tornado(cx, cy, false));
+        const rad = 30;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (Math.random() < 0.5) world.setTile(tx, ty, TILES.SAND);
+                        else if (Math.random() < 0.15) world.setTile(tx, ty, TILES.QUICKSAND);
+                    }
+                }
+            }
+        }
+    }
+
+    // Subterranean Magma Surge
+    triggerMagmaSurge(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+        if (window.game && window.game.shakeCamera) window.game.shakeCamera(16, 25);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 60, ['#ef4444', '#f97316', '#ff5722'], 2, 7, 2, 5, 'fire');
+        }
+        const rad = 16;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (dx * dx + dy * dy < 25) world.setTile(tx, ty, TILES.LAVA);
+                        else if (Math.random() < 0.5) world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                    }
+                }
+            }
+        }
+    }
+
+    // Alien Spore Bloom
+    triggerSporeBloom(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 45, ['#a855f7', '#c084fc', '#e879f9', '#ffffff'], 2, 6, 2, 4, 'stardust');
+        }
+        const rad = 20;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx);
+                    const ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (Math.random() < 0.6) world.setTile(tx, ty, TILES.MUSHROOM_SPORE);
+                    }
+                }
+            }
+        }
+    }
+
+    // Oceanic Whirlpool Maelstrom
+    spawnWhirlpool(cx, cy, audio = null) {
+        if (audio && typeof audio.playMaelstrom === 'function') audio.playMaelstrom();
+        const wp = new Whirlpool(cx, cy);
+        this.whirlpools.push(wp);
+        return wp;
+    }
+
     clear() {
         this.blackHoles = [];
         this.tornadoes = [];
@@ -2266,6 +2855,10 @@ class DisasterManager {
         this.ionCannons = [];
         this.nukeMissiles = [];
         this.duckBarrages = [];
+        this.antimatterMissiles = [];
+        this.orbitalBeams = [];
+        this.toxicClouds = [];
+        this.whirlpools = [];
         this.activeStorm = null;
         this.stormTimer = 0;
         this.nuclearFlashTimer = 0;

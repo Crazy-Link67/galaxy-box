@@ -477,6 +477,20 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerVoidImplosion(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'supernova_implosion') {
             if (isFirstClick) this.disasterManager.triggerSupernovaCollapse(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'antimatter_missile') {
+            if (isFirstClick) this.disasterManager.triggerAntimatterMissile(wx, wy, this.audio);
+        } else if (tool === 'orbital_strike') {
+            if (isFirstClick) this.disasterManager.triggerOrbitalStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'emp_blast') {
+            if (isFirstClick) this.disasterManager.triggerEmpBlast(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'hellfire_missile') {
+            if (isFirstClick) this.disasterManager.triggerHellfireMissile(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'tsar_bomba') {
+            if (isFirstClick) this.disasterManager.triggerTsarBomba(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'toxic_cloud') {
+            if (isFirstClick) this.disasterManager.triggerToxicCloud(wx, wy, this.audio);
+        } else if (tool === 'acid_missile') {
+            if (isFirstClick) this.disasterManager.triggerAcidMissile(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         }
 
         // 2. NATURE & DISASTERS
@@ -502,6 +516,20 @@ class Game {
             if (isFirstClick) this.disasterManager.spawnFireTornado(wx, wy, this.audio);
         } else if (tool === 'meteor_shower') {
             if (isFirstClick) this.disasterManager.triggerMeteorShower(wx, wy, this.audio);
+        } else if (tool === 'meteor_rain') {
+            if (isFirstClick) this.disasterManager.triggerMeteorRain(wx, wy, this.audio);
+        } else if (tool === 'lightning_storm') {
+            if (isFirstClick) this.disasterManager.triggerLightningStorm(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'blizzard_vortex') {
+            if (isFirstClick) this.disasterManager.triggerBlizzardVortex(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'sand_typhoon') {
+            if (isFirstClick) this.disasterManager.triggerSandTyphoon(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'magma_surge') {
+            if (isFirstClick) this.disasterManager.triggerMagmaSurge(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'spore_bloom') {
+            if (isFirstClick) this.disasterManager.triggerSporeBloom(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'whirlpool') {
+            if (isFirstClick) this.disasterManager.spawnWhirlpool(wx, wy, this.audio);
         } else if (tool === 'earthquake') {
             if (isFirstClick) this.disasterManager.triggerEarthquake(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'lightning') {
@@ -544,6 +572,16 @@ class Game {
         else if (tool === 'stardust') this.world.applyBrush(wx, wy, bSize, TILES.STARDUST);
         else if (tool === 'magma_rock') this.world.applyBrush(wx, wy, bSize, TILES.MAGMA_ROCK);
         else if (tool === 'bioluminescent_moss') this.world.applyBrush(wx, wy, bSize, TILES.BIOLUMINESCENT_MOSS);
+        else if (tool === 'gold_ore') this.world.applyBrush(wx, wy, bSize, TILES.GOLD_ORE);
+        else if (tool === 'mushroom_spore') this.world.applyBrush(wx, wy, bSize, TILES.MUSHROOM_SPORE);
+        else if (tool === 'honey_comb') this.world.applyBrush(wx, wy, bSize, TILES.HONEY_COMB);
+        else if (tool === 'holy_ground') this.world.applyBrush(wx, wy, bSize, TILES.HOLY_GROUND);
+        else if (tool === 'blood_river') this.world.applyBrush(wx, wy, bSize, TILES.BLOOD_RIVER);
+        else if (tool === 'poison_swamp') this.world.applyBrush(wx, wy, bSize, TILES.POISON_SWAMP);
+        else if (tool === 'biome_savanna') this.world.applyBrush(wx, wy, bSize, 'biome_savanna');
+        else if (tool === 'biome_tundra') this.world.applyBrush(wx, wy, bSize, 'biome_tundra');
+        else if (tool === 'biome_jungle') this.world.applyBrush(wx, wy, bSize, 'biome_jungle');
+        else if (tool === 'deforest') this.world.applyBrush(wx, wy, bSize, 'deforest');
         else if (tool === 'quicksand') this.world.applyBrush(wx, wy, bSize, TILES.QUICKSAND);
         else if (tool === 'level_terrain') {
             const centerTile = this.world.getTile(tx, ty);
@@ -592,6 +630,87 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerWarHorn(this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'bounty_blessing') {
             if (isFirstClick) this.disasterManager.triggerBountyBlessing(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'resurrection_ray') {
+            if (isFirstClick) this.entityManager.resurrectCorpses(wx, wy, bSize * 6 + 20, this.particleSystem, this.audio);
+        } else if (tool === 'invisibility') {
+            if (isFirstClick) {
+                for (const ent of this.entityManager.entities) {
+                    if (Math.hypot(ent.x - wx, ent.y - wy) < bSize * 6 + 15) {
+                        ent.invisibleTimer = 900;
+                        this.particleSystem.burst(ent.x, ent.y, 8, ['#94a3b8', '#ffffff'], 0.8, 2, 1, 2);
+                    }
+                }
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'divine_smite') {
+            if (isFirstClick) {
+                const ent = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (ent && Math.hypot(ent.x - wx, ent.y - wy) < 20) {
+                    ent.takeDamage(9999, 'divine', this.particleSystem, this.audio);
+                    this.particleSystem.burst(wx, wy, 20, ['#fef08a', '#eab308', '#ffffff'], 2, 5, 2, 4);
+                    if (this.audio) this.audio.playHammerOfDawn();
+                }
+            }
+        } else if (tool === 'curse_frog') {
+            if (isFirstClick) {
+                const ent = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (ent && Math.hypot(ent.x - wx, ent.y - wy) < 20) {
+                    this.entityManager.polymorph(ent, 'frog', this.particleSystem, this.audio);
+                }
+            }
+        } else if (tool === 'speed_boost') {
+            if (isFirstClick) {
+                for (const ent of this.entityManager.entities) {
+                    if (Math.hypot(ent.x - wx, ent.y - wy) < bSize * 6 + 15) {
+                        ent.speedMultiplier = 3.0;
+                        ent.overclocked = 600;
+                        this.particleSystem.burst(ent.x, ent.y, 10, ['#38bdf8', '#00f0ff'], 1.5, 4, 1, 2);
+                    }
+                }
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'giant_growth') {
+            if (isFirstClick) {
+                const ent = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (ent && Math.hypot(ent.x - wx, ent.y - wy) < 20) {
+                    ent.scale = Math.min(6.0, ent.scale * 2.2);
+                    ent.maxHp *= 3;
+                    ent.hp = ent.maxHp;
+                    ent.attack *= 2;
+                    this.particleSystem.burst(ent.x, ent.y, 25, ['#22c55e', '#eab308'], 2, 5, 2, 4);
+                    if (this.audio) this.audio.playRoar();
+                }
+            }
+        } else if (tool === 'equip_plasma_rifle') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'plasma_rifle');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#00e5ff', '#38bdf8'], 1.2, 3.5, 1, 2);
+            }
+        } else if (tool === 'equip_energy_shield') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'energy_shield');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#38bdf8', '#818cf8'], 1.2, 3.5, 1, 2);
+            }
+        } else if (tool === 'equip_poison_dagger') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'poison_dagger');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#22c55e', '#a3e635'], 1.2, 3.5, 1, 2);
+            }
+        } else if (tool === 'equip_gravity_hammer') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'gravity_hammer');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#8b5cf6', '#c084fc'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_storm_staff') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'storm_staff');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#38bdf8', '#facc15'], 1.2, 3.5, 1, 2);
+            }
+        } else if (tool === 'equip_grenade_launcher') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'grenade_launcher');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#f97316', '#ef4444'], 1.2, 3.5, 1, 2);
+            }
         } else if (tool === 'equip_thunder_hammer') {
             if (isFirstClick) {
                 const ent = this.entityManager.equipNearest(wx, wy, 'thunder_hammer');
@@ -729,15 +848,23 @@ class Game {
                 'crabzilla', 'kaiju', 'phoenix', 'kraken', 'hydra', 'frost_titan',
                 'galaxy_guardian', 'tank', 'warship', 'helicopter', 'starfighter',
                 'colossus_mech', 'seraph_angel', 'dune_leviathan', 'vampire_lord', 'void_titan', 'evermean',
-                'duck', 'crystal_golem', 'shadow_assassin'
+                'duck', 'crystal_golem', 'shadow_assassin',
+                'frog', 'cyber_ninja', 'laser_shark', 'frost_wolf', 'sand_scorpion', 'necromancer',
+                'valkyrie', 'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);
                 this.particleSystem.burst(wx, wy, 12, ['#ffffff', '#a855f7', '#38bdf8'], 1.5, 4, 1.5, 3);
                 if (this.audio) this.audio.playCreatureSound(tool);
 
-                // Auto possess colossal bosses, dragons, mechs & vehicles for instant direct control action!
-                if (['crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter', 'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean', 'duck', 'crystal_golem', 'shadow_assassin'].includes(tool)) {
+                // Auto possess colossal bosses, dragons, mechs, titans, beasts & vehicles for instant direct control action!
+                const autoPossessList = [
+                    'crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter', 
+                    'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean', 'duck', 'crystal_golem', 
+                    'shadow_assassin', 'cyber_ninja', 'laser_shark', 'mecha_rex', 'golden_dragon', 'space_worm', 
+                    'pirate_ship', 'valkyrie', 'gargoyle', 'necromancer', 'frost_wolf', 'sand_scorpion', 'frog'
+                ];
+                if (autoPossessList.includes(tool)) {
                     this.possess(ent);
                 }
             }

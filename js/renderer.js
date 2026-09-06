@@ -113,6 +113,26 @@ class Renderer {
         for (let i = 0; i < disasterManager.nukeMissiles.length; i++) {
             disasterManager.nukeMissiles[i].render(ctx);
         }
+        if (disasterManager.antimatterMissiles) {
+            for (let i = 0; i < disasterManager.antimatterMissiles.length; i++) {
+                disasterManager.antimatterMissiles[i].render(ctx);
+            }
+        }
+        if (disasterManager.orbitalBeams) {
+            for (let i = 0; i < disasterManager.orbitalBeams.length; i++) {
+                disasterManager.orbitalBeams[i].render(ctx);
+            }
+        }
+        if (disasterManager.whirlpools) {
+            for (let i = 0; i < disasterManager.whirlpools.length; i++) {
+                disasterManager.whirlpools[i].render(ctx);
+            }
+        }
+        if (disasterManager.toxicClouds) {
+            for (let i = 0; i < disasterManager.toxicClouds.length; i++) {
+                disasterManager.toxicClouds[i].render(ctx);
+            }
+        }
 
         // 6.5. Render Corpses & Remains
         const showCorpses = !(typeof window !== 'undefined' && window.game && window.game.settings && window.game.settings.corpses === false);
@@ -291,6 +311,37 @@ class Renderer {
                             r = 185 - varOffset + Math.sin(this.animTime * 1.5 + y * 0.4) * 8;
                             g = 145 - varOffset;
                             b = 85 - varOffset;
+                            break;
+                        case TILES.MUSHROOM_SPORE:
+                            r = 168 - varOffset + Math.sin(this.animTime * 2 + (x + y) * 0.2) * 20;
+                            g = 85 - varOffset;
+                            b = 247 - varOffset;
+                            break;
+                        case TILES.HONEY_COMB:
+                            r = 245 - varOffset;
+                            g = 158 - varOffset;
+                            b = 11;
+                            break;
+                        case TILES.GOLD_ORE:
+                            r = 234 - varOffset;
+                            g = 179 - varOffset;
+                            b = 8;
+                            if ((x * 13 + y * 7) % 5 === 0) { r = 255; g = 240; b = 150; }
+                            break;
+                        case TILES.POISON_SWAMP:
+                            r = 139 + Math.sin(this.animTime * 3 + x * 0.2) * 25;
+                            g = 92 + waterWave * 0.5;
+                            b = 246;
+                            break;
+                        case TILES.HOLY_GROUND:
+                            r = 254;
+                            g = 240 - varOffset;
+                            b = 138 - varOffset + Math.sin(this.animTime * 4 + (x + y) * 0.3) * 25;
+                            break;
+                        case TILES.BLOOD_RIVER:
+                            r = 170 + waterWave;
+                            g = 20;
+                            b = 20;
                             break;
                         default:
                             r = 0; g = 0; b = 0;
@@ -1443,6 +1494,45 @@ class Renderer {
             else if (ent.type === 'shadow_assassin') {
                 this.renderShadowAssassin(ctx, ent, px, py, size);
             }
+            else if (ent.type === 'frog') {
+                this.renderFrog(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'cyber_ninja') {
+                this.renderCyberNinja(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'laser_shark') {
+                this.renderLaserShark(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'frost_wolf') {
+                this.renderFrostWolf(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'sand_scorpion') {
+                this.renderSandScorpion(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'necromancer') {
+                this.renderNecromancer(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'valkyrie') {
+                this.renderValkyrie(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'gargoyle') {
+                this.renderGargoyle(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'mecha_rex') {
+                this.renderMechaRex(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'golden_dragon') {
+                this.renderGoldenDragon(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'space_worm') {
+                this.renderSpaceWorm(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'goblin') {
+                this.renderGoblin(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'pirate_ship') {
+                this.renderPirateShip(ctx, ent, px, py, size);
+            }
             else if (ent.bodyParts || (ent.customData && ent.customData.bodyParts)) {
                 this.renderCustomModularCreature(ctx, ent, px, py, size);
             }
@@ -1607,6 +1697,71 @@ class Renderer {
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(-0.5, -0.5, 1, 1);
                 ctx.restore();
+            } else if (ent.weapon === 'plasma_rifle') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(ent.vx < 0 ? -6 : 0, -2, 6, 3.5);
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(ent.vx < 0 ? -8 : 6, -1.5, 2.5, 1.5);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(ent.vx < 0 ? -4 : 2, -1, 3, 1);
+                ctx.restore();
+            } else if (ent.weapon === 'energy_shield') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.6 : size * 0.6), py);
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+                ctx.fillRect(-2, -size * 0.8, 4, size * 1.6);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(-2, -size * 0.8, 4, size * 1.6);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-0.5, -1, 1, 2);
+                ctx.restore();
+            } else if (ent.weapon === 'poison_dagger') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.6 : size * 0.6), py);
+                const slash = Math.sin(this.animTime * 15) * 0.4;
+                ctx.rotate(slash * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#14532d';
+                ctx.fillRect(-0.6, -size * 0.8, 1.2, size * 0.9);
+                ctx.fillStyle = '#84cc16';
+                ctx.fillRect(-0.4, -size * 0.9, 0.8, size * 0.5);
+                ctx.fillStyle = '#4ade80';
+                ctx.fillRect(-1, 0, 2, 1);
+                ctx.restore();
+            } else if (ent.weapon === 'gravity_hammer') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slam = ent.attackCooldown > 10 ? Math.sin(this.animTime * 18) * 0.8 : 0.2;
+                ctx.rotate(slam * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#312e81';
+                ctx.fillRect(-0.8, -size * 0.3, 1.6, size * 1.6);
+                ctx.fillStyle = '#4c1d95';
+                ctx.fillRect(-3.5, -size * 0.8, 7, 4);
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(-2, -size * 0.7, 4, 2);
+                ctx.restore();
+            } else if (ent.weapon === 'storm_staff') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.6 : size * 0.6), py);
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-0.6, -size * 1.2, 1.2, size * 1.8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-1.5, -size * 1.4, 3, 3);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-0.8, -size * 1.3, 1.6, 1.6);
+                ctx.restore();
+            } else if (ent.weapon === 'grenade_launcher') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(ent.vx < 0 ? -6 : 0, -2.5, 6, 4.5);
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(ent.vx < 0 ? -8 : 6, -2, 2.5, 3.5);
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(ent.vx < 0 ? -3 : 2, -1, 2, 2);
+                ctx.restore();
             }
 
             // Overclock Electric Energy Aura
@@ -1642,17 +1797,19 @@ class Renderer {
                 ctx.closePath();
                 ctx.fill();
 
-                // Direct Control HUD Key Banner
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-                const tagText = ent.type === 'dragon' ? 'DRAGON [WASD / SPACE / Q]' :
-                               (ent.type === 'evermean' ? 'EVERMEAN [WASD / SPACE / Q]' :
-                               (ent.type === 'mech' ? 'MECH [WASD / SPACE / Q]' :
-                               (ent.type === 'colossus_mech' ? 'COLOSSUS [WASD / SPACE / Q]' :
-                               (ent.type === 'seraph_angel' ? 'SERAPH [WASD / SPACE / Q]' :
-                               (ent.type === 'dune_leviathan' ? 'LEVIATHAN [WASD / SPACE / Q]' :
-                               (ent.type === 'vampire_lord' ? 'VAMPIRE [WASD / SPACE / Q]' :
-                               (ent.type === 'void_titan' ? 'VOID TITAN [WASD / SPACE / Q]' :
-                               'HERO [WASD / SPACE]')))))));
+                const tagNames = {
+                    dragon: 'DRAGON', evermean: 'EVERMEAN', mech: 'MECH', colossus_mech: 'COLOSSUS',
+                    seraph_angel: 'SERAPH', dune_leviathan: 'LEVIATHAN', vampire_lord: 'VAMPIRE',
+                    void_titan: 'VOID TITAN', duck: 'EXPLODING DUCK', crystal_golem: 'CRYSTAL GOLEM',
+                    shadow_assassin: 'ASSASSIN', frog: 'FROG', cyber_ninja: 'CYBER NINJA',
+                    laser_shark: 'LASER SHARK', frost_wolf: 'FROST WOLF', sand_scorpion: 'SCORPION',
+                    necromancer: 'NECROMANCER', valkyrie: 'VALKYRIE', gargoyle: 'GARGOYLE',
+                    mecha_rex: 'MECHA-REX', golden_dragon: 'GOLD DRAGON', space_worm: 'VOID WORM',
+                    goblin: 'GOBLIN', pirate_ship: 'GALLEON', crabzilla: 'CRABZILLA', kaiju: 'KAIJU',
+                    tank: 'TANK', warship: 'WARSHIP', helicopter: 'CHOPPER', starfighter: 'STARFIGHTER'
+                };
+                const tagPrefix = tagNames[ent.type] || 'HERO';
+                const tagText = `${tagPrefix} [WASD / SPACE / Q]`;
                 ctx.font = 'bold 3px monospace';
                 const textWidth = ctx.measureText(tagText).width;
                 ctx.fillRect(px - textWidth / 2 - 1, py - size - 12, textWidth + 2, 4.2);
@@ -1962,6 +2119,523 @@ class Renderer {
         ctx.fillStyle = '#475569';
         ctx.fillRect(2.2, 2.5 + bob, 1.2, 1);
         ctx.fillRect(-3.4, 2.5 + bob, 1.2, 1);
+
+        ctx.restore();
+    }
+
+    renderFrog(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const hop = Math.abs(Math.sin(this.animTime * 8)) * 1.5;
+
+        // Folded hind legs
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(-3, 0.5 - hop, 1.5, 2.5);
+        ctx.fillRect(1.5, 0.5 - hop, 1.5, 2.5);
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(-3.5, 2 - hop, 2.5, 1);
+        ctx.fillRect(1, 2 - hop, 2.5, 1);
+
+        // Chubby green body
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(-2.5, -2 - hop, 5, 3.5);
+        ctx.fillStyle = '#86efac';
+        ctx.fillRect(-1.5, -1 - hop, 3, 2);
+
+        // Big bulgy frog eyes
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(-2.5, -3.5 - hop, 2, 2);
+        ctx.fillRect(0.5, -3.5 - hop, 2, 2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-2, -3 - hop, 1.2, 1.2);
+        ctx.fillRect(1, -3 - hop, 1.2, 1.2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-1.8, -3.2 - hop, 0.6, 0.6);
+        ctx.fillRect(1.2, -3.2 - hop, 0.6, 0.6);
+
+        // Tongue snap
+        if (ent.abilityCooldown > 8) {
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillRect(2.5, -1 - hop, 6, 1.2);
+            ctx.fillRect(7.5, -1.5 - hop, 2, 2);
+        }
+
+        ctx.restore();
+    }
+
+    renderCyberNinja(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const step = Math.sin(this.animTime * 12) * 0.8;
+
+        // Dark tech boots
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-1.8, 1.5 + step, 1.4, 2);
+        ctx.fillRect(0.4, 1.5 - step, 1.4, 2);
+
+        // Cyber suit torso
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-2, -2, 4, 3.8);
+        ctx.fillStyle = '#0891b2';
+        ctx.fillRect(-1, -1.5, 2, 3);
+
+        // Ninja cowl & neon cyan visor
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-1.8, -4.5, 3.6, 2.8);
+        ctx.fillStyle = '#22d3ee';
+        ctx.fillRect(-1.2, -3.5, 2.4, 1);
+
+        // Energy Katana blade on back
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillRect(1.8, -5, 1, 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(2, -4.5, 0.6, 4);
+
+        ctx.restore();
+    }
+
+    renderLaserShark(ctx, ent, px, py, size) {
+        const s = size * 0.8;
+        const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(fAng);
+
+        // Tail fin
+        const tailWag = Math.sin(this.animTime * 10) * 2;
+        ctx.fillStyle = '#0369a1';
+        ctx.beginPath();
+        ctx.moveTo(-s * 1.3, tailWag);
+        ctx.lineTo(-s * 1.8, tailWag - 3);
+        ctx.lineTo(-s * 1.8, tailWag + 3);
+        ctx.closePath();
+        ctx.fill();
+
+        // Sleek torpedo shark body
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-s * 1.1, -s * 0.4, s * 2.2, s * 0.8);
+        ctx.fillRect(-s * 0.8, -s * 0.55, s * 1.6, s * 1.1);
+
+        // White underbelly
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(-s * 0.8, 0, s * 1.6, s * 0.4);
+
+        // Head & Snout with White Razor Teeth
+        ctx.fillStyle = '#0369a1';
+        ctx.fillRect(s * 0.8, -s * 0.35, s * 0.5, s * 0.7);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(s * 0.7, 0, 3, 1.5);
+        ctx.fillRect(s * 0.9, 0, 3, 1.5);
+
+        // Cold black eye
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(s * 0.6, -s * 0.3, 1.5, 1.5);
+
+        // Head-Mounted Cyber Laser Cannon
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(s * 0.2, -s * 0.85, s * 0.8, 2.5);
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillRect(s * 0.8, -s * 0.8, 3, 1.5);
+
+        ctx.restore();
+    }
+
+    renderFrostWolf(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const step = Math.sin(this.animTime * 10) * 1.2;
+
+        // Paws
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-3, 2 + step, 1.8, 2);
+        ctx.fillRect(1.5, 2 - step, 1.8, 2);
+
+        // Fur Body
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-3.5, -1.5, 7, 3.8);
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fillRect(-2.5, -0.5, 5, 2);
+
+        // Crystalline Spine Frills
+        ctx.fillStyle = '#a5f3fc';
+        ctx.fillRect(-2, -3, 1.5, 2);
+        ctx.fillRect(0, -3.2, 1.5, 2);
+
+        // Wolf Snout & Ears
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(2.5, -2.5, 3.5, 2.5);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(5.5, -1.5, 1, 1);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(2.5, -4, 1.2, 2);
+
+        // Glowing blue eyes
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(3.2, -2.2, 1, 1);
+
+        // Tail
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-5, -2, 2, 2);
+        ctx.fillRect(-6, -3, 1.5, 2);
+
+        ctx.restore();
+    }
+
+    renderSandScorpion(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+
+        // Multi-legs
+        ctx.fillStyle = '#b45309';
+        for (let l = -2; l <= 2; l += 2) {
+            const legW = Math.sin(this.animTime * 8 + l) * 1;
+            ctx.fillRect(l - 0.5, 1.5 + legW, 1, 2.5);
+        }
+
+        // Chitinous Body
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(-3, -1.5, 6, 3);
+        ctx.fillStyle = '#92400e';
+        ctx.fillRect(-2, -1, 4, 2);
+
+        // Front Pincers
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(2.5, -2.5, 3, 2);
+        ctx.fillRect(4.5, -3.5, 1.5, 3);
+        ctx.fillRect(2.5, 1, 3, 2);
+        ctx.fillRect(4.5, 1, 1.5, 3);
+
+        // Curling Segmented Tail & Venom Stinger
+        const tailBob = Math.sin(this.animTime * 5) * 1.5;
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(-4.5, -2.5, 2, 2);
+        ctx.fillRect(-5.5, -4.5 + tailBob * 0.5, 2, 2.5);
+        ctx.fillRect(-4.5, -6 + tailBob, 2, 2);
+        // Toxic Stinger Tip
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(-2.5, -6.5 + tailBob, 2.5, 1.5);
+        ctx.fillStyle = '#a3e635';
+        ctx.fillRect(-0.5, -6 + tailBob, 1.5, 1);
+
+        ctx.restore();
+    }
+
+    renderNecromancer(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const float = Math.sin(this.animTime * 5) * 0.8;
+
+        // Dark tattered robes
+        ctx.fillStyle = '#2e1065';
+        ctx.fillRect(-2.2, -1.5 + float, 4.4, 5);
+        ctx.fillStyle = '#4c1d95';
+        ctx.fillRect(-1.5, -1 + float, 3, 4);
+
+        // Hood & Skeletal Face
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(-2, -4.5 + float, 4, 3.2);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(-1.2, -3.8 + float, 2.4, 2.2);
+
+        // Glowing Emerald Eyes
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(-0.8, -3.2 + float, 0.8, 0.8);
+        ctx.fillRect(0.2, -3.2 + float, 0.8, 0.8);
+
+        // Skull Staff
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(2.5, -6 + float, 1, 9);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(1.8, -7.5 + float, 2.4, 2);
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(2.2, -9 + float, 1.6, 1.6);
+
+        ctx.restore();
+    }
+
+    renderValkyrie(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const wingFlap = Math.sin(this.animTime * 8) * 3;
+
+        // Golden/White Wings
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-6, -5 + wingFlap, 4, 3);
+        ctx.fillRect(-7, -3 + wingFlap * 0.8, 3, 4);
+        ctx.fillRect(2, -5 + wingFlap, 4, 3);
+        ctx.fillRect(4, -3 + wingFlap * 0.8, 3, 4);
+
+        // Silver Breastplate & Tunic
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(-2, -2, 4, 4);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(-1.5, -1, 3, 2);
+
+        // Winged Silver Helmet
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-1.8, -4.8, 3.6, 3);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-3, -5.5, 1.5, 2.5);
+        ctx.fillRect(1.5, -5.5, 1.5, 2.5);
+
+        // Face & Eyes
+        ctx.fillStyle = '#fef3c7';
+        ctx.fillRect(-1.2, -3.8, 2.4, 1.8);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-0.8, -3.4, 0.8, 0.8);
+        ctx.fillRect(0.2, -3.4, 0.8, 0.8);
+
+        // Radiant Holy Spear
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(2.8, -7, 1, 10);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(2.3, -9, 2, 2.5);
+
+        ctx.restore();
+    }
+
+    renderGargoyle(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const flap = Math.sin(this.animTime * 7) * 2.5;
+
+        // Stone Bat Wings
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-5, -4 + flap, 3, 4);
+        ctx.fillRect(-7, -2 + flap * 0.8, 3, 3);
+        ctx.fillRect(2, -4 + flap, 3, 4);
+        ctx.fillRect(4, -2 + flap * 0.8, 3, 3);
+
+        // Muscular Stone Torso
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(-2.2, -2, 4.4, 4);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-1.5, -1, 3, 2.5);
+
+        // Horned Gargoyle Head
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(-2, -4.5, 4, 3);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(-2.5, -6, 1.2, 2);
+        ctx.fillRect(1.3, -6, 1.2, 2);
+
+        // Piercing Amber Eyes
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(-1.2, -3.8, 1, 1);
+        ctx.fillRect(0.4, -3.8, 1, 1);
+
+        // Stone Claws
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(-2.5, 2, 2, 2);
+        ctx.fillRect(0.5, 2, 2, 2);
+
+        ctx.restore();
+    }
+
+    renderMechaRex(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.8;
+        const step = Math.sin(this.animTime * 6) * 2;
+
+        // Massive Hydraulic Bipedal Legs
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(-s * 0.6, s * 0.1 + step, s * 0.4, s * 0.8);
+        ctx.fillRect(s * 0.2, s * 0.1 - step, s * 0.4, s * 0.8);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-s * 0.7, s * 0.8 + step, s * 0.5, 2);
+        ctx.fillRect(s * 0.1, s * 0.8 - step, s * 0.5, 2);
+
+        // Armored Mecha Hull
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-s * 0.8, -s * 0.6, s * 1.6, s * 1.1);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(-s * 0.6, -s * 0.5, s * 1.2, s * 0.8);
+
+        // Dorsal Micro-Missile Pod
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-s * 0.4, -s * 0.9, s * 0.8, s * 0.35);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-s * 0.3, -s * 0.85, 2, 2);
+        ctx.fillRect(0, -s * 0.85, 2, 2);
+
+        // Mechanical T-Rex Head with Jaws
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(s * 0.6, -s * 0.7, s * 0.7, s * 0.6);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(s * 0.7, -s * 0.35, s * 0.6, s * 0.3);
+
+        // Glowing Red Cyber Visor Eye
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(s * 0.8, -s * 0.6, s * 0.4, 1.5);
+
+        // Stepped Steel Tail
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-s * 1.3, -s * 0.3, s * 0.6, s * 0.4);
+        ctx.fillRect(-s * 1.8, -s * 0.2, s * 0.6, s * 0.3);
+
+        ctx.restore();
+    }
+
+    renderGoldenDragon(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.9;
+        const wingFlap = Math.sin(this.animTime * 7) * 4;
+
+        // Radiant Gold Wings
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(-s * 1.5, -s * 0.9 + wingFlap, s * 1.4, s * 0.7);
+        ctx.fillRect(s * 0.3, -s * 0.9 + wingFlap, s * 1.4, s * 0.7);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-s * 1.3, -s * 0.7 + wingFlap, s * 1.0, s * 0.4);
+        ctx.fillRect(s * 0.5, -s * 0.7 + wingFlap, s * 1.0, s * 0.4);
+
+        // Golden Torso
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(-s * 0.5, -s * 0.6, s * 1.0, s * 1.2);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(-s * 0.3, -s * 0.4, s * 0.6, s * 0.8);
+
+        // Dragon Head & Golden Horns
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(s * 0.4, -s * 0.9, s * 0.6, s * 0.6);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(s * 0.3, -s * 1.3, 2, s * 0.5);
+        ctx.fillRect(s * 0.6, -s * 1.4, 2, s * 0.6);
+
+        // Starlight Radiant Eye
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(s * 0.6, -s * 0.8, 2, 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(s * 0.7, -s * 0.7, 1, 1);
+
+        // Golden Tail
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(-s * 0.9, s * 0.2, s * 0.5, 3);
+        ctx.fillRect(-s * 1.3, s * 0.4, s * 0.5, 2.5);
+
+        ctx.restore();
+    }
+
+    renderSpaceWorm(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        const s = size * 0.7;
+
+        // Undulating Void Segments
+        for (let seg = 4; seg >= 0; seg--) {
+            const segOffset = Math.sin(this.animTime * 6 + seg * 0.8) * 3;
+            const segX = -seg * 4;
+            const segY = segOffset;
+            const segR = Math.max(2, s - seg * 0.8);
+
+            ctx.fillStyle = seg === 0 ? '#6d28d9' : (seg % 2 === 0 ? '#7c3aed' : '#8b5cf6');
+            ctx.fillRect(segX - segR, segY - segR, segR * 2, segR * 2);
+
+            // Void Star Sparkle
+            if (seg % 2 === 0) {
+                ctx.fillStyle = '#c084fc';
+                ctx.fillRect(segX - 1, segY - 1, 2, 2);
+            }
+        }
+
+        // Maw / Head
+        ctx.fillStyle = '#4c1d95';
+        ctx.fillRect(s * 0.2 - 2, -2, 4, 4);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(s * 0.2, -1, 2, 2);
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(s * 0.2 + 1, -0.5, 1, 1);
+
+        ctx.restore();
+    }
+
+    renderGoblin(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const step = Math.sin(this.animTime * 14) * 0.7;
+
+        // Scrawny Legs
+        ctx.fillStyle = '#4d7c0f';
+        ctx.fillRect(-1.5, 1 + step, 1, 2);
+        ctx.fillRect(0.5, 1 - step, 1, 2);
+
+        // Ragged Tunic
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-1.8, -1.5, 3.6, 3);
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(-1.2, -0.5, 2.4, 1.5);
+
+        // Green Goblin Head with Floppy Ears
+        ctx.fillStyle = '#65a30d';
+        ctx.fillRect(-1.8, -4, 3.6, 2.8);
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(-3.2, -3.5, 1.5, 1.5);
+        ctx.fillRect(1.7, -3.5, 1.5, 1.5);
+
+        // Mischievous Red Eyes
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-1, -3.2, 0.8, 0.8);
+        ctx.fillRect(0.3, -3.2, 0.8, 0.8);
+
+        // Sharp Teeth Grin
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-0.8, -2, 1.6, 0.6);
+
+        ctx.restore();
+    }
+
+    renderPirateShip(ctx, ent, px, py, size) {
+        const s = size * 0.8;
+        const fAng = (Math.hypot(ent.vx, ent.vy) > 0.05) ? Math.atan2(ent.vy, ent.vx) : 0;
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(fAng);
+
+        const rock = Math.sin(this.animTime * 4) * 0.08;
+        ctx.rotate(rock);
+
+        // Oak Galleon Hull
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.moveTo(s * 1.3, 0);
+        ctx.lineTo(s * 0.5, -s * 0.5);
+        ctx.lineTo(-s * 1.1, -s * 0.45);
+        ctx.lineTo(-s * 1.1, s * 0.45);
+        ctx.lineTo(s * 0.5, s * 0.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#451a03';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Cannon Ports
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-s * 0.5, -s * 0.45, 2, 1);
+        ctx.fillRect(0, -s * 0.45, 2, 1);
+        ctx.fillRect(-s * 0.5, s * 0.4, 2, 1);
+        ctx.fillRect(0, s * 0.4, 2, 1);
+
+        // Wooden Mast
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(-1, -s * 1.2, 2, s * 1.3);
+
+        // Black Pirate Sail / Jolly Roger
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-s * 0.6, -s * 1.1, s * 1.2, s * 0.6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-1, -s * 0.9, 2, 1.5);
 
         ctx.restore();
     }

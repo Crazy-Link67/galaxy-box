@@ -28,7 +28,13 @@ const TILES = {
     CRYSTAL: 22,
     MAGMA_ROCK: 23,
     BIOLUMINESCENT_MOSS: 24,
-    QUICKSAND: 25
+    QUICKSAND: 25,
+    MUSHROOM_SPORE: 26,
+    HONEY_COMB: 27,
+    GOLD_ORE: 28,
+    POISON_SWAMP: 29,
+    HOLY_GROUND: 30,
+    BLOOD_RIVER: 31
 };
 
 const TILE_INFO = {
@@ -57,7 +63,13 @@ const TILE_INFO = {
     [TILES.CRYSTAL]: { name: "Luminous Crystal", color: "#ec4899", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.MAGMA_ROCK]: { name: "Magma Rock", color: "#b91c1c", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.BIOLUMINESCENT_MOSS]: { name: "Bioluminescent Moss", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0.4 },
-    [TILES.QUICKSAND]: { name: "Quicksand", color: "#b49b65", isLiquid: false, isSolid: false, flammability: 0 }
+    [TILES.QUICKSAND]: { name: "Quicksand", color: "#b49b65", isLiquid: false, isSolid: false, flammability: 0 },
+    [TILES.MUSHROOM_SPORE]: { name: "Mushroom Spore", color: "#a855f7", isLiquid: false, isSolid: true, flammability: 0.5 },
+    [TILES.HONEY_COMB]: { name: "Honey Comb", color: "#f59e0b", isLiquid: false, isSolid: true, flammability: 0.2 },
+    [TILES.GOLD_ORE]: { name: "Gold Ore", color: "#eab308", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.POISON_SWAMP]: { name: "Poison Swamp", color: "#8b5cf6", isLiquid: true, isSolid: false, flammability: 0.3 },
+    [TILES.HOLY_GROUND]: { name: "Holy Ground", color: "#fef08a", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.BLOOD_RIVER]: { name: "Blood River", color: "#991b1b", isLiquid: true, isSolid: false, flammability: 0 }
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
@@ -366,6 +378,37 @@ class World {
                 } else if (type === 'fertilizer') {
                     if (this.tiles[i] === TILES.SOIL) this.tiles[i] = TILES.GRASS;
                     else if (this.tiles[i] === TILES.GRASS) this.tiles[i] = TILES.FOREST;
+                } else if (type === 'deforest') {
+                    if (this.tiles[i] === TILES.FOREST || this.tiles[i] === TILES.GRASS || this.tiles[i] === TILES.BIOLUMINESCENT_MOSS) {
+                        this.tiles[i] = TILES.SOIL;
+                    }
+                } else if (type === 'biome_savanna') {
+                    if (this.tiles[i] !== TILES.BEDROCK && this.tiles[i] !== TILES.VOID) {
+                        const rnd = Math.random();
+                        this.tiles[i] = rnd < 0.5 ? TILES.SAND : (rnd < 0.85 ? TILES.GRASS : TILES.SOIL);
+                    }
+                } else if (type === 'biome_tundra') {
+                    if (this.tiles[i] !== TILES.BEDROCK && this.tiles[i] !== TILES.VOID) {
+                        const rnd = Math.random();
+                        this.tiles[i] = rnd < 0.5 ? TILES.SNOW : (rnd < 0.75 ? TILES.ICE : TILES.STONE);
+                    }
+                } else if (type === 'biome_jungle') {
+                    if (this.tiles[i] !== TILES.BEDROCK && this.tiles[i] !== TILES.VOID) {
+                        const rnd = Math.random();
+                        this.tiles[i] = rnd < 0.6 ? TILES.FOREST : (rnd < 0.85 ? TILES.BIOLUMINESCENT_MOSS : TILES.WATER);
+                    }
+                } else if (type === 'gold_ore') {
+                    this.setTile(x, y, TILES.GOLD_ORE);
+                } else if (type === 'mushroom_spore') {
+                    this.setTile(x, y, TILES.MUSHROOM_SPORE);
+                } else if (type === 'honey_comb') {
+                    this.setTile(x, y, TILES.HONEY_COMB);
+                } else if (type === 'holy_ground') {
+                    this.setTile(x, y, TILES.HOLY_GROUND);
+                } else if (type === 'blood_river') {
+                    this.setTile(x, y, TILES.BLOOD_RIVER);
+                } else if (type === 'poison_swamp') {
+                    this.setTile(x, y, TILES.POISON_SWAMP);
                 } else {
                     this.setTile(x, y, type);
                 }
@@ -565,6 +608,53 @@ class World {
                         const belowIdx = this.idx(x, y + 1);
                         if (this.tiles[belowIdx] === TILES.WATER || this.tiles[belowIdx] === TILES.SOIL) {
                             this.tiles[belowIdx] = TILES.QUICKSAND;
+                        }
+                    }
+                }
+
+                // 9. Poison Swamp & Blood River Fluid Flow & Spores
+                if (t === TILES.POISON_SWAMP || t === TILES.BLOOD_RIVER) {
+                    if (particleSystem && Math.random() < 0.03) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.3, -0.4, 1.3, t === TILES.POISON_SWAMP ? '#8b5cf6' : '#dc2626', 20, 'smoke');
+                    }
+                    if (y + 1 < this.height) {
+                        const bi = this.idx(x, y + 1);
+                        if (this.tiles[bi] === TILES.VOID && Math.random() < 0.3) {
+                            this.tiles[bi] = t;
+                        }
+                    }
+                }
+
+                // 10. Holy Ground Sacred Purification
+                if (t === TILES.HOLY_GROUND) {
+                    if (particleSystem && Math.random() < 0.03) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.2, -0.5, 1.5, '#fef08a', 20, 'stardust');
+                    }
+                    if (Math.random() < 0.005) {
+                        const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.CORRUPTED || this.tiles[ni] === TILES.FALLOUT) {
+                                this.tiles[ni] = TILES.GRASS;
+                            }
+                        }
+                    }
+                }
+
+                // 11. Mushroom Spore Creeping Mycelium
+                if (t === TILES.MUSHROOM_SPORE) {
+                    if (particleSystem && Math.random() < 0.02) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.4, -0.3, 1.6, '#c084fc', 22, 'stardust');
+                    }
+                    if (Math.random() < 0.003) {
+                        const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.SOIL) {
+                                this.tiles[ni] = TILES.MUSHROOM_SPORE;
+                            }
                         }
                     }
                 }
