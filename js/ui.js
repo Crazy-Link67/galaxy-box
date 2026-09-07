@@ -473,6 +473,45 @@ class UIManager {
             };
         }
 
+        // Top HUD Quick Save button
+        const btnQuickSave = document.getElementById('btn-quick-save');
+        if (btnQuickSave) {
+            btnQuickSave.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                this.showModal('modal-save');
+                this.refreshSaveSlots();
+            };
+        }
+
+        // Modal Quick Save button
+        const btnModalQuickSave = document.getElementById('btn-modal-quicksave');
+        if (btnModalQuickSave) {
+            btnModalQuickSave.onclick = () => {
+                const res = this.game.saveGame(1);
+                if (res.success) {
+                    if (this.game.audio) this.game.audio.playMagic();
+                    this.showNotification("⚡ Quick-Saved to Slot 1!", "success");
+                    this.refreshSaveSlots();
+                    const slot1 = document.getElementById('slot-card-1');
+                    if (slot1) {
+                        slot1.classList.add('save-success-glow');
+                        setTimeout(() => slot1.classList.remove('save-success-glow'), 1400);
+                    }
+                } else {
+                    alert(`Storage Error: ${res.error || 'Failed to save to browser storage.'}\n\nExporting world as JSON backup...`);
+                    this.exportWorldJSON();
+                }
+            };
+        }
+
+        // Save Creature Preset button in Creature Creator
+        const btnSaveCustomPreset = document.getElementById('btn-save-custom-preset');
+        if (btnSaveCustomPreset) {
+            btnSaveCustomPreset.onclick = () => {
+                this.saveCreaturePreset();
+            };
+        }
+
         // Diplomacy ledger buttons
         const btnLedgerPeace = document.getElementById('btn-ledger-peace');
         if (btnLedgerPeace) {
@@ -497,15 +536,7 @@ class UIManager {
         const expBtn = document.getElementById('btn-export-world');
         if (expBtn) {
             expBtn.onclick = () => {
-                const data = this.game.world.serialize();
-                const str = JSON.stringify(data);
-                const blob = new Blob([str], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `galaxybox_world_${Date.now()}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
+                this.exportWorldJSON();
             };
         }
 
@@ -514,19 +545,8 @@ class UIManager {
             impInput.onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    try {
-                        const parsed = JSON.parse(ev.target.result);
-                        this.game.world.deserialize(parsed);
-                        this.game.entityManager.clear();
-                        this.game.disasterManager.clear();
-                        document.getElementById('modal-save').classList.remove('active');
-                    } catch (err) {
-                        alert("Invalid world JSON file: " + err.message);
-                    }
-                };
-                reader.readAsText(file);
+                this.importWorldJSON(file);
+                impInput.value = ''; // Reset to allow re-importing same file
             };
         }
 
@@ -901,27 +921,44 @@ class UIManager {
             const saved = localStorage.getItem(key);
             const slotCard = document.createElement('div');
             slotCard.className = 'save-slot-card';
+            slotCard.id = `slot-card-${slot}`;
 
+            let info = null;
             if (saved) {
-                const info = JSON.parse(saved);
+                try {
+                    info = JSON.parse(saved);
+                } catch (e) {
+                    info = null;
+                }
+            }
+
+            if (info) {
+                const entCount = info.entities?.entities?.length ?? (info.entitiesCount || 0);
+                const kdCount = info.entities?.kingdoms?.length ?? (info.kingdomsCount || 0);
+                const sizeStr = info.world?.width ? ` · 🗺️ ${info.world.width}x${info.world.height}` : '';
+
                 slotCard.innerHTML = `
                     <div class="slot-info">
-                        <strong>Slot ${slot}: ${info.name || 'World'}</strong>
-                        <small>Saved: ${info.date || 'Unknown'}</small>
+                        <div style="font-weight: 700; color: #f8fafc; font-size: 0.95rem;">Slot ${slot}: ${info.name || 'World ' + slot}</div>
+                        <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;">📅 ${info.date || 'Unknown'}</div>
+                        <div style="font-size: 0.74rem; color: #38bdf8; margin-top: 2px;">
+                            👥 ${entCount} creatures · 👑 ${kdCount} kingdoms${sizeStr}
+                        </div>
                     </div>
                     <div class="slot-actions">
-                        <button class="btn btn-sm btn-load" data-slot="${slot}">Load</button>
-                        <button class="btn btn-sm btn-save" data-slot="${slot}">Overwrite</button>
-                        <button class="btn btn-sm btn-del" data-slot="${slot}">Delete</button>
+                        <button class="btn btn-sm btn-load" data-slot="${slot}" style="background: rgba(56, 189, 248, 0.25); border-color: #38bdf8;">Load</button>
+                        <button class="btn btn-sm btn-save" data-slot="${slot}" style="background: rgba(34, 197, 94, 0.2); border-color: #22c55e;">Overwrite</button>
+                        <button class="btn btn-sm btn-del btn-danger" data-slot="${slot}">Delete</button>
                     </div>
                 `;
             } else {
                 slotCard.innerHTML = `
                     <div class="slot-info">
-                        <strong>Slot ${slot}: Empty</strong>
+                        <div style="font-weight: 700; color: #64748b; font-size: 0.95rem;">Slot ${slot}: Empty</div>
+                        <div style="font-size: 0.74rem; color: #475569; margin-top: 2px;">No world saved in this slot yet</div>
                     </div>
                     <div class="slot-actions">
-                        <button class="btn btn-sm btn-save" data-slot="${slot}">Save Here</button>
+                        <button class="btn btn-sm btn-save" data-slot="${slot}" style="background: rgba(59, 130, 246, 0.35); border-color: #60a5fa; font-weight: 600;">Save Here</button>
                     </div>
                 `;
             }
@@ -929,32 +966,200 @@ class UIManager {
             // Bind actions
             slotCard.querySelectorAll('.btn-save').forEach(b => {
                 b.onclick = () => {
-                    const worldData = this.game.world.serialize();
-                    worldData.name = `World ${slot}`;
-                    worldData.date = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
-                    localStorage.setItem(key, JSON.stringify(worldData));
-                    this.refreshSaveSlots();
-                };
-            });
-            slotCard.querySelectorAll('.btn-load').forEach(b => {
-                b.onclick = () => {
-                    const loaded = JSON.parse(localStorage.getItem(key));
-                    if (loaded) {
-                        this.game.world.deserialize(loaded);
-                        this.game.entityManager.clear();
-                        this.game.disasterManager.clear();
-                        document.getElementById('modal-save').classList.remove('active');
+                    const res = this.game.saveGame(slot);
+                    if (res.success) {
+                        if (this.game.audio) this.game.audio.playMagic();
+                        this.showNotification(`💾 Saved successfully to Slot ${slot}!`, 'success');
+                        this.refreshSaveSlots();
+                        const card = document.getElementById(`slot-card-${slot}`);
+                        if (card) {
+                            card.classList.add('save-success-glow');
+                            setTimeout(() => card.classList.remove('save-success-glow'), 1400);
+                        }
+                    } else {
+                        this.showNotification(`⚠️ Save error: ${res.error || 'Storage full'}`, 'error');
+                        alert(`Storage Error: ${res.error || 'Failed to save to browser storage.'}\n\nExporting world as JSON backup...`);
+                        this.exportWorldJSON();
                     }
                 };
             });
+
+            slotCard.querySelectorAll('.btn-load').forEach(b => {
+                b.onclick = () => {
+                    const res = this.game.loadGame(slot);
+                    if (res.success) {
+                        if (this.game.audio) this.game.audio.playMagic();
+                        this.showNotification(`🌟 Successfully loaded Slot ${slot}!`, 'success');
+                        const modal = document.getElementById('modal-save');
+                        if (modal) modal.classList.remove('active');
+                    } else {
+                        this.showNotification(`⚠️ Load error: ${res.error || 'Unknown'}`, 'error');
+                        alert(`Failed to load slot ${slot}: ${res.error || 'Unknown error'}`);
+                    }
+                };
+            });
+
             slotCard.querySelectorAll('.btn-del').forEach(b => {
                 b.onclick = () => {
                     localStorage.removeItem(key);
+                    if (this.game.audio) this.game.audio.playClick();
+                    this.showNotification(`🗑️ Slot ${slot} deleted.`, 'info');
                     this.refreshSaveSlots();
                 };
             });
 
             container.appendChild(slotCard);
+        }
+    }
+
+    showNotification(message, type = 'info', duration = 2400) {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-message toast-${type}`;
+        toast.innerHTML = message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 320);
+            }
+        }, duration);
+    }
+
+    exportWorldJSON() {
+        try {
+            const saveObj = {
+                version: 2,
+                name: `GalaxyBox_Export_${new Date().toISOString().slice(0, 10)}`,
+                date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
+                timestamp: Date.now(),
+                world: this.game.world.serialize(),
+                entities: this.game.entityManager.serialize(),
+                weather: {
+                    current: this.game.disasterManager.weather,
+                    timer: this.game.disasterManager.weatherTimer
+                }
+            };
+
+            const jsonStr = JSON.stringify(saveObj, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `galaxybox_world_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                if (a.parentNode) document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 600);
+
+            if (this.game.audio) this.game.audio.playMagic();
+            this.showNotification("📦 World exported successfully to file!", "success");
+        } catch (err) {
+            console.error("Export failed:", err);
+            this.showNotification("⚠️ Export failed: " + err.message, "error");
+        }
+    }
+
+    importWorldJSON(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                const res = this.game.applySaveData(data);
+                if (res.success) {
+                    if (this.game.audio) this.game.audio.playMagic();
+                    this.showNotification(`📥 Loaded world: ${file.name}!`, "success");
+                    const modal = document.getElementById('modal-save');
+                    if (modal) modal.classList.remove('active');
+                } else {
+                    alert("Import Error: " + (res.error || "Corrupted save file format"));
+                }
+            } catch (err) {
+                console.error("Import failed:", err);
+                alert("Failed to parse JSON save file: " + err.message);
+            }
+        };
+        reader.onerror = () => {
+            alert("Failed to read file.");
+        };
+        reader.readAsText(file);
+    }
+
+    saveCreaturePreset() {
+        const nameEl = document.getElementById('custom-name');
+        const archetypeEl = document.getElementById('custom-archetype');
+        const hpEl = document.getElementById('custom-hp');
+        const atkEl = document.getElementById('custom-attack');
+        const spdEl = document.getElementById('custom-speed');
+        const scaleEl = document.getElementById('custom-scale');
+
+        const colEl = document.getElementById('custom-color');
+        const colSecEl = document.getElementById('custom-color-sec');
+        const colGlowEl = document.getElementById('custom-color-glow');
+
+        const headEl = document.getElementById('custom-part-head');
+        const bodyEl = document.getElementById('custom-part-body');
+        const armsEl = document.getElementById('custom-part-arms');
+        const legsEl = document.getElementById('custom-part-legs');
+        const backEl = document.getElementById('custom-part-back');
+
+        const name = nameEl ? nameEl.value : 'Custom Creature';
+        const traits = [];
+        document.querySelectorAll('.custom-trait-check:checked').forEach(chk => {
+            traits.push(chk.value);
+        });
+
+        const presetObj = {
+            name,
+            archetype: archetypeEl ? archetypeEl.value : 'human',
+            hp: hpEl ? (parseInt(hpEl.value) || 1000) : 1000,
+            attack: atkEl ? (parseInt(atkEl.value) || 50) : 50,
+            speed: spdEl ? (parseFloat(spdEl.value) || 0.8) : 0.8,
+            scale: scaleEl ? (parseFloat(scaleEl.value) || 2.0) : 2.0,
+            colors: {
+                primary: colEl ? colEl.value : '#ea580c',
+                secondary: colSecEl ? colSecEl.value : '#38bdf8',
+                glow: colGlowEl ? colGlowEl.value : '#facc15'
+            },
+            bodyParts: {
+                head: headEl ? headEl.value : 'humanoid',
+                body: bodyEl ? bodyEl.value : 'standard',
+                arms: armsEl ? armsEl.value : 'bipedal_arms',
+                legs: legsEl ? legsEl.value : 'bipedal_legs',
+                back: backEl ? backEl.value : 'none'
+            },
+            traits
+        };
+
+        try {
+            let presets = JSON.parse(localStorage.getItem('galaxybox_custom_creature_presets') || '[]');
+            const idx = presets.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+            if (idx >= 0) {
+                presets[idx] = presetObj;
+            } else {
+                presets.push(presetObj);
+            }
+            localStorage.setItem('galaxybox_custom_creature_presets', JSON.stringify(presets));
+            if (this.game.audio) this.game.audio.playMagic();
+            this.showNotification(`💾 Saved creature preset "${name}"!`, "success");
+        } catch (err) {
+            console.error("Save preset failed:", err);
+            this.showNotification("⚠️ Failed to save preset: " + err.message, "error");
         }
     }
 

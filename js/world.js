@@ -730,26 +730,73 @@ class World {
         }
     }
 
+    // RLE (Run-Length Encoding) for ultra-compact world saving (15x-20x smaller)
+    encodeRLE(arr) {
+        if (!arr || arr.length === 0) return '';
+        const res = [];
+        let count = 1;
+        let cur = arr[0];
+        const len = arr.length;
+        for (let i = 1; i < len; i++) {
+            if (arr[i] === cur && count < 65535) {
+                count++;
+            } else {
+                res.push(count === 1 ? cur : `${count}x${cur}`);
+                cur = arr[i];
+                count = 1;
+            }
+        }
+        res.push(count === 1 ? cur : `${count}x${cur}`);
+        return res.join(',');
+    }
+
+    decodeRLE(str, targetArr) {
+        if (!str || !targetArr) return;
+        const tokens = str.split(',');
+        let idx = 0;
+        const maxLen = targetArr.length;
+        for (let i = 0; i < tokens.length && idx < maxLen; i++) {
+            const token = tokens[i];
+            const xIdx = token.indexOf('x');
+            if (xIdx !== -1) {
+                const count = parseInt(token.substring(0, xIdx), 10);
+                const val = parseInt(token.substring(xIdx + 1), 10);
+                const end = Math.min(idx + count, maxLen);
+                while (idx < end) targetArr[idx++] = val;
+            } else {
+                targetArr[idx++] = parseInt(token, 10);
+            }
+        }
+    }
+
     // Save & Load Serializer
     serialize() {
         return {
             width: this.width,
             height: this.height,
             seed: this.seed,
-            tiles: Array.from(this.tiles)
+            tilesRLE: this.encodeRLE(this.tiles)
         };
     }
 
     deserialize(data) {
-        if (!data || !data.tiles) return false;
-        this.width = data.width;
-        this.height = data.height;
-        this.size = data.width * data.height;
+        if (!data || (!data.tiles && !data.tilesRLE)) return false;
+        this.width = data.width || 640;
+        this.height = data.height || 360;
+        this.size = this.width * this.height;
         this.seed = data.seed || 12345;
-        this.tiles = new Uint8Array(data.tiles);
+        this.tiles = new Uint8Array(this.size);
         this.variation = new Uint8Array(this.size);
         this.temperature = new Int16Array(this.size);
         this.fire = new Uint8Array(this.size);
+
+        if (data.tilesRLE) {
+            this.decodeRLE(data.tilesRLE, this.tiles);
+        } else if (data.tiles && Array.isArray(data.tiles)) {
+            // Backward-compatibility with legacy uncompressed array format
+            this.tiles.set(data.tiles);
+        }
+
         for (let i = 0; i < this.size; i++) {
             this.variation[i] = Math.floor(Math.random() * 5);
             this.temperature[i] = 20;

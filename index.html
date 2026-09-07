@@ -40,6 +40,7 @@
             <button class="time-btn" data-speed="2" title="Fast Speed">2x</button>
             <button class="time-btn" data-speed="5" title="Hyper Speed">5x</button>
             <button class="time-btn" data-speed="10" title="Ultra Fast Speed">10x</button>
+            <button class="time-btn" id="btn-quick-save" title="World Save & Load Menu (Ctrl+S)">💾 Save</button>
             <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">👁️</button>
             <button class="time-btn" id="btn-install-pwa" title="Install GalaxyBox as App" style="display:none; background: linear-gradient(135deg, #4f46e5, #9333ea); color:#fff; border-color:#818cf8; font-weight:bold;">📲 Install</button>
         </div>
@@ -172,6 +173,7 @@
                 <button class="close-btn modal-close">&times;</button>
             </div>
             <div class="modal-body">
+                <button class="btn btn-primary" id="btn-modal-quicksave" style="width:100%; margin-bottom:14px; padding:11px 16px; font-weight:700; font-size:0.95rem; background:linear-gradient(135deg, #10b981, #059669); border:1px solid #34d399; box-shadow: 0 0 16px rgba(16, 185, 129, 0.35); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">⚡ Quick Save to Slot 1 (Ctrl+S)</button>
                 <div id="save-slots-list">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -624,7 +626,10 @@
                     </div>
                 </div>
 
-                <button id="btn-spawn-custom" class="btn" style="width:100%; margin-top:10px; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button id="btn-spawn-custom" class="btn" style="flex:2; padding:12px; font-size:1rem; font-weight:700; background:linear-gradient(135deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">🌟 Spawn & Control Custom Creature</button>
+                    <button id="btn-save-custom-preset" class="btn btn-secondary" style="flex:1; padding:12px; font-size:0.9rem; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px;" title="Save current custom monster design to local storage">💾 Save Preset</button>
+                </div>
             </div>
         </div>
     </div>
@@ -754,6 +759,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast Notification Banner Container -->
+    <div id="toast-container"></div>
 
     <!-- Game Scripts -->
     <script src="js/audio.js"></script>

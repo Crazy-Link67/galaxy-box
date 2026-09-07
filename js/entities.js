@@ -3632,6 +3632,123 @@ class EntityManager {
         this.explosiveEggs = [];
         this.nextKingdomId = 1;
     }
+
+    serialize() {
+        const serializedKingdoms = [];
+        this.kingdoms.forEach((k) => {
+            serializedKingdoms.push({
+                id: k.id,
+                name: k.name,
+                color: k.color,
+                x: k.x,
+                y: k.y,
+                wood: k.wood,
+                stone: k.stone,
+                food: k.food,
+                population: k.population,
+                isAtWar: !!k.isAtWar,
+                enemies: Array.from(k.enemies || [])
+            });
+        });
+
+        const serializedBuildings = this.buildings.map(b => ({
+            type: b.type,
+            x: b.x,
+            y: b.y,
+            kingdomId: b.kingdomId,
+            hp: b.hp,
+            maxHp: b.maxHp,
+            level: b.level || 1
+        }));
+
+        const serializedEntities = this.entities.filter(e => e.active && !e.isDying).map(e => ({
+            type: e.type,
+            x: Math.round(e.x * 10) / 10,
+            y: Math.round(e.y * 10) / 10,
+            hp: Math.round(e.hp),
+            maxHp: e.maxHp,
+            attack: e.attack,
+            speed: e.speed,
+            scale: e.scale,
+            color: e.color,
+            colorSec: e.colorSec,
+            colorGlow: e.colorGlow,
+            traits: Array.from(e.traits || []),
+            weapon: e.weapon || null,
+            kingdomId: e.kingdomId || null,
+            name: e.name || null,
+            parts: e.parts || null
+        }));
+
+        return {
+            kingdoms: serializedKingdoms,
+            buildings: serializedBuildings,
+            entities: serializedEntities,
+            forcePeace: !!this.forcePeace,
+            worldWar: !!this.worldWar,
+            nextKingdomId: this.nextKingdomId
+        };
+    }
+
+    deserialize(data) {
+        this.clear();
+        if (!data) return;
+
+        if (data.forcePeace !== undefined) this.forcePeace = data.forcePeace;
+        if (data.worldWar !== undefined) this.worldWar = data.worldWar;
+        if (data.nextKingdomId !== undefined) this.nextKingdomId = data.nextKingdomId;
+
+        // 1. Restore Kingdoms
+        if (Array.isArray(data.kingdoms)) {
+            data.kingdoms.forEach(kd => {
+                const k = new Kingdom(kd.id, kd.name, kd.color, kd.x, kd.y);
+                k.wood = kd.wood || 20;
+                k.stone = kd.stone || 10;
+                k.food = kd.food || 30;
+                k.population = kd.population || 0;
+                k.isAtWar = !!kd.isAtWar;
+                k.enemies = new Set(kd.enemies || []);
+                this.kingdoms.set(k.id, k);
+            });
+        }
+
+        // 2. Restore Buildings
+        if (Array.isArray(data.buildings)) {
+            data.buildings.forEach(bd => {
+                const b = new Building(bd.type, bd.x, bd.y, bd.kingdomId);
+                if (bd.hp !== undefined) b.hp = bd.hp;
+                if (bd.maxHp !== undefined) b.maxHp = bd.maxHp;
+                if (bd.level !== undefined) b.level = bd.level;
+                this.buildings.push(b);
+                const kd = this.kingdoms.get(b.kingdomId);
+                if (kd) kd.buildings.push(b);
+            });
+        }
+
+        // 3. Restore Entities
+        if (Array.isArray(data.entities)) {
+            data.entities.forEach(ed => {
+                const ent = this.spawn(ed.type, ed.x, ed.y);
+                if (ent) {
+                    if (ed.hp !== undefined) ent.hp = ed.hp;
+                    if (ed.maxHp !== undefined) ent.maxHp = ed.maxHp;
+                    if (ed.attack !== undefined) ent.attack = ed.attack;
+                    if (ed.speed !== undefined) ent.speed = ed.speed;
+                    if (ed.scale !== undefined) ent.scale = ed.scale;
+                    if (ed.color) ent.color = ed.color;
+                    if (ed.colorSec) ent.colorSec = ed.colorSec;
+                    if (ed.colorGlow) ent.colorGlow = ed.colorGlow;
+                    if (ed.weapon) ent.weapon = ed.weapon;
+                    if (ed.kingdomId) ent.kingdomId = ed.kingdomId;
+                    if (ed.name) ent.name = ed.name;
+                    if (ed.parts) ent.parts = ed.parts;
+                    if (Array.isArray(ed.traits)) {
+                        ent.traits = new Set(ed.traits);
+                    }
+                }
+            });
+        }
+    }
 }
 
 window.TRAITS = TRAITS;

@@ -367,6 +367,17 @@ class Game {
     handleKeyDown(e) {
         this.keys[e.key.toLowerCase()] = true;
 
+        // Ctrl+S / Cmd+S: Open Save Menu
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+            this.ui.showModal('modal-save');
+            this.ui.refreshSaveSlots();
+            if (this.ui && typeof this.ui.showNotification === 'function') {
+                this.ui.showNotification("💾 World Save & Load Menu", "info");
+            }
+            return;
+        }
+
         // Escape to Unpossess / Exit Control
         if (e.key === 'Escape') {
             this.unpossess();
@@ -907,6 +918,74 @@ class Game {
 
     unlockGalaxyTemplate() {
         this.unlockCosmicSacrificeSecrets();
+    }
+
+    // ==========================================
+    // SAVE & LOAD SYSTEM
+    // ==========================================
+    saveGame(slot = 1) {
+        const saveObj = {
+            version: 2,
+            name: `World ${slot}`,
+            date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
+            timestamp: Date.now(),
+            world: this.world.serialize(),
+            entities: this.entityManager.serialize(),
+            weather: {
+                current: this.disasterManager.weather,
+                timer: this.disasterManager.weatherTimer
+            }
+        };
+
+        const key = `galaxybox_save_${slot}`;
+        try {
+            localStorage.setItem(key, JSON.stringify(saveObj));
+            return { success: true, slot, date: saveObj.date };
+        } catch (err) {
+            console.error("LocalStorage save failed:", err);
+            return { success: false, error: err.message, data: saveObj };
+        }
+    }
+
+    loadGame(slot = 1) {
+        const key = `galaxybox_save_${slot}`;
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return { success: false, error: "Save slot is empty." };
+            const data = JSON.parse(raw);
+            return this.applySaveData(data);
+        } catch (err) {
+            console.error("Load failed:", err);
+            return { success: false, error: err.message };
+        }
+    }
+
+    applySaveData(data) {
+        if (!data) return { success: false, error: "Invalid save data." };
+
+        // Support both Format v2 (bundled) and Format v1 (world only)
+        if (data.world) {
+            this.world.deserialize(data.world);
+            if (data.entities) {
+                this.entityManager.deserialize(data.entities);
+            } else {
+                this.entityManager.clear();
+            }
+            if (data.weather) {
+                this.disasterManager.weather = data.weather.current || 'clear';
+                this.disasterManager.weatherTimer = data.weather.timer || 0;
+            }
+        } else if (data.tiles || data.tilesRLE) {
+            this.world.deserialize(data);
+            this.entityManager.clear();
+            this.disasterManager.clear();
+        }
+
+        this.particleSystem.clear();
+        this.unpossess();
+        this.renderer.camera.x = this.world.width / 2;
+        this.renderer.camera.y = this.world.height / 2;
+        return { success: true, date: data.date || "Unknown" };
     }
 
     // Camera Navigation & Controlled Entity Movement
