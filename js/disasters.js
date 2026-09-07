@@ -1329,15 +1329,23 @@ class DisasterManager {
                 }
             } else if (this.activeStorm === 'clone_rain') {
                 if (particleSystem && Math.random() < 0.35) {
-                    particleSystem.spawn(rx, ry - 25, 0, 4, 1.8, '#c084fc', 20, 'stardust');
+                    particleSystem.spawn(rx, ry - 25, (Math.random() - 0.5) * 0.4, 4, 1.8, '#c084fc', 20, 'stardust');
                 }
-                if (Math.random() < 0.07 && entityManager.entities.length > 0 && entityManager.entities.length < 350) {
-                    const candidate = entityManager.entities[Math.floor(Math.random() * entityManager.entities.length)];
-                    if (candidate && candidate.active) {
-                        entityManager.clone(candidate);
-                        if (particleSystem) {
-                            particleSystem.burst(rx, ry, 12, ['#c084fc', '#e879f9', '#ffffff'], 1, 3, 1.5, 3, 'stardust');
-                        }
+            }
+        }
+
+        // Throttle clone rain spawning to once every 18 frames, capped at 150 entities
+        if (this.activeStorm === 'clone_rain') {
+            this.cloneTimer = (this.cloneTimer || 0) + 1;
+            if (this.cloneTimer % 18 === 0 && entityManager && Array.isArray(entityManager.entities)) {
+                const living = entityManager.entities.filter(e => e && e.active && !e.isDying);
+                if (living.length > 0 && living.length < 150) {
+                    const candidate = living[Math.floor(Math.random() * living.length)];
+                    const spawnX = Math.floor(10 + Math.random() * (world.width - 20));
+                    const spawnY = Math.floor(10 + Math.random() * (world.height - 20));
+                    const clone = entityManager.clone(candidate, spawnX, spawnY);
+                    if (clone && particleSystem) {
+                        particleSystem.burst(spawnX, spawnY, 18, ['#c084fc', '#e879f9', '#ffffff', '#38bdf8'], 1.5, 4, 1.5, 3, 'stardust');
                     }
                 }
             }
@@ -1356,13 +1364,13 @@ class DisasterManager {
         }
 
         // Blinding full-screen whiteout nuclear flash
-        this.nuclearFlashTimer = 65;
+        this.nuclearFlashTimer = 75;
 
         // Catastrophic prolonged seismic rumble
         if (window.game) {
-            window.game.shakeCamera(55, 140);
+            window.game.shakeCamera(60, 160);
             if (window.game.ui && typeof window.game.ui.showNotification === 'function') {
-                window.game.ui.showNotification("☢️ APOCALYPTIC NUKE IMPACT: THE ENTIRE WORLD HAS BEEN DESTROYED!");
+                window.game.ui.showNotification("☢️ APOCALYPTIC NUKE IMPACT: TOTAL PLANETARY EXTINCTION!");
             }
         }
 
@@ -1370,13 +1378,13 @@ class DisasterManager {
 
         // Colossal atmospheric mushroom cloud & fiery explosion bursts
         if (particleSystem) {
-            particleSystem.nukeMushroom(cx, cy, 4.5);
-            particleSystem.burst(cx, cy, 800, ['#ffffff', '#fef08a', '#f97316', '#ef4444', '#84cc16', '#475569'], 6, 32, 2, 9, 'fire');
+            particleSystem.nukeMushroom(cx, cy, 5.0);
+            particleSystem.burst(cx, cy, 1000, ['#ffffff', '#fef08a', '#f97316', '#ef4444', '#84cc16', '#475569'], 8, 40, 3, 12, 'fire');
 
             // Multiple global supersonic shockwaves sweeping across the map
-            for (let s = 0; s < 4; s++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 16 + s * 12, '#f97316', 100 + s * 25, 'shockwave', 0, 1);
-                if (sw) sw.extra = maxDim * 2.5;
+            for (let s = 0; s < 5; s++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 18 + s * 14, '#f97316', 120 + s * 30, 'shockwave', 0, 1);
+                if (sw) sw.extra = maxDim * 3.0;
             }
         }
 
@@ -1384,27 +1392,35 @@ class DisasterManager {
         if (entityManager && Array.isArray(entityManager.buildings)) {
             for (let i = entityManager.buildings.length - 1; i >= 0; i--) {
                 const b = entityManager.buildings[i];
-                b.takeDamage(99999, world, particleSystem, audio);
+                b.takeDamage(999999, world, particleSystem, audio);
             }
             entityManager.buildings = [];
         }
 
         // 2. COMPLETE ANNIHILATION OF ALL LIVING ENTITIES ACROSS THE ENTIRE WORLD
         if (entityManager && Array.isArray(entityManager.entities)) {
-            for (let i = 0; i < entityManager.entities.length; i++) {
+            for (let i = entityManager.entities.length - 1; i >= 0; i--) {
                 const ent = entityManager.entities[i];
-                if (!ent.active) continue;
+                if (!ent) continue;
 
                 // Check for The Great Galaxy Sacrifice
                 if (ent.type === 'galaxy_guardian' || ent.isCelestial) {
                     this.triggerGreatGalaxySacrifice(ent.x, ent.y, world, entityManager, particleSystem, audio);
                 }
 
-                ent.takeDamage(99999);
-                const angle = Math.atan2(ent.y - cy, ent.x - cx);
-                ent.vx += Math.cos(angle) * 22;
-                ent.vy += Math.sin(angle) * 22;
+                ent.hp = 0;
+                ent.isDying = true;
+                ent.active = false;
+                ent.takeDamage(999999);
             }
+            if (window.game && window.game.possessedEntity) {
+                window.game.unpossess();
+            }
+            entityManager.entities = [];
+            entityManager.corpses = [];
+            entityManager.projectiles = [];
+            entityManager.explosiveEggs = [];
+            if (entityManager.kingdoms) entityManager.kingdoms.clear();
         }
 
         // 3. COMPLETE WORLD TERRAIN DESTRUCTION ACROSS EVERY TILE ON THE PLANET
@@ -1418,48 +1434,45 @@ class DisasterManager {
                 if (tile === TILES.BEDROCK) continue;
 
                 // Ground Zero Void Abyss (Core Crater)
-                if (dist < 40) {
+                if (dist < 60) {
                     world.setTile(tx, ty, TILES.VOID);
                 }
-                // Heavy Thermal & Radioactive Rupture Zone (~40 to 95 tiles)
-                else if (dist < 95) {
+                // Heavy Thermal & Radioactive Rupture Zone (~60 to 130 tiles)
+                else if (dist < 130) {
                     const r = Math.random();
-                    world.setTile(tx, ty, r < 0.5 ? TILES.FALLOUT : (r < 0.8 ? TILES.LAVA : TILES.MAGMA_ROCK));
-                    if (Math.random() < 0.3) world.ignite(tx, ty, 200);
+                    world.setTile(tx, ty, r < 0.45 ? TILES.FALLOUT : (r < 0.75 ? TILES.LAVA : TILES.MAGMA_ROCK));
+                    world.ignite(tx, ty, 255);
                 }
-                // Middle Fallout & Acid Crater (~95 to 180 tiles)
-                else if (dist < 180) {
+                // Middle Fallout & Acid Crater (~130 to 220 tiles)
+                else if (dist < 220) {
                     if (tile === TILES.WATER || tile === TILES.DEEP_WATER) {
-                        world.setTile(tx, ty, Math.random() < 0.6 ? TILES.ACID : TILES.SAND);
+                        world.setTile(tx, ty, Math.random() < 0.75 ? TILES.ACID : TILES.FALLOUT);
                     } else if (tile === TILES.ICE || tile === TILES.SNOW) {
-                        world.setTile(tx, ty, TILES.WATER);
+                        world.setTile(tx, ty, TILES.ACID);
                     } else {
-                        world.setTile(tx, ty, Math.random() < 0.4 ? TILES.FALLOUT : TILES.ASH);
-                        world.ignite(tx, ty, 180);
+                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.FALLOUT : TILES.ASH);
+                        world.ignite(tx, ty, 240);
                     }
                 }
-                // Rest of the ENTIRE WORLD (Global Thermal Shockwave & Incineration)
+                // Rest of the ENTIRE WORLD (Global Thermal Shockwave & Planetary Incineration)
                 else {
-                    if (tile === TILES.GRASS || tile === TILES.FOREST || tile === TILES.SWAMP || tile === TILES.BIOLUMINESCENT_MOSS) {
-                        world.setTile(tx, ty, TILES.ASH);
-                        world.ignite(tx, ty, 240);
-                    } else if (tile === TILES.WATER) {
-                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.ACID : TILES.WATER);
-                    } else if (tile === TILES.DEEP_WATER) {
-                        if (Math.random() < 0.25) world.setTile(tx, ty, TILES.ACID);
+                    if (tile === TILES.WATER || tile === TILES.DEEP_WATER) {
+                        world.setTile(tx, ty, TILES.ACID); // All oceans turned to deadly radioactive acid
                     } else if (tile === TILES.ICE || tile === TILES.SNOW) {
-                        world.setTile(tx, ty, TILES.WATER);
-                    } else if (tile === TILES.ROAD || tile === TILES.SOIL) {
-                        world.setTile(tx, ty, TILES.ASH);
+                        world.setTile(tx, ty, TILES.ACID);
                     } else if (tile === TILES.STONE || tile === TILES.HIGH_MOUNTAIN) {
-                        if (Math.random() < 0.35) world.setTile(tx, ty, TILES.ASH);
+                        world.setTile(tx, ty, Math.random() < 0.6 ? TILES.MAGMA_ROCK : TILES.ASH);
+                        if (Math.random() < 0.4) world.ignite(tx, ty, 200);
+                    } else {
+                        world.setTile(tx, ty, Math.random() < 0.4 ? TILES.FALLOUT : TILES.ASH);
+                        world.ignite(tx, ty, 255);
                     }
                 }
             }
         }
 
         // Global Nuclear Winter Fallout Storm
-        this.startStorm('acid', 3500);
+        this.startStorm('acid', 4500);
     }
 
     // Atomic Nuke (Mega-Destruction Overhaul)

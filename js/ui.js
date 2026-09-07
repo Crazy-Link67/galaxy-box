@@ -162,6 +162,14 @@ const CATEGORY_TOOLS = {
     creatures: [
         { id: 'control', name: 'Possess / Control', icon: '🎮', desc: 'Directly pilot and control any creature with WASD & attacks!' },
         { id: 'creator', name: 'Creature Creator', icon: '🎨', desc: 'Design, customize, and build your own custom monsters!' },
+        { id: 'trex', name: 'Tyrannosaurus Rex', icon: '🦖', desc: 'Apex primordial carnivore with bone-crushing bite and earthshaking roar!' },
+        { id: 'triceratops', name: 'Triceratops', icon: '🦏', desc: 'Three-horned armored ceratopsian with frill shield bulldoze charge!' },
+        { id: 'velociraptor', name: 'Velociraptor', icon: '🦎', desc: 'Lethal sickle-clawed pack hunter with leap pounce and frenzy howl!' },
+        { id: 'pterodactyl', name: 'Pterodactyl', icon: '🦅', desc: 'Soaring flying reptile with dive talons and supersonic screech gale!' },
+        { id: 'brachiosaurus', name: 'Brachiosaurus', icon: '🦕', desc: 'Colossal titan sauropod with columnar stomp and earth-shattering quake!' },
+        { id: 'frost_dragon', name: 'Glacial Frost Dragon', icon: '❄️', desc: 'Ancient ice wyrm breathing freezing frost streams and blizzard vortices!' },
+        { id: 'shadow_dragon', name: 'Shadow Void Dragon', icon: '🔮', desc: 'Abyssal netherflame wyrm with void lasers and singularity shadow warp!' },
+        { id: 'storm_dragon', name: 'Thunder Storm Dragon', icon: '⚡', desc: 'High-voltage electric wyrm firing chain lightning and supercell thunder surges!' },
         { id: 'duck', name: 'Exploding Duck', icon: '🦆', desc: 'Quacking aquatic fowl that lays ticking explosive eggs and detonates upon death!' },
         { id: 'evermean', name: 'Evermean Treant', icon: '🌲', desc: 'Eyeless walking tree with sharp needle legs that headslams foes and forest trees!' },
         { id: 'frog', name: 'Poison Dart Frog', icon: '🐸', desc: 'Agile amphibious hopper that spits venom darts and tongue-snatches prey.' },
@@ -1509,6 +1517,54 @@ class UIManager {
                 head: 'cyclops', body: 'muscular', arms: 'bipedal_arms', legs: 'bipedal_legs', back: 'none',
                 col: '#78716c', colSec: '#44403c', colGlow: '#a8a29e',
                 hp: 2500, atk: 65, spd: 0.5, scale: 2.5
+            },
+            trex: {
+                name: 'Tyrannosaurus Rex',
+                head: 'trex_head', body: 'dino_armored', arms: 'bipedal_arms', legs: 'theropod_legs', back: 'dino_spikes',
+                col: '#2d5a27', colSec: '#14532d', colGlow: '#facc15',
+                hp: 4500, atk: 95, spd: 0.95, scale: 3.2
+            },
+            triceratops: {
+                name: 'Triceratops',
+                head: 'triceratops_horns', body: 'dino_armored', arms: 'quadruped_paws', legs: 'sauropod_pillars', back: 'none',
+                col: '#b45309', colSec: '#78350f', colGlow: '#fef08a',
+                hp: 3800, atk: 75, spd: 0.85, scale: 2.8
+            },
+            velociraptor: {
+                name: 'Velociraptor',
+                head: 'trex_head', body: 'avian_feather', arms: 'raptor_claws', legs: 'theropod_legs', back: 'none',
+                col: '#dc2626', colSec: '#991b1b', colGlow: '#facc15',
+                hp: 1200, atk: 65, spd: 1.4, scale: 1.6
+            },
+            pterodactyl: {
+                name: 'Pterodactyl',
+                head: 'pterosaur_beak', body: 'standard', arms: 'pterodactyl_wings', legs: 'bipedal_legs', back: 'none',
+                col: '#0284c7', colSec: '#38bdf8', colGlow: '#bae6fd',
+                hp: 1600, atk: 60, spd: 1.25, scale: 2.2
+            },
+            brachiosaurus: {
+                name: 'Brachiosaurus',
+                head: 'humanoid', body: 'sauropod_bulk', arms: 'quadruped_paws', legs: 'sauropod_pillars', back: 'none',
+                col: '#166534', colSec: '#14532d', colGlow: '#4ade80',
+                hp: 7500, atk: 85, spd: 0.45, scale: 4.0
+            },
+            frost_dragon: {
+                name: 'Frost Dragon',
+                head: 'dragon_snout', body: 'dragon_scales', arms: 'dragon_wings', legs: 'quadruped_paws', back: 'dragon_wings',
+                col: '#0284c7', colSec: '#38bdf8', colGlow: '#00ffff',
+                hp: 4200, atk: 88, spd: 0.9, scale: 3.0
+            },
+            shadow_dragon: {
+                name: 'Shadow Dragon',
+                head: 'dragon_snout', body: 'dragon_scales', arms: 'dragon_wings', legs: 'quadruped_paws', back: 'dragon_wings',
+                col: '#1e1b4b', colSec: '#581c87', colGlow: '#f43f5e',
+                hp: 4800, atk: 92, spd: 0.95, scale: 3.2
+            },
+            storm_dragon: {
+                name: 'Storm Dragon',
+                head: 'dragon_snout', body: 'dragon_scales', arms: 'dragon_wings', legs: 'quadruped_paws', back: 'dragon_wings',
+                col: '#0891b2', colSec: '#06b6d4', colGlow: '#facc15',
+                hp: 4600, atk: 90, spd: 1.0, scale: 3.0
             }
         };
 
@@ -1582,6 +1638,28 @@ class UIManager {
                     ctx.fillRect(cx + 10, cy - 12, 4, 8);
                     ctx.fillRect(cx - 18, cy - 6, 4, 6);
                     ctx.fillRect(cx + 14, cy - 6, 4, 6);
+                } else if (back === 'dragon_wings') {
+                    const wingSpread = Math.sin(previewAnim * 5) * 4;
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 26, cy - 16 + wingSpread, 14, 18);
+                    ctx.fillRect(cx - 30, cy - 22 + wingSpread, 12, 12);
+                    ctx.fillRect(cx + 12, cy - 16 - wingSpread, 14, 18);
+                    ctx.fillRect(cx + 18, cy - 22 - wingSpread, 12, 12);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 31, cy - 24 + wingSpread, 3, 3);
+                    ctx.fillRect(cx + 28, cy - 24 - wingSpread, 3, 3);
+                } else if (back === 'stegosaurus_plates') {
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 16, cy - 18, 6, 8);
+                    ctx.fillRect(cx - 4, cy - 22, 8, 12);
+                    ctx.fillRect(cx + 10, cy - 18, 6, 8);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 2, cy - 20, 4, 4);
+                } else if (back === 'dino_spikes') {
+                    ctx.fillStyle = sec;
+                    for (let sp = -14; sp <= 14; sp += 7) {
+                        ctx.fillRect(cx + sp - 1, cy - 16, 3, 6);
+                    }
                 }
 
                 if (legs === 'pointy_roots') {
@@ -1602,6 +1680,24 @@ class UIManager {
 
                     ctx.fillStyle = '#270e02';
                     ctx.fillRect(cx - 2, cy + 14, 4, 12);
+                } else if (legs === 'theropod_legs') {
+                    const legBob = Math.sin(previewAnim * 6) * 3;
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 10, cy + 10, 6, 14 + legBob);
+                    ctx.fillRect(cx + 4, cy + 10, 6, 14 - legBob);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(cx - 13, cy + 22 + legBob, 9, 3);
+                    ctx.fillRect(cx + 4, cy + 22 - legBob, 9, 3);
+                } else if (legs === 'sauropod_pillars') {
+                    const legBob = Math.sin(previewAnim * 4) * 2;
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 14, cy + 10, 8, 14 + legBob);
+                    ctx.fillRect(cx - 4, cy + 10, 8, 14 - legBob);
+                    ctx.fillRect(cx + 6, cy + 10, 8, 14 + legBob);
+                    ctx.fillStyle = '#052e16';
+                    ctx.fillRect(cx - 15, cy + 22 + legBob, 10, 3);
+                    ctx.fillRect(cx - 5, cy + 22 - legBob, 10, 3);
+                    ctx.fillRect(cx + 5, cy + 22 + legBob, 10, 3);
                 } else if (legs === 'duck_webbed') {
                     ctx.fillStyle = sec;
                     ctx.fillRect(cx - 8, cy + 14, 5, 6);
@@ -1643,6 +1739,22 @@ class UIManager {
                     ctx.fillRect(cx - 8, cy - 6 + bob, 16, 14);
                     ctx.fillStyle = glow;
                     ctx.fillRect(cx - 3, cy - 2 + bob, 6, 6);
+                } else if (body === 'sauropod_bulk') {
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 16, cy - 12 + bob, 32, 24);
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 12, cy - 8 + bob, 24, 16);
+                } else if (body === 'dino_armored') {
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 12, cy - 8 + bob, 24, 5);
+                    ctx.fillRect(cx - 10, cy - 1 + bob, 20, 5);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 2, cy + 5 + bob, 4, 4);
+                } else if (body === 'dragon_scales') {
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 10, cy - 8 + bob, 20, 18);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 4, cy - 4 + bob, 8, 8);
                 } else if (body === 'treant_bark') {
                     ctx.fillStyle = '#14532d';
                     ctx.fillRect(cx - 10, cy - 8 + bob, 20, 8);
@@ -1665,6 +1777,21 @@ class UIManager {
                     ctx.fillStyle = glow;
                     ctx.fillRect(cx - 22, cy + 8 + bob, 4, 10);
                     ctx.fillRect(cx + 18, cy + 8 + bob, 4, 10);
+                } else if (arms === 'raptor_claws') {
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 16, cy - 4 + bob, 6, 12);
+                    ctx.fillRect(cx + 10, cy - 4 + bob, 6, 12);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(cx - 18, cy + 6 + bob, 4, 6);
+                    ctx.fillRect(cx + 14, cy + 6 + bob, 4, 6);
+                } else if (arms === 'pterodactyl_wings' || arms === 'dragon_wings') {
+                    const flap = Math.sin(previewAnim * 6) * 4;
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 24, cy - 8 + bob + flap, 14, 12);
+                    ctx.fillRect(cx + 10, cy - 8 + bob + flap, 14, 12);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 25, cy - 9 + bob + flap, 3, 3);
+                    ctx.fillRect(cx + 22, cy - 9 + bob + flap, 3, 3);
                 } else if (arms === 'blaster_arms') {
                     ctx.fillStyle = '#334155';
                     ctx.fillRect(cx - 20, cy - 4 + bob, 8, 8);
@@ -1704,6 +1831,44 @@ class UIManager {
                     ctx.fillStyle = '#0a0502';
                     ctx.fillRect(cx - 4, cy - 22 + bob, 8, 6);
                     ctx.fillRect(cx - 2, cy - 24 + bob, 4, 2);
+                } else if (head === 'trex_head') {
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 12, cy - 30 + bob, 26, 18);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(cx + 4, cy - 20 + bob, 12, 6);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(cx + 6, cy - 21 + bob, 3, 3);
+                    ctx.fillRect(cx + 11, cy - 21 + bob, 3, 3);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 2, cy - 26 + bob, 4, 4);
+                } else if (head === 'dragon_snout') {
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 12, cy - 28 + bob, 24, 16);
+                    ctx.fillRect(cx + 6, cy - 22 + bob, 10, 8);
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 14, cy - 36 + bob, 5, 10);
+                    ctx.fillRect(cx - 2, cy - 36 + bob, 5, 10);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx, cy - 25 + bob, 4, 4);
+                } else if (head === 'triceratops_horns') {
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 16, cy - 34 + bob, 32, 14);
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 10, cy - 26 + bob, 20, 16);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(cx + 6, cy - 30 + bob, 12, 4);
+                    ctx.fillRect(cx + 8, cy - 20 + bob, 6, 4);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 2, cy - 22 + bob, 4, 4);
+                } else if (head === 'pterosaur_beak') {
+                    ctx.fillStyle = sec;
+                    ctx.fillRect(cx - 22, cy - 30 + bob, 14, 6);
+                    ctx.fillStyle = col;
+                    ctx.fillRect(cx - 10, cy - 28 + bob, 18, 14);
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.fillRect(cx + 8, cy - 24 + bob, 16, 5);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(cx - 2, cy - 24 + bob, 4, 4);
                 } else if (head === 'duck') {
                     ctx.fillStyle = col;
                     ctx.fillRect(cx - 10, cy - 26 + bob, 20, 16);

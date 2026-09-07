@@ -220,6 +220,7 @@ class Entity {
     constructor(type, x, y, customData = null) {
         this.id = Math.floor(Math.random() * 1000000);
         this.type = type;
+        this.species = type;
         this.x = x;
         this.y = y;
         this.vx = 0;
@@ -840,6 +841,106 @@ class Entity {
                 this.isAquatic = true;
                 this.traits.add('water_walker');
                 break;
+            case 'trex':
+                this.name = 'Tyrannosaurus Rex';
+                this.hp = 3500;
+                this.maxHp = 3500;
+                this.speed = 0.85;
+                this.attack = 115;
+                this.size = 11;
+                this.color = '#15803d';
+                this.isApex = true;
+                this.traits.add('titan');
+                this.traits.add('bloodthirsty');
+                this.traits.add('earthshaker');
+                break;
+            case 'triceratops':
+                this.name = 'Triceratops';
+                this.hp = 2800;
+                this.maxHp = 2800;
+                this.speed = 0.65;
+                this.attack = 80;
+                this.size = 9;
+                this.color = '#b45309';
+                this.traits.add('titan');
+                this.traits.add('thorny');
+                break;
+            case 'velociraptor':
+                this.name = 'Velociraptor';
+                this.hp = 380;
+                this.maxHp = 380;
+                this.speed = 1.45;
+                this.attack = 45;
+                this.size = 4;
+                this.color = '#ca8a04';
+                this.traits.add('super_speed');
+                this.traits.add('bloodthirsty');
+                break;
+            case 'pterodactyl':
+                this.name = 'Pterodactyl';
+                this.hp = 480;
+                this.maxHp = 480;
+                this.speed = 1.35;
+                this.attack = 42;
+                this.size = 5;
+                this.color = '#0284c7';
+                this.isFlying = true;
+                this.traits.add('flying');
+                break;
+            case 'brachiosaurus':
+                this.name = 'Brachiosaurus';
+                this.hp = 6500;
+                this.maxHp = 6500;
+                this.speed = 0.4;
+                this.attack = 85;
+                this.size = 15;
+                this.color = '#3f6212';
+                this.traits.add('titan');
+                this.traits.add('peaceful');
+                this.traits.add('earthshaker');
+                break;
+            case 'frost_dragon':
+                this.name = 'Glacial Frost Dragon';
+                this.hp = 4200;
+                this.maxHp = 4200;
+                this.speed = 0.95;
+                this.attack = 95;
+                this.size = 12;
+                this.color = '#38bdf8';
+                this.isFlying = true;
+                this.isBoss = true;
+                this.traits.add('flying');
+                this.traits.add('cryomancer');
+                this.traits.add('fireproof');
+                break;
+            case 'shadow_dragon':
+                this.name = 'Nether Shadow Dragon';
+                this.hp = 4500;
+                this.maxHp = 4500;
+                this.speed = 1.0;
+                this.attack = 110;
+                this.size = 12;
+                this.color = '#7e22ce';
+                this.isFlying = true;
+                this.isBoss = true;
+                this.traits.add('flying');
+                this.traits.add('teleporter');
+                this.traits.add('fireproof');
+                break;
+            case 'storm_dragon':
+                this.name = 'Storm Lightning Wyrm';
+                this.hp = 4000;
+                this.maxHp = 4000;
+                this.speed = 1.05;
+                this.attack = 100;
+                this.size = 12;
+                this.color = '#06b6d4';
+                this.isFlying = true;
+                this.isBoss = true;
+                this.traits.add('flying');
+                this.traits.add('electrocharged');
+                this.traits.add('fireproof');
+                break;
             default:
                 this.hp = 100;
                 this.maxHp = 100;
@@ -1062,9 +1163,12 @@ class Entity {
         } else if (this.type === 'seraph_angel') {
             this.deathTimer = 36;
             this.deathType = 'seraph_angel';
-        } else if (this.type === 'dragon' || this.type === 'dune_leviathan') {
+        } else if (this.type === 'dragon' || this.type === 'dune_leviathan' || this.type === 'golden_dragon' || this.type === 'frost_dragon' || this.type === 'shadow_dragon' || this.type === 'storm_dragon') {
             this.deathTimer = 40;
             this.deathType = 'dragon';
+        } else if (this.type === 'trex' || this.type === 'brachiosaurus' || this.type === 'triceratops' || this.type === 'velociraptor' || this.type === 'pterodactyl') {
+            this.deathTimer = 38;
+            this.deathType = 'dino';
         } else if (this.type === 'skeleton' || this.type === 'zombie') {
             this.deathTimer = 22;
             this.deathType = 'undead';
@@ -1429,6 +1533,135 @@ class Entity {
                 entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 6, Math.sin(ang) * 6, 'fireball', this.id, this.attack * 0.8));
             }
             if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#78350f', '#f97316', '#475569'], 2, 4, 1.5, 3);
+            return;
+        } else if (this.type === 'trex') {
+            // Apex Bone-Crushing Bite & Lunge
+            if (audio && typeof audio.playBiteChomp === 'function') audio.playBiteChomp();
+            else if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            if (window.game) window.game.shakeCamera(7, 14);
+            this.vx += dirX * 3.8;
+            this.vy += dirY * 3.8;
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const target = entityManager.entities[i];
+                if (!target.active || target.id === this.id) continue;
+                if (Math.hypot(target.x - (this.x + dirX * 10), target.y - (this.y + dirY * 10)) < 18) {
+                    target.takeDamage(this.attack * 1.4, this);
+                    target.vx += dirX * 6;
+                    target.vy += dirY * 6;
+                    if (particleSystem) particleSystem.burst(target.x, target.y, 10, ['#dc2626', '#991b1b', '#ffffff'], 1.5, 3.5, 1, 2, 'blood');
+                }
+            }
+            return;
+        } else if (this.type === 'triceratops') {
+            // Horn Gore Charge & Bulldoze
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            if (window.game) window.game.shakeCamera(8, 15);
+            this.vx += dirX * 4.2;
+            this.vy += dirY * 4.2;
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const target = entityManager.entities[i];
+                if (!target.active || target.id === this.id) continue;
+                if (Math.hypot(target.x - (this.x + dirX * 8), target.y - (this.y + dirY * 8)) < 16) {
+                    target.takeDamage(this.attack * 1.25, this);
+                    target.vx += dirX * 8;
+                    target.vy += dirY * 8;
+                    if (particleSystem) particleSystem.burst(target.x, target.y, 8, ['#b45309', '#78350f', '#ffffff'], 1.5, 3.5, 1, 2);
+                }
+            }
+            return;
+        } else if (this.type === 'velociraptor') {
+            // Sickle Claw Leaping Pounce
+            if (audio && typeof audio.playSlash === 'function') audio.playSlash();
+            this.vx += dirX * 5.5;
+            this.vy += dirY * 5.5;
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const target = entityManager.entities[i];
+                if (!target.active || target.id === this.id) continue;
+                if (Math.hypot(target.x - (this.x + dirX * 6), target.y - (this.y + dirY * 6)) < 14) {
+                    target.takeDamage(this.attack * 1.3, this);
+                    target.vx += dirX * 4;
+                    target.vy += dirY * 4;
+                    if (particleSystem) particleSystem.burst(target.x, target.y, 8, ['#dc2626', '#facc15'], 1.2, 3, 1, 2, 'blood');
+                }
+            }
+            return;
+        } else if (this.type === 'pterodactyl') {
+            // Dive Bomb Talons & Aerial Gust
+            if (audio && typeof audio.playPterosaurScreech === 'function') audio.playPterosaurScreech();
+            this.vx += dirX * 5.0;
+            this.vy += dirY * 5.0;
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const target = entityManager.entities[i];
+                if (!target.active || target.id === this.id) continue;
+                if (Math.hypot(target.x - (this.x + dirX * 8), target.y - (this.y + dirY * 8)) < 15) {
+                    target.takeDamage(this.attack, this);
+                    target.vx += dirX * 5;
+                    target.vy += dirY * 5;
+                    if (particleSystem) particleSystem.burst(target.x, target.y, 6, ['#38bdf8', '#ffffff'], 1, 3, 1, 2);
+                }
+            }
+            return;
+        } else if (this.type === 'brachiosaurus') {
+            // Columnar Foot Stomp Shockwave
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.6);
+            if (window.game) window.game.shakeCamera(14, 22);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 25, ['#3f6212', '#78350f', '#475569'], 2, 5, 1.5, 3);
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const target = entityManager.entities[i];
+                if (!target.active || target.id === this.id) continue;
+                const d = Math.hypot(target.x - this.x, target.y - this.y);
+                if (d < 30) {
+                    target.takeDamage(this.attack, this);
+                    const ang = Math.atan2(target.y - this.y, target.x - this.x);
+                    target.vx += Math.cos(ang) * 9;
+                    target.vy += Math.sin(ang) * 9;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_dragon') {
+            // Glacial Frost Breath Stream
+            if (audio && typeof audio.playFrostBreath === 'function') audio.playFrostBreath();
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.18;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 6.5, Math.sin(ang) * 6.5, 'frost', this.id, this.attack * 0.7));
+            }
+            // Freeze water along breath path
+            for (let step = 3; step < 20; step += 4) {
+                const mx = Math.floor(this.x + dirX * step);
+                const my = Math.floor(this.y + dirY * step);
+                if (world.inBounds(mx, my)) {
+                    const t = world.getTile(mx, my);
+                    if (t === TILES.WATER || t === TILES.DEEP_WATER) world.setTile(mx, my, TILES.ICE);
+                    else if (t === TILES.GRASS || t === TILES.SOIL) world.setTile(mx, my, TILES.SNOW);
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 6, this.y + dirY * 6, 16, ['#38bdf8', '#a5f3fc', '#ffffff'], 2, 5, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'shadow_dragon') {
+            // Netherflame Void Beam
+            if (audio && typeof audio.playShadowBreath === 'function') audio.playShadowBreath();
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.18;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 7.0, Math.sin(ang) * 7.0, 'laser', this.id, this.attack * 0.75));
+            }
+            for (let step = 3; step < 20; step += 4) {
+                const mx = Math.floor(this.x + dirX * step);
+                const my = Math.floor(this.y + dirY * step);
+                if (world.inBounds(mx, my) && world.getTile(mx, my) !== TILES.BEDROCK) {
+                    if (Math.random() < 0.4) world.setTile(mx, my, TILES.ASH);
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 6, this.y + dirY * 6, 16, ['#7e22ce', '#a855f7', '#0f051d'], 2, 5, 1.5, 3, 'stardust');
+            return;
+        } else if (this.type === 'storm_dragon') {
+            // Chain Lightning Breath
+            if (audio && typeof audio.playLightningBreath === 'function') audio.playLightningBreath();
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.22;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 8.0, Math.sin(ang) * 8.0, 'plasma', this.id, this.attack * 0.8));
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 6, this.y + dirY * 6, 18, ['#06b6d4', '#facc15', '#ffffff'], 2, 6, 1.5, 3, 'spark');
+            return;
         } else if (this.type === 'crabzilla') {
             // Twin Eye Lasers!
             if (audio) audio.playLaser();
@@ -1837,6 +2070,175 @@ class Entity {
                 }
             }
             if (particleSystem) particleSystem.burst(this.x, this.y, 25, ['#78350f', '#f97316', '#475569'], 2, 6, 2, 4);
+            return;
+        } else if (this.type === 'trex') {
+            // Earthshaking Apex Roar
+            if (audio && typeof audio.playDinoRoar === 'function') audio.playDinoRoar();
+            else if (audio) audio.playRoar();
+            if (window.game) window.game.shakeCamera(18, 30);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 45, ['#78350f', '#b45309', '#dc2626', '#ffffff'], 2.5, 7, 2, 5, 'smoke');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (!o.active || o.id === this.id) continue;
+                const d = Math.hypot(o.x - this.x, o.y - this.y);
+                if (d < 35) {
+                    o.takeDamage(130, this);
+                    o.frozen = 60; // Terrified / Stunned
+                    const ang = Math.atan2(o.y - this.y, o.x - this.x);
+                    o.vx += Math.cos(ang) * 9;
+                    o.vy += Math.sin(ang) * 9;
+                }
+            }
+            return;
+        } else if (this.type === 'triceratops') {
+            // Frill Shield Bulldoze Rush
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            if (window.game) window.game.shakeCamera(12, 22);
+            const dirX = Math.cos(this.rotation || 0);
+            const dirY = Math.sin(this.rotation || 0);
+            this.vx += dirX * 9;
+            this.vy += dirY * 9;
+            if (particleSystem) particleSystem.burst(this.x, this.y, 30, ['#b45309', '#78350f', '#facc15'], 2, 6, 1.5, 4);
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (!o.active || o.id === this.id) continue;
+                if (Math.hypot(o.x - this.x, o.y - this.y) < 26) {
+                    o.takeDamage(110, this);
+                    o.vx += dirX * 12;
+                    o.vy += dirY * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'velociraptor') {
+            // Pack Frenzy Howl & Razor Cyclone
+            if (audio && typeof audio.playSlash === 'function') audio.playSlash();
+            if (particleSystem) particleSystem.burst(this.x, this.y, 30, ['#dc2626', '#facc15', '#ffffff'], 2, 6, 1.5, 3, 'blood');
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 7.5, Math.sin(a) * 7.5, 'arrow', this.id, this.attack * 1.1));
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (o.active && o.type === 'velociraptor' && Math.hypot(o.x - this.x, o.y - this.y) < 40) {
+                    o.speed *= 1.35; // Pack hunting buff
+                }
+            }
+            return;
+        } else if (this.type === 'pterodactyl') {
+            // Supersonic Screech & Aerial Gale Shockwave
+            if (audio && typeof audio.playPterosaurScreech === 'function') audio.playPterosaurScreech();
+            if (window.game) window.game.shakeCamera(8, 16);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#38bdf8', '#e0f2fe', '#ffffff'], 2.5, 7, 2, 4, 'spark');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (!o.active || o.id === this.id) continue;
+                const d = Math.hypot(o.x - this.x, o.y - this.y);
+                if (d < 30) {
+                    o.takeDamage(85, this);
+                    const ang = Math.atan2(o.y - this.y, o.x - this.x);
+                    o.vx += Math.cos(ang) * 11;
+                    o.vy += Math.sin(ang) * 11;
+                }
+            }
+            return;
+        } else if (this.type === 'brachiosaurus') {
+            // Colossal Seismic Earthshaker Stomp
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(2.2);
+            if (window.game) window.game.shakeCamera(22, 35);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 60, ['#3f6212', '#78350f', '#475569', '#15803d'], 3, 8, 2.5, 5);
+            const radius = 32;
+            for (let dy = -radius; dy <= radius; dy += 2) {
+                for (let dx = -radius; dx <= radius; dx += 2) {
+                    if (dx * dx + dy * dy <= radius * radius) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                            if (Math.random() < 0.15) world.setTile(tx, ty, TILES.SOIL);
+                        }
+                    }
+                }
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (!o.active || o.id === this.id) continue;
+                const d = Math.hypot(o.x - this.x, o.y - this.y);
+                if (d < radius) {
+                    o.takeDamage(170, this);
+                    const ang = Math.atan2(o.y - this.y, o.x - this.x);
+                    o.vx += Math.cos(ang) * 12;
+                    o.vy += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_dragon') {
+            // Glacial Blizzard Vortex
+            if (audio && typeof audio.playFrostBreath === 'function') audio.playFrostBreath();
+            if (window.game) window.game.shakeCamera(10, 20);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 50, ['#38bdf8', '#a5f3fc', '#ffffff'], 3, 8, 2, 5, 'snow');
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 6.5, Math.sin(a) * 6.5, 'frost', this.id, 95));
+            }
+            const frad = 24;
+            for (let dy = -frad; dy <= frad; dy++) {
+                for (let dx = -frad; dx <= frad; dx++) {
+                    if (dx * dx + dy * dy <= frad * frad) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world.inBounds(tx, ty)) {
+                            const t = world.getTile(tx, ty);
+                            if (t === TILES.WATER || t === TILES.DEEP_WATER) world.setTile(tx, ty, TILES.ICE);
+                            else if ((t === TILES.GRASS || t === TILES.SOIL) && Math.random() < 0.6) world.setTile(tx, ty, TILES.SNOW);
+                        }
+                    }
+                }
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (o.active && o.id !== this.id && Math.hypot(o.x - this.x, o.y - this.y) < frad) {
+                    o.takeDamage(100, this);
+                    o.frozen = 120;
+                }
+            }
+            return;
+        } else if (this.type === 'shadow_dragon') {
+            // Singularity Shadow Warp & Void Implosion
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            if (window.game) window.game.shakeCamera(14, 25);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 45, ['#7e22ce', '#a855f7', '#0f051d'], 2.5, 7, 2, 5, 'stardust');
+            const target = entityManager.findNearestEntity(this, (o) => o.id !== this.id);
+            if (target) {
+                this.x = target.x + (Math.random() < 0.5 ? -6 : 6);
+                this.y = target.y + (Math.random() < 0.5 ? -6 : 6);
+            } else {
+                this.x += (Math.random() - 0.5) * 40;
+                this.y += (Math.random() - 0.5) * 40;
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 45, ['#7e22ce', '#a855f7', '#0f051d'], 2.5, 7, 2, 5, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (o.active && o.id !== this.id && Math.hypot(o.x - this.x, o.y - this.y) < 32) {
+                    o.takeDamage(130, this);
+                    const ang = Math.atan2(this.y - o.y, this.x - o.x);
+                    o.vx += Math.cos(ang) * 9;
+                    o.vy += Math.sin(ang) * 9;
+                }
+            }
+            return;
+        } else if (this.type === 'storm_dragon') {
+            // Supercell Thunder Surge
+            if (audio && typeof audio.playLightningBreath === 'function') audio.playLightningBreath();
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game) window.game.shakeCamera(18, 28);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 55, ['#06b6d4', '#facc15', '#ffffff'], 3, 8, 2, 5, 'spark');
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 8.5, Math.sin(a) * 8.5, 'plasma', this.id, 110));
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const o = entityManager.entities[i];
+                if (o.active && o.id !== this.id && Math.hypot(o.x - this.x, o.y - this.y) < 34) {
+                    o.takeDamage(120, this);
+                }
+            }
+            return;
         } else if (this.type === 'crabzilla') {
             // Crabzilla Mega Stomp Shockwave!
             if (audio) audio.playExplosion(2.0);
@@ -2226,6 +2628,26 @@ class EntityManager {
 
         this.entities.push(ent);
         return ent;
+    }
+
+    clone(parent, targetX = null, targetY = null) {
+        if (!parent) return null;
+        const x = targetX !== null ? targetX : parent.x + (Math.random() - 0.5) * 8;
+        const y = targetY !== null ? targetY : parent.y + (Math.random() - 0.5) * 8;
+        const customData = parent.customData ? JSON.parse(JSON.stringify(parent.customData)) : null;
+        const cloneEnt = this.spawn(parent.type, x, y, customData);
+        if (!cloneEnt) return null;
+
+        cloneEnt.scale = parent.scale;
+        cloneEnt.maxHp = parent.maxHp;
+        cloneEnt.hp = parent.hp;
+        cloneEnt.attack = parent.attack;
+        cloneEnt.speed = parent.speed;
+        cloneEnt.color = parent.color;
+        cloneEnt.traits = new Set(parent.traits);
+        cloneEnt.weapon = parent.weapon;
+        cloneEnt.kingdomId = parent.kingdomId;
+        return cloneEnt;
     }
 
     update(world, particleSystem, audio, disasterManager) {

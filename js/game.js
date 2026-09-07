@@ -850,7 +850,9 @@ class Game {
                 'colossus_mech', 'seraph_angel', 'dune_leviathan', 'vampire_lord', 'void_titan', 'evermean',
                 'duck', 'crystal_golem', 'shadow_assassin',
                 'frog', 'cyber_ninja', 'laser_shark', 'frost_wolf', 'sand_scorpion', 'necromancer',
-                'valkyrie', 'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship'
+                'valkyrie', 'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship',
+                'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
+                'frost_dragon', 'shadow_dragon', 'storm_dragon'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);
@@ -858,11 +860,14 @@ class Game {
                 if (this.audio) this.audio.playCreatureSound(tool);
 
                 // Auto possess colossal bosses, dragons, mechs, titans, beasts & vehicles for instant direct control action!
+                // Note: 'duck' and 'frog' are excluded from autoPossess to allow flock spawning without camera seizure.
                 const autoPossessList = [
                     'crabzilla', 'kaiju', 'dragon', 'mech', 'tank', 'warship', 'helicopter', 'starfighter', 
-                    'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean', 'duck', 'crystal_golem', 
+                    'colossus_mech', 'void_titan', 'dune_leviathan', 'evermean', 'crystal_golem', 
                     'shadow_assassin', 'cyber_ninja', 'laser_shark', 'mecha_rex', 'golden_dragon', 'space_worm', 
-                    'pirate_ship', 'valkyrie', 'gargoyle', 'necromancer', 'frost_wolf', 'sand_scorpion', 'frog'
+                    'pirate_ship', 'valkyrie', 'gargoyle', 'necromancer', 'frost_wolf', 'sand_scorpion',
+                    'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
+                    'frost_dragon', 'shadow_dragon', 'storm_dragon'
                 ];
                 if (autoPossessList.includes(tool)) {
                     this.possess(ent);
