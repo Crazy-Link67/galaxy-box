@@ -327,12 +327,44 @@ class SoundManager {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        if (type === 'dragon' || type === 'golden_dragon' || type === 'frost_dragon' || type === 'shadow_dragon' || type === 'storm_dragon') {
+        if (type === 'dragon' || type === 'golden_dragon' || type === 'frost_dragon' || type === 'shadow_dragon' || type === 'storm_dragon' || type === 'cyber_dragon') {
+            if (type === 'cyber_dragon' && this.playCyberDragon) {
+                this.playCyberDragon();
+                return;
+            }
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(140, now);
             osc.frequency.exponentialRampToValueAtTime(60, now + 0.5);
             gain.gain.setValueAtTime(0.35, now);
             gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        } else if (type === 'thunder_bird' || type === 'pterodactyl') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(850, now);
+            osc.frequency.linearRampToValueAtTime(1300, now + 0.08);
+            osc.frequency.exponentialRampToValueAtTime(450, now + 0.35);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        } else if (type === 'dark_matter_colossus' || type === 'swamp_behemoth') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(90, now);
+            osc.frequency.linearRampToValueAtTime(130, now + 0.15);
+            osc.frequency.exponentialRampToValueAtTime(35, now + 0.7);
+            gain.gain.setValueAtTime(0.42, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        } else if (type === 'mammoth') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(160, now);
+            osc.frequency.linearRampToValueAtTime(320, now + 0.12);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.6);
+            gain.gain.setValueAtTime(0.38, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+        } else if (type === 'phoenix_knight') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(520, now);
+            osc.frequency.linearRampToValueAtTime(780, now + 0.1);
+            osc.frequency.exponentialRampToValueAtTime(260, now + 0.4);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
         } else if (type === 'trex' || type === 'brachiosaurus' || type === 'mecha_rex') {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(110, now);
@@ -346,13 +378,6 @@ class SoundManager {
             osc.frequency.exponentialRampToValueAtTime(90, now + 0.35);
             gain.gain.setValueAtTime(0.25, now);
             gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-        } else if (type === 'pterodactyl') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(700, now);
-            osc.frequency.linearRampToValueAtTime(1100, now + 0.1);
-            osc.frequency.exponentialRampToValueAtTime(400, now + 0.3);
-            gain.gain.setValueAtTime(0.28, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
         } else if (type === 'zombie') {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(110, now);
@@ -917,6 +942,107 @@ class SoundManager {
         osc.start(now);
         osc.stop(now + 0.45);
     }
+
+    // 30. Primal Beast / Kaiju / Dragon Roar
+    playRoar() {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.linearRampToValueAtTime(190, now + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(38, now + 0.95);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, now);
+        filter.frequency.exponentialRampToValueAtTime(120, now + 0.95);
+        if (filter.Q) filter.Q.value = 4;
+
+        gain.gain.setValueAtTime(0.45, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.95);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        osc.stop(now + 0.95);
+    }
+
+    // 31. Chain Lightning Arc
+    playChainLightning() {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(680, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.18);
+    }
+
+    // 32. Cyber Dragon / Mecha Laser Charge
+    playCyberDragon() {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.linearRampToValueAtTime(320, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.5);
+
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.5);
+    }
+
+    // 33. Celestial Aurora / Shimmer
+    playAuraSound() {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.linearRampToValueAtTime(880, now + 0.4);
+        osc.frequency.linearRampToValueAtTime(660, now + 0.8);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.8);
+    }
 }
 
 window.SoundManager = SoundManager;
+

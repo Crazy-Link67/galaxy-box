@@ -34,7 +34,11 @@ const TILES = {
     GOLD_ORE: 28,
     POISON_SWAMP: 29,
     HOLY_GROUND: 30,
-    BLOOD_RIVER: 31
+    BLOOD_RIVER: 31,
+    PLASMA_FIELD: 32,
+    LIVING_BRAMBLE: 33,
+    AETHER_FLUID: 34,
+    METEORITE_ORE: 35
 };
 
 const TILE_INFO = {
@@ -69,7 +73,11 @@ const TILE_INFO = {
     [TILES.GOLD_ORE]: { name: "Gold Ore", color: "#eab308", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.POISON_SWAMP]: { name: "Poison Swamp", color: "#8b5cf6", isLiquid: true, isSolid: false, flammability: 0.3 },
     [TILES.HOLY_GROUND]: { name: "Holy Ground", color: "#fef08a", isLiquid: false, isSolid: true, flammability: 0 },
-    [TILES.BLOOD_RIVER]: { name: "Blood River", color: "#991b1b", isLiquid: true, isSolid: false, flammability: 0 }
+    [TILES.BLOOD_RIVER]: { name: "Blood River", color: "#991b1b", isLiquid: true, isSolid: false, flammability: 0 },
+    [TILES.PLASMA_FIELD]: { name: "Plasma Field", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.LIVING_BRAMBLE]: { name: "Living Bramble", color: "#15803d", isLiquid: false, isSolid: true, flammability: 0.8 },
+    [TILES.AETHER_FLUID]: { name: "Aether Fluid", color: "#818cf8", isLiquid: true, isSolid: false, flammability: 0 },
+    [TILES.METEORITE_ORE]: { name: "Meteorite Ore", color: "#f97316", isLiquid: false, isSolid: true, flammability: 0 }
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
@@ -409,6 +417,14 @@ class World {
                     this.setTile(x, y, TILES.BLOOD_RIVER);
                 } else if (type === 'poison_swamp') {
                     this.setTile(x, y, TILES.POISON_SWAMP);
+                } else if (type === 'plasma_field') {
+                    this.setTile(x, y, TILES.PLASMA_FIELD);
+                } else if (type === 'living_bramble') {
+                    this.setTile(x, y, TILES.LIVING_BRAMBLE);
+                } else if (type === 'aether_fluid') {
+                    this.setTile(x, y, TILES.AETHER_FLUID);
+                } else if (type === 'meteorite_ore') {
+                    this.setTile(x, y, TILES.METEORITE_ORE);
                 } else {
                     this.setTile(x, y, type);
                 }
@@ -656,6 +672,50 @@ class World {
                                 this.tiles[ni] = TILES.MUSHROOM_SPORE;
                             }
                         }
+                    }
+                }
+
+                // 12. Living Bramble Spreading
+                if (t === TILES.LIVING_BRAMBLE) {
+                    if (particleSystem && Math.random() < 0.015) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.2, -0.3, 1.2, '#22c55e', 16, 'spark');
+                    }
+                    if (Math.random() < 0.004) {
+                        const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.GRASS || this.tiles[ni] === TILES.SOIL) {
+                                this.tiles[ni] = TILES.LIVING_BRAMBLE;
+                            }
+                        }
+                    }
+                }
+
+                // 13. Aether Fluid Flow
+                if (t === TILES.AETHER_FLUID) {
+                    if (particleSystem && Math.random() < 0.02) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.3, -0.4, 1.3, '#818cf8', 18, 'stardust');
+                    }
+                    if (y + 1 < this.height) {
+                        const bi = this.idx(x, y + 1);
+                        if (this.tiles[bi] === TILES.VOID && Math.random() < 0.3) {
+                            this.tiles[bi] = TILES.AETHER_FLUID;
+                        }
+                    }
+                }
+
+                // 14. Plasma Field Sparkles
+                if (t === TILES.PLASMA_FIELD) {
+                    if (particleSystem && Math.random() < 0.025) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.4, -0.5, 1.4, '#06b6d4', 15, 'spark');
+                    }
+                }
+
+                // 15. Meteorite Ore Glint
+                if (t === TILES.METEORITE_ORE) {
+                    if (particleSystem && Math.random() < 0.015) {
+                        particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.2, -0.3, 1.2, '#f97316', 15, 'spark');
                     }
                 }
             }

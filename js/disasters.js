@@ -823,6 +823,25 @@ class DuckBarrage {
             this.active = false;
         }
     }
+
+    render(ctx) {
+        if (!this.active) return;
+        const tx = Math.round(this.targetX);
+        const ty = Math.round(this.targetY);
+        ctx.save();
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tx - 12, ty - 12, 24, 24);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(tx - 4, ty, 9, 1);
+        ctx.fillRect(tx, ty - 4, 1, 9);
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(tx - 12, ty - 12, 2, 2);
+        ctx.fillRect(tx + 11, ty - 12, 2, 2);
+        ctx.fillRect(tx - 12, ty + 11, 2, 2);
+        ctx.fillRect(tx + 11, ty + 11, 2, 2);
+        ctx.restore();
+    }
 }
 
 class AntimatterMissile {
@@ -1161,6 +1180,11 @@ class DisasterManager {
         this.grabStartY = 0;
     }
 
+    get weather() { return this.activeStorm || 'clear'; }
+    set weather(val) { this.activeStorm = (val === 'clear' || !val) ? null : val; }
+    get weatherTimer() { return this.stormTimer; }
+    set weatherTimer(val) { this.stormTimer = val; }
+
     isShielded(x, y) {
         for (let i = 0; i < this.forcefields.length; i++) {
             const ff = this.forcefields[i];
@@ -1284,60 +1308,78 @@ class DisasterManager {
     }
 
     simulateWeather(world, entityManager, particleSystem) {
-        const drops = Math.floor(world.width * 0.15);
+        // Focus weather around the visible camera viewport so the user clearly sees the atmosphere without wasting 90% particles offscreen
+        const cam = (typeof window !== 'undefined' && window.game && window.game.renderer) ? window.game.renderer.camera : null;
+        const zoom = cam ? Math.max(0.5, cam.zoom) : 1;
+        const viewW = cam ? (window.innerWidth / zoom) : (world ? world.width : 200);
+        const viewH = cam ? (window.innerHeight / zoom) : (world ? world.height : 200);
+        const minX = cam ? Math.max(0, Math.floor(cam.x - viewW * 0.55)) : 0;
+        const maxX = cam ? Math.min(world ? world.width : 200, Math.floor(cam.x + viewW * 0.55)) : (world ? world.width : 200);
+        const minY = cam ? Math.max(0, Math.floor(cam.y - viewH * 0.55)) : 0;
+        const maxY = cam ? Math.min(world ? world.height : 200, Math.floor(cam.y + viewH * 0.55)) : (world ? world.height : 200);
+
+        const drops = 6 + Math.floor(Math.random() * 4);
         for (let i = 0; i < drops; i++) {
-            const rx = Math.floor(Math.random() * world.width);
-            const ry = Math.floor(Math.random() * world.height);
+            const rx = Math.floor(minX + Math.random() * Math.max(1, maxX - minX));
+            const ry = Math.floor(minY + Math.random() * Math.max(1, maxY - minY));
 
             if (this.activeStorm === 'rain') {
-                if (particleSystem && Math.random() < 0.2) {
-                    particleSystem.spawn(rx, ry - 15, (Math.random() - 0.5) * 0.2, 4, 1, '#60a5fa', 12, 'water');
+                if (particleSystem && Math.random() < 0.6) {
+                    particleSystem.spawn(rx, ry - 15, (Math.random() - 0.5) * 0.2, 4, 1.5, '#60a5fa', 14, 'water');
                 }
-                const t = world.getTile(rx, ry);
-                if (world.fire[world.idx(rx, ry)] > 0) {
-                    world.fire[world.idx(rx, ry)] = 0; // extinguish fire
-                } else if (t === TILES.SOIL && Math.random() < 0.05) {
-                    world.setTile(rx, ry, TILES.GRASS);
+                if (world && world.inBounds(rx, ry)) {
+                    const idx = world.idx(rx, ry);
+                    if (world.fire[idx] > 0) {
+                        world.fire[idx] = 0; // extinguish fire
+                    } else if (world.getTile(rx, ry) === TILES.SOIL && Math.random() < 0.08) {
+                        world.setTile(rx, ry, TILES.GRASS);
+                    }
                 }
             } else if (this.activeStorm === 'snow') {
-                if (particleSystem && Math.random() < 0.25) {
-                    particleSystem.spawn(rx, ry - 20, (Math.random() - 0.5) * 0.5, 1.2, 1.5, '#ffffff', 25, 'spark');
+                if (particleSystem && Math.random() < 0.5) {
+                    particleSystem.spawn(rx, ry - 18, (Math.random() - 0.5) * 0.5, 1.0, 1.5, '#ffffff', 28, 'spark');
                 }
-                const t = world.getTile(rx, ry);
-                if (t === TILES.WATER && Math.random() < 0.03) {
-                    world.setTile(rx, ry, TILES.ICE);
-                } else if (t === TILES.GRASS && Math.random() < 0.03) {
-                    world.setTile(rx, ry, TILES.SNOW);
+                if (world && world.inBounds(rx, ry)) {
+                    const t = world.getTile(rx, ry);
+                    if (t === TILES.WATER && Math.random() < 0.05) {
+                        world.setTile(rx, ry, TILES.ICE);
+                    } else if (t === TILES.GRASS && Math.random() < 0.05) {
+                        world.setTile(rx, ry, TILES.SNOW);
+                    }
                 }
             } else if (this.activeStorm === 'acid') {
-                if (particleSystem && Math.random() < 0.3) {
-                    particleSystem.spawn(rx, ry - 15, 0, 3.5, 1.5, '#84cc16', 15, 'acid');
+                if (particleSystem && Math.random() < 0.5) {
+                    particleSystem.spawn(rx, ry - 15, 0, 3.2, 1.5, '#84cc16', 15, 'acid');
                 }
-                const t = world.getTile(rx, ry);
-                if (t === TILES.FOREST || t === TILES.GRASS) {
-                    if (Math.random() < 0.08) world.setTile(rx, ry, TILES.ASH);
+                if (world && world.inBounds(rx, ry)) {
+                    const t = world.getTile(rx, ry);
+                    if ((t === TILES.FOREST || t === TILES.GRASS) && Math.random() < 0.08) {
+                        world.setTile(rx, ry, TILES.ASH);
+                    }
                 }
             } else if (this.activeStorm === 'sandstorm') {
-                if (particleSystem && Math.random() < 0.3) {
-                    particleSystem.spawn(rx - 10, ry, 3.5 + Math.random() * 2, (Math.random() - 0.5) * 0.8, 1.5, '#dec17a', 15, 'stardust');
+                if (particleSystem && Math.random() < 0.5) {
+                    particleSystem.spawn(rx - 10, ry, 3.2 + Math.random() * 1.5, (Math.random() - 0.5) * 0.6, 1.5, '#dec17a', 16, 'stardust');
                 }
-                const t = world.getTile(rx, ry);
-                if (t === TILES.GRASS || t === TILES.SOIL) {
-                    if (Math.random() < 0.05) world.setTile(rx, ry, TILES.SAND);
-                } else if (t === TILES.STONE && Math.random() < 0.02) {
-                    world.setTile(rx, ry, TILES.SAND);
+                if (world && world.inBounds(rx, ry)) {
+                    const t = world.getTile(rx, ry);
+                    if ((t === TILES.GRASS || t === TILES.SOIL) && Math.random() < 0.06) {
+                        world.setTile(rx, ry, TILES.SAND);
+                    } else if (t === TILES.STONE && Math.random() < 0.02) {
+                        world.setTile(rx, ry, TILES.SAND);
+                    }
                 }
             } else if (this.activeStorm === 'clone_rain') {
-                if (particleSystem && Math.random() < 0.35) {
-                    particleSystem.spawn(rx, ry - 25, (Math.random() - 0.5) * 0.4, 4, 1.8, '#c084fc', 20, 'stardust');
+                if (particleSystem && Math.random() < 0.4) {
+                    particleSystem.spawn(rx, ry - 20, (Math.random() - 0.5) * 0.3, 3.5, 1.8, '#c084fc', 20, 'stardust');
                 }
             }
         }
 
-        // Throttle clone rain spawning to once every 18 frames, capped at 150 entities
+        // Throttle clone rain spawning to once every 24 frames, capped at 150 entities
         if (this.activeStorm === 'clone_rain') {
             this.cloneTimer = (this.cloneTimer || 0) + 1;
-            if (this.cloneTimer % 18 === 0 && entityManager && Array.isArray(entityManager.entities)) {
+            if (this.cloneTimer % 24 === 0 && entityManager && Array.isArray(entityManager.entities)) {
                 const living = entityManager.entities.filter(e => e && e.active && !e.isDying);
                 if (living.length > 0 && living.length < 150) {
                     const candidate = living[Math.floor(Math.random() * living.length)];
@@ -1345,7 +1387,7 @@ class DisasterManager {
                     const spawnY = Math.floor(10 + Math.random() * (world.height - 20));
                     const clone = entityManager.clone(candidate, spawnX, spawnY);
                     if (clone && particleSystem) {
-                        particleSystem.burst(spawnX, spawnY, 18, ['#c084fc', '#e879f9', '#ffffff', '#38bdf8'], 1.5, 4, 1.5, 3, 'stardust');
+                        particleSystem.burst(spawnX, spawnY, 10, ['#c084fc', '#e879f9', '#ffffff'], 1.5, 3.5, 1.5, 2.5, 'stardust');
                     }
                 }
             }
@@ -1374,17 +1416,14 @@ class DisasterManager {
             }
         }
 
-        const maxDim = world ? Math.max(world.width, world.height) : 600;
-
-        // Colossal atmospheric mushroom cloud & fiery explosion bursts
+        // Crisp retro mushroom cloud & supersonic shockwave
         if (particleSystem) {
-            particleSystem.nukeMushroom(cx, cy, 5.0);
-            particleSystem.burst(cx, cy, 1000, ['#ffffff', '#fef08a', '#f97316', '#ef4444', '#84cc16', '#475569'], 8, 40, 3, 12, 'fire');
+            particleSystem.nukeMushroom(cx, cy, 2.0);
+            particleSystem.burst(cx, cy, 70, ['#ffffff', '#fef08a', '#f97316', '#ef4444', '#84cc16'], 5, 20, 2, 6, 'fire');
 
-            // Multiple global supersonic shockwaves sweeping across the map
-            for (let s = 0; s < 5; s++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 18 + s * 14, '#f97316', 120 + s * 30, 'shockwave', 0, 1);
-                if (sw) sw.extra = maxDim * 3.0;
+            for (let s = 0; s < 2; s++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 14 + s * 8, '#f97316', 70 + s * 20, 'shockwave', 0, 1);
+                if (sw) sw.extra = 130;
             }
         }
 
@@ -1536,6 +1575,20 @@ class DisasterManager {
     }
 
     triggerGreatGalaxySacrifice(gx, gy, world, entityManager, particleSystem, audio) {
+        if (typeof gx === 'object' && gx !== null && gx.width) {
+            audio = entityManager;
+            particleSystem = world;
+            entityManager = gy;
+            world = gx;
+            gx = Math.floor(world.width / 2);
+            gy = Math.floor(world.height / 2);
+        }
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (!world) return;
+
         if (audio) {
             audio.playNuke();
             audio.playMagic();
@@ -1548,11 +1601,10 @@ class DisasterManager {
         }
 
         if (particleSystem) {
-            // Massive expanding celestial stardust supernova
-            particleSystem.burst(gx, gy, 650, ['#a855f7', '#c026d3', '#38bdf8', '#facc15', '#ffffff'], 4, 18, 2, 8, 'stardust');
-            for (let r = 0; r < 5; r++) {
-                const sw = particleSystem.spawn(gx, gy, 0, 0, 10 + r * 8, '#38bdf8', 70 + r * 15, 'shockwave', 0, 1);
-                sw.extra = 120;
+            particleSystem.burst(gx, gy, 65, ['#a855f7', '#c026d3', '#38bdf8', '#facc15', '#ffffff'], 3, 12, 2, 5, 'stardust');
+            for (let r = 0; r < 2; r++) {
+                const sw = particleSystem.spawn(gx, gy, 0, 0, 10 + r * 8, '#38bdf8', 60 + r * 15, 'shockwave', 0, 1);
+                if (sw) sw.extra = 120;
             }
         }
 
@@ -1626,10 +1678,10 @@ class DisasterManager {
 
         const radius = 52;
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 260, ['#a855f7', '#000000', '#3b82f6', '#ffffff'], 3, 10, 2, 6, 'stardust');
-            for (let r = 0; r < 3; r++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 8 + r * 6, '#a855f7', 50 + r * 10, 'shockwave', 0, 1);
-                sw.extra = 90;
+            particleSystem.burst(cx, cy, 50, ['#a855f7', '#000000', '#3b82f6', '#ffffff'], 3, 10, 2, 5, 'stardust');
+            for (let r = 0; r < 2; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 8 + r * 6, '#a855f7', 45 + r * 10, 'shockwave', 0, 1);
+                if (sw) sw.extra = 90;
             }
         }
 
@@ -1745,10 +1797,10 @@ class DisasterManager {
         if (audio) audio.playNuke();
         if (window.game) window.game.shakeCamera(32, 55);
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 450, ['#ffffff', '#f43f5e', '#a855f7', '#38bdf8', '#facc15'], 3, 16, 2, 7, 'stardust');
-            for (let r = 0; r < 4; r++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#facc15', 60 + r * 15, 'shockwave', 0, 1);
-                sw.extra = 110;
+            particleSystem.burst(cx, cy, 65, ['#ffffff', '#f43f5e', '#a855f7', '#38bdf8', '#facc15'], 3, 14, 2, 5, 'stardust');
+            for (let r = 0; r < 2; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#facc15', 50 + r * 15, 'shockwave', 0, 1);
+                if (sw) sw.extra = 110;
             }
         }
         this.triggerExplosion(cx, cy, 85, 4.0, world, entityManager, particleSystem, audio);
@@ -1773,7 +1825,7 @@ class DisasterManager {
         if (audio) audio.playSplash();
         const radius = 18;
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 110, ['#84cc16', '#4ade80', '#15803d'], 1.5, 5, 1.5, 4, 'acid');
+            particleSystem.burst(cx, cy, 35, ['#84cc16', '#4ade80', '#15803d'], 1.5, 5, 1.5, 3.5, 'acid');
         }
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -1828,10 +1880,10 @@ class DisasterManager {
                 particleSystem.spawn(cx + (Math.random() - 0.5) * 4, y, 0, 12, 3, '#f1f5f9', 15, 'fire');
                 particleSystem.spawn(cx + (Math.random() - 0.5) * 8, y, 0, 10, 3, '#64748b', 20, 'smoke');
             }
-            particleSystem.burst(cx, cy, 300, ['#ffffff', '#f97316', '#475569', '#334155'], 4, 18, 3, 7);
-            for (let r = 0; r < 4; r++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#f1f5f9', 60 + r * 15, 'shockwave', 0, 1);
-                sw.extra = 110;
+            particleSystem.burst(cx, cy, 45, ['#ffffff', '#f97316', '#475569', '#334155'], 3, 14, 2, 5);
+            for (let r = 0; r < 2; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 10 + r * 8, '#f1f5f9', 50 + r * 15, 'shockwave', 0, 1);
+                if (sw) sw.extra = 110;
             }
         }
 
@@ -1890,7 +1942,7 @@ class DisasterManager {
         }
 
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 200, ['#a855f7', '#38bdf8', '#000000', '#ffffff'], 3, 10, 2, 5, 'stardust');
+            particleSystem.burst(cx, cy, 40, ['#a855f7', '#38bdf8', '#000000', '#ffffff'], 2.5, 8, 2, 4, 'stardust');
         }
 
         setTimeout(() => {
@@ -1924,6 +1976,8 @@ class DisasterManager {
 
     // NEW: Supervolcano (Mega Caldera)
     spawnSupervolcano(x, y, world) {
+        world = world || (window.game ? window.game.world : null);
+        if (!world) return;
         const radius = 22;
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -1968,6 +2022,11 @@ class DisasterManager {
 
     // Secret Apocalypse: Cosmic Supernova Collapse (Unlocked via Galaxy Sacrifice)
     triggerSupernovaCollapse(cx, cy, world, entityManager, particleSystem, audio) {
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+
         if (audio) {
             audio.playSingularity();
             audio.playNuke();
@@ -1975,10 +2034,10 @@ class DisasterManager {
         if (window.game) window.game.shakeCamera(35, 70);
 
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 800, ['#ffffff', '#a855f7', '#38bdf8', '#facc15', '#ec4899'], 5, 20, 3, 9, 'stardust');
-            for (let r = 0; r < 6; r++) {
-                const sw = particleSystem.spawn(cx, cy, 0, 0, 12 + r * 10, '#38bdf8', 80 + r * 15, 'shockwave', 0, 1);
-                sw.extra = 140;
+            particleSystem.burst(cx, cy, 60, ['#ffffff', '#a855f7', '#38bdf8', '#facc15', '#ec4899'], 4, 15, 2, 6, 'stardust');
+            for (let r = 0; r < 2; r++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 12 + r * 10, '#38bdf8', 65 + r * 15, 'shockwave', 0, 1);
+                if (sw) sw.extra = 140;
             }
         }
 
@@ -2380,12 +2439,24 @@ class DisasterManager {
     }
 
     // Solar Flare Pulse
-    triggerSolarFlare(world, entityManager, particleSystem, audio) {
+    triggerSolarFlare(...args) {
+        let world, entityManager, particleSystem, audio;
+        if (typeof args[0] === 'number' && typeof args[1] === 'number') {
+            world = args[2]; entityManager = args[3]; particleSystem = args[4]; audio = args[5];
+        } else {
+            world = args[0]; entityManager = args[1]; particleSystem = args[2]; audio = args[3];
+        }
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (!world) return;
+
         if (audio && typeof audio.playSolarFlare === 'function') audio.playSolarFlare();
         else if (audio) audio.playThunder();
         if (window.game && window.game.shakeCamera) window.game.shakeCamera(16, 30);
         if (particleSystem) {
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 40; i++) {
                 const rx = Math.random() * world.width;
                 const ry = Math.random() * world.height;
                 particleSystem.spawn(rx, ry, (Math.random() - 0.5) * 2, -1.5 - Math.random(), 2, '#f59e0b', 25, 'spark');
@@ -2397,17 +2468,31 @@ class DisasterManager {
                 if (Math.random() < 0.08) world.fire[i] = 70;
             }
         }
-        for (let i = 0; i < entityManager.entities.length; i++) {
-            const ent = entityManager.entities[i];
-            if (ent.active) ent.overclockTimer = Math.max(ent.overclockTimer, 300);
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (ent && ent.active) ent.overclockTimer = Math.max(ent.overclockTimer || 0, 300);
+            }
         }
     }
 
     // Frost Tempest Blizzard
-    triggerFrostTempest(world, entityManager, particleSystem, audio) {
+    triggerFrostTempest(...args) {
+        let world, entityManager, particleSystem, audio;
+        if (typeof args[0] === 'number' && typeof args[1] === 'number') {
+            world = args[2]; entityManager = args[3]; particleSystem = args[4]; audio = args[5];
+        } else {
+            world = args[0]; entityManager = args[1]; particleSystem = args[2]; audio = args[3];
+        }
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (!world) return;
+
         if (audio) audio.playThunder();
         if (particleSystem) {
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 50; i++) {
                 const rx = Math.random() * world.width;
                 const ry = Math.random() * world.height;
                 particleSystem.spawn(rx, ry, -1 - Math.random(), 1 + Math.random(), 1.5, '#a5f3fc', 30, 'snow');
@@ -2423,16 +2508,33 @@ class DisasterManager {
                 world.tiles[i] = TILES.SNOW;
             }
         }
-        for (let i = 0; i < entityManager.entities.length; i++) {
-            const ent = entityManager.entities[i];
-            if (ent.active && !ent.hasTrait('fireproof')) {
-                ent.frozen = Math.max(ent.frozen, 60);
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (ent && ent.active && !ent.hasTrait('fireproof')) {
+                    ent.frozen = Math.max(ent.frozen || 0, 60);
+                }
             }
         }
     }
 
     // Crystal Spire Eruption
-    triggerCrystalSpire(cx, cy, world, particleSystem, audio) {
+    triggerCrystalSpire(cx, cy, world, ...rest) {
+        let particleSystem = null, audio = null;
+        if (rest.length >= 3) {
+            particleSystem = rest[1];
+            audio = rest[2];
+        } else if (rest.length === 2) {
+            particleSystem = rest[0];
+            audio = rest[1];
+        } else if (rest.length === 1) {
+            particleSystem = rest[0];
+        }
+        world = world || (window.game ? window.game.world : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (!world) return;
+
         if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
         if (particleSystem) {
             particleSystem.burst(cx, cy, 35, ['#ec4899', '#f472b6', '#38bdf8', '#ffffff'], 2, 6, 2, 4, 'spark');
@@ -2617,32 +2719,51 @@ class DisasterManager {
     }
 
     // Orbital Death Ray / Hammer of Dawn
-    triggerOrbitalStrike(targetX, targetY, audio = null) {
+    triggerOrbitalStrike(targetX, targetY, ...rest) {
+        let audio = null;
+        for (const a of rest) {
+            if (a && typeof a.playHammerOfDawn === 'function') { audio = a; break; }
+            if (a && typeof a.playLaser === 'function') { audio = a; }
+        }
+        audio = audio || (window.game ? window.game.audio : null);
         if (audio && typeof audio.playHammerOfDawn === 'function') audio.playHammerOfDawn();
         else if (audio && typeof audio.playLaser === 'function') audio.playLaser();
         this.orbitalBeams.push(new OrbitalDeathRay(targetX, targetY));
     }
 
     // EMP Shockwave Blast
-    triggerEmpBlast(cx, cy, world, entityManager, particleSystem, audio = null) {
+    triggerEmpBlast(cx, cy, ...rest) {
+        let world = null, entityManager = null, particleSystem = null, audio = null;
+        if (rest[0] && rest[0].tiles) {
+            world = rest[0]; entityManager = rest[1]; particleSystem = rest[2]; audio = rest[3];
+        } else {
+            entityManager = rest[0]; particleSystem = rest[1]; audio = rest[2];
+            world = window.game ? window.game.world : null;
+        }
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+
         if (audio && typeof audio.playEmpSound === 'function') audio.playEmpSound();
         else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
         if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 25);
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 60, ['#00e5ff', '#38bdf8', '#ffffff'], 3, 9, 2, 5, 'spark');
+            particleSystem.burst(cx, cy, 35, ['#00e5ff', '#38bdf8', '#ffffff'], 2.5, 7, 2, 4, 'spark');
             const sw = particleSystem.spawn(cx, cy, 0, 0, 8, '#00e5ff', 50, 'shockwave', 0, 1);
             if (sw) sw.extra = 80;
         }
         this.forcefields = [];
-        for (let i = 0; i < entityManager.entities.length; i++) {
-            const ent = entityManager.entities[i];
-            if (!ent.active) continue;
-            const dist = Math.hypot(ent.x - cx, ent.y - cy);
-            if (dist < 60) {
-                if (ent.isVehicle || ent.type === 'mech' || ent.type === 'colossus_mech' || ent.type === 'tank' || ent.type === 'helicopter' || ent.type === 'starfighter') {
-                    ent.frozen = 300;
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (!ent || !ent.active) continue;
+                const dist = Math.hypot(ent.x - cx, ent.y - cy);
+                if (dist < 60) {
+                    if (ent.isVehicle || ent.type === 'mech' || ent.type === 'colossus_mech' || ent.type === 'tank' || ent.type === 'helicopter' || ent.type === 'starfighter') {
+                        ent.frozen = 300;
+                    }
+                    ent.takeDamage(45);
                 }
-                ent.takeDamage(45);
             }
         }
     }
@@ -2675,8 +2796,8 @@ class DisasterManager {
         this.nuclearFlashTimer = 45;
         if (window.game) window.game.shakeCamera(40, 75);
         if (particleSystem) {
-            particleSystem.nukeMushroom(cx, cy, 3.5);
-            particleSystem.burst(cx, cy, 400, ['#ffffff', '#fef08a', '#f97316', '#ef4444'], 5, 22, 2, 8, 'fire');
+            particleSystem.nukeMushroom(cx, cy, 2.5);
+            particleSystem.burst(cx, cy, 65, ['#ffffff', '#fef08a', '#f97316', '#ef4444'], 4, 18, 2, 6, 'fire');
         }
         const radius = 80;
         for (let dy = -radius; dy <= radius; dy++) {
@@ -2715,7 +2836,7 @@ class DisasterManager {
         if (audio && typeof audio.playSplash === 'function') audio.playSplash();
         if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 25);
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 90, ['#84cc16', '#4ade80', '#15803d', '#ffffff'], 2, 6, 2, 4, 'acid');
+            particleSystem.burst(cx, cy, 35, ['#84cc16', '#4ade80', '#15803d', '#ffffff'], 2, 6, 2, 4, 'acid');
         }
         const rad = 25;
         for (let dy = -rad; dy <= rad; dy++) {
@@ -2739,8 +2860,15 @@ class DisasterManager {
     }
 
     // Continuous Meteor Rain
-    triggerMeteorRain(world) {
-        for (let i = 0; i < 30; i++) {
+    triggerMeteorRain(...args) {
+        let world = null, audio = null;
+        for (const a of args) {
+            if (a && a.tiles && a.width) world = a;
+            else if (a && (typeof a.playMeteorExplosion === 'function' || typeof a.playThunder === 'function')) audio = a;
+        }
+        world = world || (window.game ? window.game.world : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        for (let i = 0; i < 20; i++) {
             setTimeout(() => {
                 const rx = Math.random() * (world ? world.width : 200);
                 const ry = Math.random() * (world ? world.height : 200);
@@ -2750,7 +2878,17 @@ class DisasterManager {
     }
 
     // Global Lightning Storm
-    triggerLightningStorm(world, entityManager, particleSystem, audio) {
+    triggerLightningStorm(...args) {
+        let world, entityManager, particleSystem, audio;
+        if (typeof args[0] === 'number' && typeof args[1] === 'number') {
+            world = args[2]; entityManager = args[3]; particleSystem = args[4]; audio = args[5];
+        } else {
+            world = args[0]; entityManager = args[1]; particleSystem = args[2]; audio = args[3];
+        }
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
         for (let i = 0; i < 15; i++) {
             setTimeout(() => {
                 const rx = Math.random() * (world ? world.width : 200);
@@ -2808,11 +2946,23 @@ class DisasterManager {
     }
 
     // Subterranean Magma Surge
-    triggerMagmaSurge(cx, cy, world, entityManager, particleSystem, audio) {
+    triggerMagmaSurge(cx, cy, world, ...rest) {
+        let entityManager = null, particleSystem = null, audio = null;
+        if (rest.length >= 3) {
+            entityManager = rest[0]; particleSystem = rest[1]; audio = rest[2];
+        } else if (rest.length === 2) {
+            particleSystem = rest[0]; audio = rest[1];
+        }
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (!world) return;
+
         if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
         if (window.game && window.game.shakeCamera) window.game.shakeCamera(16, 25);
         if (particleSystem) {
-            particleSystem.burst(cx, cy, 60, ['#ef4444', '#f97316', '#ff5722'], 2, 7, 2, 5, 'fire');
+            particleSystem.burst(cx, cy, 35, ['#ef4444', '#f97316', '#ff5722'], 2, 6, 2, 4, 'fire');
         }
         const rad = 16;
         for (let dy = -rad; dy <= rad; dy++) {
@@ -2855,6 +3005,139 @@ class DisasterManager {
         const wp = new Whirlpool(cx, cy);
         this.whirlpools.push(wp);
         return wp;
+    }
+
+    // NEW: Aurora Borealis - Cosmic celestial healing curtain
+    triggerAuroraBorealis(world, entityManager, particleSystem, audio) {
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        else if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+
+        if (particleSystem && world) {
+            for (let i = 0; i < 45; i++) {
+                const rx = Math.random() * world.width;
+                const ry = Math.random() * (world.height * 0.45);
+                const colors = ['#22c55e', '#10b981', '#06b6d4', '#8b5cf6', '#ec4899'];
+                const col = colors[Math.floor(Math.random() * colors.length)];
+                particleSystem.spawn(rx, ry, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 0.5, 2.5, col, 50, 'stardust');
+            }
+        }
+
+        if (world) {
+            for (let i = 0; i < world.size; i++) {
+                const t = world.tiles[i];
+                if (t === TILES.CORRUPTED || t === TILES.ASH || t === TILES.FALLOUT) {
+                    if (Math.random() < 0.45) world.tiles[i] = TILES.GRASS;
+                }
+                world.fire[i] = 0;
+            }
+        }
+
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (ent && ent.active) {
+                    ent.hp = ent.maxHp;
+                    ent.infected = false;
+                    ent.cursed = false;
+                    ent.applyBlessing();
+                }
+            }
+        }
+    }
+
+    // NEW: Ion Storm Barrage - Orbital precision particle lance salvo
+    triggerIonStormBarrage(cx, cy, world, entityManager, particleSystem, audio) {
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        if (window.game && window.game.shakeCamera) window.game.shakeCamera(20, 35);
+
+        for (let s = 0; s < 5; s++) {
+            setTimeout(() => {
+                const strikeX = cx + (Math.random() - 0.5) * 36;
+                const strikeY = cy + (Math.random() - 0.5) * 36;
+                if (particleSystem) {
+                    particleSystem.burst(strikeX, strikeY, 25, ['#00e5ff', '#38bdf8', '#ffffff'], 2.5, 6, 2, 4, 'spark');
+                    const sw = particleSystem.spawn(strikeX, strikeY, 0, 0, 6, '#00e5ff', 35, 'shockwave', 0, 1);
+                    if (sw) sw.extra = 45;
+                }
+                if (world) {
+                    for (let dy = -5; dy <= 5; dy++) {
+                        for (let dx = -5; dx <= 5; dx++) {
+                            if (dx * dx + dy * dy <= 25) {
+                                const tx = Math.floor(strikeX + dx);
+                                const ty = Math.floor(strikeY + dy);
+                                if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                                    world.setTile(tx, ty, (TILES.PLASMA_FIELD !== undefined ? TILES.PLASMA_FIELD : 32));
+                                }
+                            }
+                        }
+                    }
+                }
+                if (entityManager && Array.isArray(entityManager.entities)) {
+                    for (let i = 0; i < entityManager.entities.length; i++) {
+                        const ent = entityManager.entities[i];
+                        if (ent && ent.active && Math.hypot(ent.x - strikeX, ent.y - strikeY) < 16) {
+                            ent.takeDamage(220);
+                            ent.overclockTimer = 180;
+                        }
+                    }
+                }
+            }, s * 80);
+        }
+    }
+
+    // NEW: Chronos Spacetime Rift - Spatial temporal singularity
+    triggerChronosRift(cx, cy, world, entityManager, particleSystem, audio) {
+        world = world || (window.game ? window.game.world : null);
+        entityManager = entityManager || (window.game ? window.game.entityManager : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+        audio = audio || (window.game ? window.game.audio : null);
+        if (audio && typeof audio.playChronoFreeze === 'function') audio.playChronoFreeze();
+        else if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        if (window.game && window.game.shakeCamera) window.game.shakeCamera(18, 30);
+
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 35, ['#c084fc', '#818cf8', '#38bdf8', '#ffffff'], 2.5, 7, 2, 4, 'stardust');
+            const sw = particleSystem.spawn(cx, cy, 0, 0, 8, '#c084fc', 60, 'shockwave', 0, 1);
+            if (sw) sw.extra = 90;
+        }
+
+        const rad = 24;
+        if (world) {
+            for (let dy = -rad; dy <= rad; dy++) {
+                for (let dx = -rad; dx <= rad; dx++) {
+                    if (dx * dx + dy * dy <= rad * rad) {
+                        const tx = Math.floor(cx + dx);
+                        const ty = Math.floor(cy + dy);
+                        if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                            const t = world.getTile(tx, ty);
+                            if (t === TILES.WATER || t === TILES.DEEP_WATER) {
+                                world.setTile(tx, ty, TILES.CRYSTAL);
+                            } else if (Math.random() < 0.2) {
+                                world.setTile(tx, ty, (TILES.AETHER_FLUID !== undefined ? TILES.AETHER_FLUID : 34));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (entityManager && Array.isArray(entityManager.entities)) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (ent && ent.active && Math.hypot(ent.x - cx, ent.y - cy) <= rad * 1.2) {
+                    ent.frozen = 350;
+                    ent.takeDamage(90);
+                }
+            }
+        }
     }
 
     clear() {

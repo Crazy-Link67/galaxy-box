@@ -280,6 +280,12 @@ class Entity {
         this.inventory = { wood: 0, stone: 0, food: 0 };
     }
 
+    update(world, entityManager, particleSystem, audio, disasterManager) {
+        if (entityManager && typeof entityManager.updateEntity === 'function') {
+            entityManager.updateEntity(this, world, particleSystem, audio, disasterManager);
+        }
+    }
+
     initStats() {
         switch (this.type) {
             case 'crabzilla':
@@ -941,6 +947,92 @@ class Entity {
                 this.traits.add('electrocharged');
                 this.traits.add('fireproof');
                 break;
+            case 'dark_matter_colossus':
+                this.name = 'Dark Matter Colossus';
+                this.hp = 5500;
+                this.maxHp = 5500;
+                this.speed = 0.5;
+                this.attack = 150;
+                this.size = 13;
+                this.color = '#4338ca';
+                this.isBoss = true;
+                this.isCelestial = true;
+                this.traits.add('titan');
+                this.traits.add('immortal');
+                this.traits.add('water_walker');
+                this.traits.add('earthshaker');
+                break;
+            case 'phoenix_knight':
+                this.name = 'Phoenix Knight';
+                this.hp = 2400;
+                this.maxHp = 2400;
+                this.speed = 1.1;
+                this.attack = 85;
+                this.size = 5.5;
+                this.color = '#f97316';
+                this.isMythic = true;
+                this.traits.add('flying');
+                this.traits.add('fireproof');
+                this.traits.add('regenerating');
+                this.traits.add('starlight_aura');
+                break;
+            case 'thunder_bird':
+                this.name = 'Storm Thunderbird';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 1.3;
+                this.attack = 75;
+                this.size = 6.5;
+                this.color = '#0284c7';
+                this.isFlying = true;
+                this.isMythic = true;
+                this.traits.add('flying');
+                this.traits.add('electrocharged');
+                this.traits.add('super_speed');
+                break;
+            case 'cyber_dragon':
+                this.name = 'Cybernetic Dragon';
+                this.hp = 4800;
+                this.maxHp = 4800;
+                this.speed = 1.05;
+                this.attack = 125;
+                this.size = 13;
+                this.color = '#06b6d4';
+                this.isFlying = true;
+                this.isBoss = true;
+                this.isVehicle = true;
+                this.traits.add('flying');
+                this.traits.add('laser_eyes');
+                this.traits.add('fireproof');
+                this.traits.add('titan');
+                break;
+            case 'swamp_behemoth':
+                this.name = 'Swamp Behemoth';
+                this.hp = 3800;
+                this.maxHp = 3800;
+                this.speed = 0.6;
+                this.attack = 95;
+                this.size = 10;
+                this.color = '#166534';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('amphibious');
+                this.traits.add('venomous');
+                this.traits.add('acid_blood');
+                this.traits.add('regenerating');
+                break;
+            case 'mammoth':
+                this.name = 'Woolly Mammoth';
+                this.hp = 3200;
+                this.maxHp = 3200;
+                this.speed = 0.7;
+                this.attack = 85;
+                this.size = 9;
+                this.color = '#78350f';
+                this.traits.add('titan');
+                this.traits.add('earthshaker');
+                this.traits.add('headslammer');
+                break;
             default:
                 this.hp = 100;
                 this.maxHp = 100;
@@ -1378,6 +1470,32 @@ class Entity {
             entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'fireball', this.id, this.attack));
             if (particleSystem) particleSystem.burst(this.x + dirX * 3, this.y + dirY * 3, 8, ['#f97316', '#475569'], 1, 3, 1, 2);
             return;
+        } else if (this.weapon === 'laser_shotgun') {
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            for (let i = -2; i <= 2; i++) {
+                const spread = i * 0.15;
+                const fx = dirX * Math.cos(spread) - dirY * Math.sin(spread);
+                const fy = dirX * Math.sin(spread) + dirY * Math.cos(spread);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, fx * 8.5, fy * 8.5, 'laser', this.id, this.attack * 0.45));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 10, ['#00e5ff', '#38bdf8', '#ffffff'], 1.5, 3.5, 1, 2, 'spark');
+            return;
+        } else if (this.weapon === 'chain_lightning_staff') {
+            if (audio && typeof audio.playChainLightning === 'function') audio.playChainLightning();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            let prev = this;
+            const hitSet = new Set([this.id]);
+            for (let c = 0; c < 4; c++) {
+                const next = entityManager.findNearestEntity(prev, (other) => other.id !== this.id && !hitSet.has(other.id) && Math.hypot(other.x - prev.x, other.y - prev.y) < 70);
+                if (!next) break;
+                hitSet.add(next.id);
+                next.takeDamage(this.attack * (1 - c * 0.15), this);
+                if (particleSystem) {
+                    particleSystem.burst(next.x, next.y, 10, ['#60a5fa', '#93c5fd', '#ffffff'], 1.5, 4, 1.5, 3, 'spark');
+                }
+                prev = next;
+            }
+            return;
         }
 
         if (this.type === 'duck') {
@@ -1395,6 +1513,65 @@ class Entity {
                     const ang = Math.atan2(other.y - this.y, other.x - this.x);
                     other.x += Math.cos(ang) * 14;
                     other.y += Math.sin(ang) * 14;
+                }
+            }
+            return;
+        } else if (this.type === 'dark_matter_colossus') {
+            // Graviton Crush
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 22);
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'laser', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 20, ['#4338ca', '#6366f1', '#a855f7'], 2, 5, 1.5, 3, 'stardust');
+            return;
+        } else if (this.type === 'phoenix_knight') {
+            // Solar Blade Beam
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            for (let a = -0.15; a <= 0.15; a += 0.15) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8, sy * 8, 'fireball', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#f97316', '#fbbf24', '#ffffff'], 2, 4, 1.5, 3, 'fire');
+            return;
+        } else if (this.type === 'thunder_bird') {
+            // Storm Gale Lightning
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            for (let a = -0.25; a <= 0.25; a += 0.25) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 9, sy * 9, 'laser', this.id, this.attack * 0.65));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#0284c7', '#38bdf8', '#ffffff'], 2, 5, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'cyber_dragon') {
+            // Hyper Neon Laser Breath
+            if (audio && typeof audio.playCyberDragon === 'function') audio.playCyberDragon();
+            else if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            entityManager.projectiles.push(new Projectile(this.x - 3, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.6));
+            entityManager.projectiles.push(new Projectile(this.x + 3, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.6));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#06b6d4', '#00e5ff', '#ffffff'], 2, 5, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'swamp_behemoth') {
+            // Corrosive Sludge Ball
+            if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'frost', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#166534', '#4ade80', '#84cc16'], 1.5, 4, 1.5, 3, 'acid');
+            return;
+        } else if (this.type === 'mammoth') {
+            // Tusk Charge Slam
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            this.x += dirX * 10;
+            this.y += dirY * 10;
+            if (particleSystem) particleSystem.burst(this.x, this.y, 25, ['#78350f', '#a8a29e', '#ffffff'], 2, 6, 2, 4);
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 26) {
+                    other.takeDamage(this.attack * 1.5, this);
+                    other.x += dirX * 14;
+                    other.y += dirY * 14;
                 }
             }
             return;
@@ -2485,6 +2662,120 @@ class Entity {
                     other.frozen = 25; // Root stasis / stun
                 }
             }
+        } else if (this.type === 'dark_matter_colossus') {
+            // Singularity Pulse
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(22, 35);
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 45, ['#4338ca', '#6366f1', '#000000', '#ffffff'], 2.5, 7, 2, 5, 'stardust');
+                const sw = particleSystem.spawn(this.x, this.y, 0, 0, 8, '#6366f1', 60, 'shockwave', 0, 1);
+                if (sw) sw.extra = 85;
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                const d = Math.hypot(other.x - this.x, other.y - this.y);
+                if (d < 65) {
+                    other.takeDamage(180, this);
+                    const ang = Math.atan2(this.y - other.y, this.x - other.x);
+                    other.x += Math.cos(ang) * 14;
+                    other.y += Math.sin(ang) * 14;
+                }
+            }
+            return;
+        } else if (this.type === 'phoenix_knight') {
+            // Solar Smite
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(16, 25);
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 50, ['#f97316', '#fbbf24', '#ffffff', '#ef4444'], 3, 8, 2, 5, 'fire');
+                const sw = particleSystem.spawn(this.x, this.y, 0, 0, 7, '#fbbf24', 50, 'shockwave', 0, 1);
+                if (sw) sw.extra = 65;
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active) continue;
+                const d = Math.hypot(other.x - this.x, other.y - this.y);
+                if (d < 45) {
+                    if (other.id === this.id || other.kingdomId === this.kingdomId) {
+                        other.hp = Math.min(other.maxHp, other.hp + 200);
+                        other.blessed = true;
+                    } else {
+                        other.takeDamage(150, this);
+                    }
+                }
+            }
+            return;
+        } else if (this.type === 'thunder_bird') {
+            // Thunder Tempest
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(16, 25);
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 40, ['#0284c7', '#38bdf8', '#ffffff'], 2.5, 7, 2, 4, 'spark');
+            }
+            for (let i = 0; i < 5; i++) {
+                const ox = (Math.random() - 0.5) * 60;
+                const oy = (Math.random() - 0.5) * 60;
+                if (disasterManager && typeof disasterManager.triggerLightning === 'function') {
+                    disasterManager.triggerLightning(this.x + ox, this.y + oy, world, entityManager, particleSystem, audio);
+                }
+            }
+            return;
+        } else if (this.type === 'cyber_dragon') {
+            // Micro-Missile Swarm
+            if (audio && typeof audio.playCyberDragon === 'function') audio.playCyberDragon();
+            else if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(14, 22);
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(a) * 7.5, Math.sin(a) * 7.5, 'plasma', this.id, 95));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#06b6d4', '#00e5ff', '#ffffff'], 2, 6, 2, 4, 'spark');
+            return;
+        } else if (this.type === 'swamp_behemoth') {
+            // Toxic Quagmire
+            if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 40, ['#166534', '#84cc16', '#4ade80'], 2, 6, 1.5, 4, 'acid');
+            const rad = 12;
+            for (let dy = -rad; dy <= rad; dy++) {
+                for (let dx = -rad; dx <= rad; dx++) {
+                    if (dx * dx + dy * dy <= rad * rad) {
+                        const tx = Math.floor(this.x + dx);
+                        const ty = Math.floor(this.y + dy);
+                        if (world && world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                            if (Math.random() < 0.35) world.setTile(tx, ty, (TILES.POISON_SWAMP !== undefined ? TILES.POISON_SWAMP : 29));
+                            else if (Math.random() < 0.25) world.setTile(tx, ty, TILES.ACID);
+                        }
+                    }
+                }
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (other.active && other.id !== this.id && Math.hypot(other.x - this.x, other.y - this.y) < 32) {
+                    other.takeDamage(110, this);
+                    other.infected = true;
+                }
+            }
+            return;
+        } else if (this.type === 'mammoth') {
+            // Frost Stampede Shockwave
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(18, 30);
+            if (particleSystem) {
+                particleSystem.burst(this.x, this.y, 45, ['#78350f', '#a5f3fc', '#ffffff'], 2.5, 7, 2, 5, 'snow');
+                const sw = particleSystem.spawn(this.x, this.y, 0, 0, 7, '#a5f3fc', 50, 'shockwave', 0, 1);
+                if (sw) sw.extra = 70;
+            }
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 40) {
+                    other.takeDamage(120, this);
+                    other.frozen = 90;
+                }
+            }
+            return;
         } else {
             // Generic Special: Dash Shockwave
             if (audio) audio.playClick();
@@ -2544,7 +2835,16 @@ class EntityManager {
         }
     }
 
-    resurrectCorpses(cx, cy, radius, audio = null, particleSystem = null) {
+    resurrectCorpses(cx, cy, radius, arg4 = null, arg5 = null) {
+        let audio = null, particleSystem = null;
+        if (arg4 && typeof arg4.burst === 'function') {
+            particleSystem = arg4; audio = arg5;
+        } else {
+            audio = arg4; particleSystem = arg5;
+        }
+        audio = audio || (window.game ? window.game.audio : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+
         if (audio && typeof audio.playResurrection === 'function') audio.playResurrection();
         else if (audio && typeof audio.playMagic === 'function') audio.playMagic();
         if (particleSystem) {
@@ -2566,8 +2866,17 @@ class EntityManager {
         return revived;
     }
 
-    polymorph(target, newType = 'frog', audio = null, particleSystem = null) {
+    polymorph(target, newType = 'frog', arg3 = null, arg4 = null) {
         if (!target || !target.active) return null;
+        let audio = null, particleSystem = null;
+        if (arg3 && typeof arg3.burst === 'function') {
+            particleSystem = arg3; audio = arg4;
+        } else {
+            audio = arg3; particleSystem = arg4;
+        }
+        audio = audio || (window.game ? window.game.audio : null);
+        particleSystem = particleSystem || (window.game ? window.game.particleSystem : null);
+
         if (audio && typeof audio.playPolymorphCroak === 'function') audio.playPolymorphCroak();
         if (particleSystem) {
             particleSystem.burst(target.x, target.y, 25, ['#22c55e', '#86efac', '#a855f7', '#ffffff'], 2, 5, 1.5, 3, 'stardust');

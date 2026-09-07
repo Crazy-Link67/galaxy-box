@@ -491,6 +491,10 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerToxicCloud(wx, wy, this.audio);
         } else if (tool === 'acid_missile') {
             if (isFirstClick) this.disasterManager.triggerAcidMissile(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'ion_storm_barrage') {
+            if (isFirstClick) this.disasterManager.triggerIonStormBarrage(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'chronos_rift') {
+            if (isFirstClick) this.disasterManager.triggerChronosRift(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         }
 
         // 2. NATURE & DISASTERS
@@ -499,19 +503,21 @@ class Game {
                 this.disasterManager.spawnVolcano(wx, wy, this.world);
                 if (this.audio) this.audio.playExplosion(1.5);
             }
+        } else if (tool === 'supervolcano') {
+            if (isFirstClick) this.disasterManager.spawnSupervolcano(wx, wy, this.world, this.audio);
         } else if (tool === 'solar_flare') {
             if (isFirstClick) this.disasterManager.triggerSolarFlare(this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'frost_tempest') {
             if (isFirstClick) this.disasterManager.triggerFrostTempest(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'crystal_spire') {
             if (isFirstClick) this.disasterManager.triggerCrystalSpire(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'aurora_borealis') {
+            if (isFirstClick) this.disasterManager.triggerAuroraBorealis(this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'tornado') {
             if (isFirstClick) {
                 this.disasterManager.spawnTornado(wx, wy);
                 if (this.audio) this.audio.playThunder();
             }
-        } else if (tool === 'supervolcano') {
-            if (isFirstClick) this.disasterManager.spawnSupervolcano(wx, wy, this.world, this.audio);
         } else if (tool === 'fire_tornado') {
             if (isFirstClick) this.disasterManager.spawnFireTornado(wx, wy, this.audio);
         } else if (tool === 'meteor_shower') {
@@ -538,7 +544,7 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerTsunami(wx, wy, this.world, this.particleSystem, this.audio);
         } else if (tool === 'rain') {
             this.disasterManager.startStorm('rain', 800);
-        } else if (tool === 'snow') {
+        } else if (tool === 'snowfall' || (tool === 'snow' && this.ui.activeCategory === 'nature')) {
             this.disasterManager.startStorm('snow', 800);
         } else if (tool === 'acidrain') {
             this.disasterManager.startStorm('acid', 800);
@@ -578,6 +584,10 @@ class Game {
         else if (tool === 'holy_ground') this.world.applyBrush(wx, wy, bSize, TILES.HOLY_GROUND);
         else if (tool === 'blood_river') this.world.applyBrush(wx, wy, bSize, TILES.BLOOD_RIVER);
         else if (tool === 'poison_swamp') this.world.applyBrush(wx, wy, bSize, TILES.POISON_SWAMP);
+        else if (tool === 'plasma_field') this.world.applyBrush(wx, wy, bSize, TILES.PLASMA_FIELD);
+        else if (tool === 'living_bramble') this.world.applyBrush(wx, wy, bSize, TILES.LIVING_BRAMBLE);
+        else if (tool === 'aether_fluid') this.world.applyBrush(wx, wy, bSize, TILES.AETHER_FLUID);
+        else if (tool === 'meteorite_ore') this.world.applyBrush(wx, wy, bSize, TILES.METEORITE_ORE);
         else if (tool === 'biome_savanna') this.world.applyBrush(wx, wy, bSize, 'biome_savanna');
         else if (tool === 'biome_tundra') this.world.applyBrush(wx, wy, bSize, 'biome_tundra');
         else if (tool === 'biome_jungle') this.world.applyBrush(wx, wy, bSize, 'biome_jungle');
@@ -771,6 +781,16 @@ class Game {
                 const ent = this.entityManager.equipNearest(wx, wy, 'galaxy_blade');
                 if (ent) this.particleSystem.burst(ent.x, ent.y, 18, ['#f472b6', '#67e8f9', '#facc15', '#ffffff'], 1.5, 4, 1.5, 3);
             }
+        } else if (tool === 'equip_laser_shotgun') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'laser_shotgun');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#ef4444', '#f97316', '#ffffff'], 1.2, 3.5, 1, 2);
+            }
+        } else if (tool === 'equip_chain_lightning_staff') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'chain_lightning_staff');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#38bdf8', '#818cf8', '#ffffff'], 1.2, 3.5, 1, 2);
+            }
         } else if (tool === 'chronos_stasis') {
             if (isFirstClick) {
                 for (const ent of this.entityManager.entities) {
@@ -852,7 +872,8 @@ class Game {
                 'frog', 'cyber_ninja', 'laser_shark', 'frost_wolf', 'sand_scorpion', 'necromancer',
                 'valkyrie', 'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship',
                 'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
-                'frost_dragon', 'shadow_dragon', 'storm_dragon'
+                'frost_dragon', 'shadow_dragon', 'storm_dragon',
+                'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);
@@ -867,7 +888,8 @@ class Game {
                     'shadow_assassin', 'cyber_ninja', 'laser_shark', 'mecha_rex', 'golden_dragon', 'space_worm', 
                     'pirate_ship', 'valkyrie', 'gargoyle', 'necromancer', 'frost_wolf', 'sand_scorpion',
                     'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
-                    'frost_dragon', 'shadow_dragon', 'storm_dragon'
+                    'frost_dragon', 'shadow_dragon', 'storm_dragon',
+                    'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth'
                 ];
                 if (autoPossessList.includes(tool)) {
                     this.possess(ent);

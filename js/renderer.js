@@ -113,6 +113,11 @@ class Renderer {
         for (let i = 0; i < disasterManager.nukeMissiles.length; i++) {
             disasterManager.nukeMissiles[i].render(ctx);
         }
+        if (disasterManager.duckBarrages) {
+            for (let i = 0; i < disasterManager.duckBarrages.length; i++) {
+                disasterManager.duckBarrages[i].render(ctx);
+            }
+        }
         if (disasterManager.antimatterMissiles) {
             for (let i = 0; i < disasterManager.antimatterMissiles.length; i++) {
                 disasterManager.antimatterMissiles[i].render(ctx);
@@ -343,6 +348,30 @@ class Renderer {
                             g = 20;
                             b = 20;
                             break;
+                        case TILES.PLASMA_FIELD:
+                            r = 6;
+                            g = 182 + Math.sin(this.animTime * 5 + (x + y) * 0.4) * 35;
+                            b = 212;
+                            break;
+                        case TILES.LIVING_BRAMBLE:
+                            r = 21;
+                            g = 128 - varOffset;
+                            b = 61 - varOffset;
+                            if ((x * 17 + y * 11) % 7 === 0) { r = 34; g = 197; b = 94; }
+                            break;
+                        case TILES.AETHER_FLUID:
+                            r = 129 + Math.sin(this.animTime * 3 + x * 0.25) * 30;
+                            g = 140 + waterWave * 0.4;
+                            b = 248;
+                            break;
+                        case TILES.METEORITE_ORE:
+                            r = 249 - varOffset;
+                            g = 115 - varOffset;
+                            b = 22;
+                            if ((x * 19 + y * 23 + Math.floor(this.animTime * 4)) % 19 === 0) {
+                                r = 255; g = 240; b = 180;
+                            }
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
@@ -366,7 +395,7 @@ class Renderer {
                 }
 
                 // Star glints in cosmic tiles
-                if ((t === TILES.NEBULA || t === TILES.STARDUST || t === TILES.CRYSTAL) && fire === 0) {
+                if ((t === TILES.NEBULA || t === TILES.STARDUST || t === TILES.CRYSTAL || t === TILES.PLASMA_FIELD || t === TILES.AETHER_FLUID) && fire === 0) {
                     if (((x * 31 + y * 17 + Math.floor(this.animTime * 5)) % 47) === 0) {
                         r = 255; g = 255; b = 255;
                     }
@@ -1557,6 +1586,24 @@ class Renderer {
             else if (ent.type === 'storm_dragon') {
                 this.renderStormDragon(ctx, ent, px, py, size);
             }
+            else if (ent.type === 'dark_matter_colossus') {
+                this.renderDarkMatterColossus(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'phoenix_knight') {
+                this.renderPhoenixKnight(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'thunder_bird') {
+                this.renderThunderBird(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'cyber_dragon') {
+                this.renderCyberDragon(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'swamp_behemoth') {
+                this.renderSwampBehemoth(ctx, ent, px, py, size);
+            }
+            else if (ent.type === 'mammoth') {
+                this.renderMammoth(ctx, ent, px, py, size);
+            }
             else if (ent.bodyParts || (ent.customData && ent.customData.bodyParts)) {
                 this.renderCustomModularCreature(ctx, ent, px, py, size);
             }
@@ -1833,7 +1880,10 @@ class Renderer {
                     tank: 'TANK', warship: 'WARSHIP', helicopter: 'CHOPPER', starfighter: 'STARFIGHTER',
                     trex: 'T-REX', triceratops: 'TRICERATOPS', velociraptor: 'RAPTOR',
                     pterodactyl: 'PTERODACTYL', brachiosaurus: 'BRACHIOSAURUS',
-                    frost_dragon: 'FROST DRAGON', shadow_dragon: 'SHADOW DRAGON', storm_dragon: 'STORM DRAGON'
+                    frost_dragon: 'FROST DRAGON', shadow_dragon: 'SHADOW DRAGON', storm_dragon: 'STORM DRAGON',
+                    dark_matter_colossus: 'DARK COLOSSUS', phoenix_knight: 'PHOENIX KNIGHT',
+                    thunder_bird: 'THUNDERBIRD', cyber_dragon: 'CYBER DRAGON',
+                    swamp_behemoth: 'BEHEMOTH', mammoth: 'MAMMOTH'
                 };
                 const tagPrefix = tagNames[ent.type] || 'HERO';
                 const tagText = `${tagPrefix} [WASD / SPACE / Q]`;
@@ -3111,6 +3161,305 @@ class Renderer {
         ctx.fillRect(s * 0.75, -s * 0.55, 3, 2.5);
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(s * 0.8, -s * 0.55, 1, 1);
+
+        ctx.restore();
+    }
+
+    renderDarkMatterColossus(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.9;
+        const walkBob = Math.sin(this.animTime * 4) * 1.5;
+
+        // Dark Cosmic Pillar Legs
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(-s * 0.55, s * 0.2 + walkBob, s * 0.45, s * 0.8);
+        ctx.fillRect(s * 0.1, s * 0.2 - walkBob, s * 0.45, s * 0.8);
+        ctx.fillStyle = '#312e81';
+        ctx.fillRect(-s * 0.6, s * 0.85 + walkBob, s * 0.55, 2.5);
+        ctx.fillRect(s * 0.05, s * 0.85 - walkBob, s * 0.55, 2.5);
+
+        // Heavy Void Torso
+        ctx.fillStyle = '#312e81';
+        ctx.fillRect(-s * 0.7, -s * 0.6, s * 1.4, s * 0.95);
+        ctx.fillStyle = '#4338ca';
+        ctx.fillRect(-s * 0.55, -s * 0.5, s * 1.1, s * 0.75);
+
+        // Event Horizon Core in Chest (Pulsing Singularity)
+        const pulse = Math.sin(this.animTime * 6) * 1.5;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(-s * 0.3, -s * 0.35, s * 0.6, s * 0.5);
+        ctx.fillStyle = '#818cf8';
+        ctx.fillRect(-s * 0.2, -s * 0.25, s * 0.4, 1.5);
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(-s * 0.15, -s * 0.15 + pulse * 0.2, s * 0.3, 1.5);
+
+        // Huge Monolith Shoulders & Crushing Fists
+        ctx.fillStyle = '#4338ca';
+        ctx.fillRect(-s * 0.95, -s * 0.65, s * 0.4, s * 0.5);
+        ctx.fillRect(s * 0.55, -s * 0.65, s * 0.4, s * 0.5);
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(-s * 0.9, -s * 0.15 + walkBob, s * 0.35, s * 0.45);
+        ctx.fillRect(s * 0.55, -s * 0.15 - walkBob, s * 0.35, s * 0.45);
+
+        // Void Horned Brow & Celestial Gaze
+        ctx.fillStyle = '#312e81';
+        ctx.fillRect(-s * 0.35, -s * 0.95, s * 0.7, s * 0.4);
+        ctx.fillStyle = '#6366f1';
+        ctx.fillRect(-s * 0.45, -s * 1.15, 2, s * 0.3);
+        ctx.fillRect(s * 0.35, -s * 1.15, 2, s * 0.3);
+
+        // Glowing Magenta Void Eyes
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(-s * 0.2, -s * 0.85, 2, 2);
+        ctx.fillRect(s * 0.1, -s * 0.85, 2, 2);
+
+        ctx.restore();
+    }
+
+    renderPhoenixKnight(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.9;
+        const flap = Math.sin(this.animTime * 7) * 3;
+
+        // Flaming Feathered Wings
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(-s * 1.2, -s * 0.8 + flap, s * 0.9, s * 0.5);
+        ctx.fillRect(s * 0.3, -s * 0.8 + flap, s * 0.9, s * 0.5);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(-s * 1.0, -s * 0.6 + flap, s * 0.6, s * 0.3);
+        ctx.fillRect(s * 0.4, -s * 0.6 + flap, s * 0.6, s * 0.3);
+
+        // Golden Armored Greaves
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(-s * 0.35, s * 0.2, 2.5, s * 0.6);
+        ctx.fillRect(s * 0.1, s * 0.2, 2.5, s * 0.6);
+
+        // Solar Cuirass & Tabard
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(-s * 0.4, -s * 0.4, s * 0.8, s * 0.7);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(-s * 0.25, -s * 0.3, s * 0.5, s * 0.5);
+
+        // Knight Greathelm & Fiery Crest
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(-s * 0.3, -s * 0.8, s * 0.6, s * 0.45);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-s * 0.1, -s * 1.15, 2, s * 0.4);
+        ctx.fillRect(0, -s * 1.25, 2, s * 0.4);
+
+        // Visor Glow
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-s * 0.15, -s * 0.65, s * 0.35, 1.5);
+
+        // Radiant Solar Blade
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(s * 0.45, -s * 0.9, 1.8, s * 1.1);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(s * 0.5, -s * 1.05, 1, s * 0.3);
+
+        ctx.restore();
+    }
+
+    renderThunderBird(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.85;
+        const wingFlap = Math.sin(this.animTime * 9) * 4;
+
+        // Wide Storm Wings with Electric Tips
+        ctx.fillStyle = '#0369a1';
+        ctx.fillRect(-s * 1.4, -s * 0.6 + wingFlap, s * 1.3, s * 0.5);
+        ctx.fillRect(s * 0.1, -s * 0.6 + wingFlap, s * 1.3, s * 0.5);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-s * 1.2, -s * 0.4 + wingFlap, s * 0.9, s * 0.3);
+        ctx.fillRect(s * 0.3, -s * 0.4 + wingFlap, s * 0.9, s * 0.3);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-s * 1.5, -s * 0.65 + wingFlap, 2, 2);
+        ctx.fillRect(s * 1.3, -s * 0.65 + wingFlap, 2, 2);
+
+        // Aerodynamic Falcon Body
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-s * 0.4, -s * 0.4, s * 0.8, s * 0.9);
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fillRect(-s * 0.25, -s * 0.2, s * 0.5, s * 0.6);
+
+        // Raptor Head & Hooked Gold Beak
+        ctx.fillStyle = '#0369a1';
+        ctx.fillRect(s * 0.2, -s * 0.7, s * 0.55, s * 0.45);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(s * 0.65, -s * 0.55, s * 0.35, 2.5);
+        ctx.fillRect(s * 0.8, -s * 0.45, 2, 2);
+
+        // Lightning Feather Crest
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-s * 0.1, -s * 0.95, 2, 4);
+        ctx.fillRect(s * 0.1, -s * 1.05, 2, 4);
+
+        // Electric Gold Eye
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(s * 0.35, -s * 0.65, 2, 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(s * 0.4, -s * 0.65, 1, 1);
+
+        // Tail Plumage
+        ctx.fillStyle = '#0369a1';
+        ctx.fillRect(-s * 0.9, s * 0.1, s * 0.55, 3);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(-s * 1.1, s * 0.15, s * 0.3, 2);
+
+        ctx.restore();
+    }
+
+    renderCyberDragon(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.85;
+        const wingFlap = Math.sin(this.animTime * 8) * 3.5;
+
+        // High-Tech Cyber Wings with Neon Thrusters
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(-s * 1.4, -s * 0.8 + wingFlap, s * 1.3, s * 0.6);
+        ctx.fillRect(s * 0.2, -s * 0.8 + wingFlap, s * 1.3, s * 0.6);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(-s * 1.3, -s * 0.6 + wingFlap, s * 1.0, 2);
+        ctx.fillRect(s * 0.3, -s * 0.6 + wingFlap, s * 1.0, 2);
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillRect(-s * 1.5, -s * 0.8 + wingFlap, 2, 2);
+        ctx.fillRect(s * 1.4, -s * 0.8 + wingFlap, 2, 2);
+
+        // Plated Titanium Mecha Torso
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-s * 0.7, -s * 0.5, s * 1.4, s * 0.9);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(-s * 0.5, -s * 0.4, s * 1.0, s * 0.7);
+
+        // Neon Energy Heat Sink Ribs
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(-s * 0.3, -s * 0.3, 2, s * 0.5);
+        ctx.fillRect(0, -s * 0.3, 2, s * 0.5);
+        ctx.fillRect(s * 0.3, -s * 0.3, 2, s * 0.5);
+
+        // Mechanical Dragon Skull & Twin Laser Pods
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(s * 0.5, -s * 0.7, s * 0.7, s * 0.5);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(s * 0.6, -s * 0.95, 2, 4);
+        ctx.fillRect(s * 0.8, -s * 0.95, 2, 4);
+
+        // Cyan Laser Visor Eye
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillRect(s * 0.75, -s * 0.6, 3, 1.5);
+
+        // Segmented Cyber Tail with Stabilizers
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-s * 1.1, -s * 0.1, s * 0.5, s * 0.3);
+        ctx.fillRect(-s * 1.6, 0, s * 0.6, 2.5);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(-s * 1.8, -2, 3, 5);
+
+        ctx.restore();
+    }
+
+    renderSwampBehemoth(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.85;
+        const step = Math.sin(this.animTime * 5) * 1.5;
+
+        // Heavy Swamp Pillar Legs
+        ctx.fillStyle = '#14532d';
+        ctx.fillRect(-s * 0.6, s * 0.2 + step, s * 0.35, s * 0.6);
+        ctx.fillRect(-s * 0.1, s * 0.2 - step, s * 0.35, s * 0.6);
+        ctx.fillRect(s * 0.4, s * 0.2 + step, s * 0.35, s * 0.6);
+
+        // Massive Primordial Beast Body
+        ctx.fillStyle = '#166534';
+        ctx.fillRect(-s * 0.8, -s * 0.5, s * 1.6, s * 0.9);
+        ctx.fillStyle = '#14532d';
+        ctx.fillRect(-s * 0.7, -s * 0.4, s * 1.4, s * 0.7);
+
+        // Toxic Acid Pustules on Back
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(-s * 0.5, -s * 0.75, 3, 3);
+        ctx.fillRect(-s * 0.1, -s * 0.8, 4, 3.5);
+        ctx.fillRect(s * 0.3, -s * 0.75, 3, 3);
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(-s * 0.05, -s * 0.75, 2, 2);
+
+        // Massive Gaping Sludge Jaws
+        ctx.fillStyle = '#14532d';
+        ctx.fillRect(s * 0.6, -s * 0.4, s * 0.6, s * 0.6);
+        ctx.fillStyle = '#166534';
+        ctx.fillRect(s * 0.7, -s * 0.6, s * 0.5, s * 0.3);
+
+        // Dripping Acid Venom Fangs
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(s * 0.8, -s * 0.3, 1.5, 2.5);
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(s * 0.8, s * 0.05, 1.5, 2);
+
+        // Murky Amber Eyes
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(s * 0.75, -s * 0.5, 2, 2);
+
+        ctx.restore();
+    }
+
+    renderMammoth(ctx, ent, px, py, size) {
+        ctx.save();
+        ctx.translate(px, py);
+        if (ent.facingLeft) ctx.scale(-1, 1);
+        const s = size * 0.85;
+        const walk = Math.sin(this.animTime * 5) * 1.5;
+
+        // Heavy Sturdy Pillar Legs
+        ctx.fillStyle = '#54371c';
+        ctx.fillRect(-s * 0.6, s * 0.2 + walk, s * 0.35, s * 0.7);
+        ctx.fillRect(s * 0.25, s * 0.2 - walk, s * 0.35, s * 0.7);
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-s * 0.3, s * 0.2 - walk, s * 0.3, s * 0.7);
+        ctx.fillRect(s * 0.0, s * 0.2 + walk, s * 0.3, s * 0.7);
+
+        // Dense Shaggy Woolly Body & Hump
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-s * 0.8, -s * 0.5, s * 1.6, s * 0.9);
+        ctx.fillStyle = '#92400e';
+        ctx.fillRect(-s * 0.6, -s * 0.8, s * 0.9, s * 0.4);
+        ctx.fillStyle = '#54371c';
+        ctx.fillRect(-s * 0.7, -s * 0.3, s * 1.4, s * 0.6);
+
+        // Massive Domed Head
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(s * 0.4, -s * 0.7, s * 0.6, s * 0.65);
+        ctx.fillStyle = '#92400e';
+        ctx.fillRect(s * 0.45, -s * 0.85, s * 0.4, s * 0.25);
+
+        // Swaying Trunk
+        const trunkSway = Math.sin(this.animTime * 4) * 2;
+        ctx.fillStyle = '#54371c';
+        ctx.fillRect(s * 0.85, -s * 0.3, 2.5, s * 0.5);
+        ctx.fillRect(s * 0.95 + trunkSway * 0.5, s * 0.15, 2.5, s * 0.4);
+
+        // Huge Curving Ivory Tusks
+        ctx.fillStyle = '#fef3c7';
+        ctx.fillRect(s * 0.7, -s * 0.2, s * 0.5, 2.5);
+        ctx.fillRect(s * 1.1, -s * 0.35, 2.5, s * 0.4);
+        ctx.fillRect(s * 1.15, -s * 0.55, 2, 2.5);
+
+        // Kind Brown Eye
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(s * 0.6, -s * 0.55, 2, 2);
+
+        // Tail
+        ctx.fillStyle = '#54371c';
+        ctx.fillRect(-s * 0.95, -s * 0.2, 2, s * 0.45);
 
         ctx.restore();
     }
