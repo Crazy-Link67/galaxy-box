@@ -17,6 +17,7 @@
     <!-- Fullscreen Canvas Container -->
     <div id="canvas-container">
         <canvas id="game-canvas"></canvas>
+        <canvas id="game-canvas-3d" style="display: none;"></canvas>
     </div>
 
     <!-- Top HUD -->
@@ -41,6 +42,7 @@
             <button class="time-btn" data-speed="5" title="Hyper Speed">5x</button>
             <button class="time-btn" data-speed="10" title="Ultra Fast Speed">10x</button>
             <button class="time-btn" id="btn-quick-save" title="World Save & Load Menu (Ctrl+S)">💾 Save</button>
+            <button class="time-btn" id="btn-toggle-3d" title="Toggle 2D / 3D Perspective Mode (V)">🌐 3D</button>
             <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">👁️</button>
             <button class="time-btn" id="btn-install-pwa" title="Install GalaxyBox as App" style="display:none; background: linear-gradient(135deg, #4f46e5, #9333ea); color:#fff; border-color:#818cf8; font-weight:bold;">📲 Install</button>
         </div>
@@ -763,12 +765,21 @@
     <!-- Toast Notification Banner Container -->
     <div id="toast-container"></div>
 
+    <!-- 3D Camera Controls Hint HUD -->
+    <div id="cam-3d-hint" style="display: none;">
+        <span class="hint-item"><kbd>Right-Drag</kbd> 360° Orbit</span>
+        <span class="hint-item"><kbd>Scroll</kbd> Zoom</span>
+        <span class="hint-item"><kbd>WASD / Mid-Drag</kbd> Pan</span>
+        <span class="hint-item"><kbd>V</kbd> 2D/3D Toggle</span>
+    </div>
+
     <!-- Game Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/world.js"></script>
     <script src="js/entities.js"></script>
     <script src="js/disasters.js"></script>
+    <script src="js/renderer3d.js"></script>
     <script src="js/renderer.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/game.js"></script>

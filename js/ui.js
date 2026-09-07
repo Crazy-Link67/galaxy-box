@@ -473,6 +473,15 @@ class UIManager {
             };
         }
 
+        // 3D Perspective Mode toggle button
+        const btnToggle3D = document.getElementById('btn-toggle-3d');
+        if (btnToggle3D) {
+            btnToggle3D.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                this.game.toggle3D();
+            };
+        }
+
         // Top HUD Quick Save button
         const btnQuickSave = document.getElementById('btn-quick-save');
         if (btnQuickSave) {
@@ -1035,6 +1044,19 @@ class UIManager {
                 }, 320);
             }
         }, duration);
+    }
+
+    update3DButtonState(is3DMode) {
+        const btn = document.getElementById('btn-toggle-3d');
+        const hint = document.getElementById('cam-3d-hint');
+        if (btn) {
+            btn.classList.toggle('active-3d', is3DMode);
+            btn.innerHTML = is3DMode ? '🌐 3D Active' : '🗺️ 2D View';
+            btn.title = is3DMode ? 'Switch to 2D Pixel View (V)' : 'Switch to 3D Perspective Mode (V)';
+        }
+        if (hint) {
+            hint.style.display = is3DMode ? 'flex' : 'none';
+        }
     }
 
     exportWorldJSON() {

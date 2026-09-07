@@ -6,6 +6,7 @@
 class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
+        this.canvas3D = document.getElementById('game-canvas-3d');
         this.minimapCanvas = document.getElementById('minimap-canvas');
 
         // Core systems
@@ -18,6 +19,11 @@ class Game {
         this.renderer.camera.x = 320;
         this.renderer.camera.y = 180;
         this.renderer.camera.zoom = 2.0;
+
+        // 3D Perspective WebGL 2.0 Renderer Engine
+        this.renderer3D = (typeof Renderer3D !== 'undefined' && this.canvas3D) ? new Renderer3D(this.canvas3D) : null;
+        this.is3DMode = false;
+
         this.ui = new UIManager(this);
         window.game = this;
 
@@ -45,6 +51,10 @@ class Game {
             isDown: false,
             button: 0,
             isPanning: false,
+            isOrbiting3D: false,
+            isPanning3D: false,
+            lastX: 0,
+            lastY: 0,
             panStartX: 0,
             panStartY: 0,
             camStartX: 0,
@@ -70,8 +80,12 @@ class Game {
         this.setupInputs();
 
         // Handle resize
-        window.addEventListener('resize', () => this.renderer.resize());
+        window.addEventListener('resize', () => {
+            this.renderer.resize();
+            if (this.renderer3D) this.renderer3D.resize();
+        });
         this.renderer.resize();
+        if (this.renderer3D) this.renderer3D.resize();
 
         // Start Loop
         requestAnimationFrame((t) => this.loop(t));
@@ -96,6 +110,47 @@ class Game {
         this.ui.hideControlHUD();
     }
 
+    toggle3D(forceState = null) {
+        if (!this.renderer3D || !this.renderer3D.gl) {
+            if (this.ui && typeof this.ui.showNotification === 'function') {
+                this.ui.showNotification("⚠️ WebGL 2.0 not available on this browser/device", "error");
+            }
+            return;
+        }
+
+        this.is3DMode = forceState !== null ? forceState : !this.is3DMode;
+
+        if (this.is3DMode) {
+            // Sync 3D camera target to 2D camera focus
+            this.renderer3D.setTarget(this.renderer.camera.x, this.renderer.camera.y);
+            this.canvas.style.display = 'none';
+            this.canvas3D.style.display = 'block';
+            this.renderer3D.resize();
+        } else {
+            // Sync 2D camera focus to 3D target
+            this.renderer.camera.x = this.renderer3D.camera.target[0];
+            this.renderer.camera.y = this.renderer3D.camera.target[1];
+            this.canvas3D.style.display = 'none';
+            this.canvas.style.display = 'block';
+            this.renderer.resize();
+        }
+
+        if (this.ui && typeof this.ui.update3DButtonState === 'function') {
+            this.ui.update3DButtonState(this.is3DMode);
+        }
+
+        if (this.audio) this.audio.playMagic();
+
+        if (this.ui && typeof this.ui.showNotification === 'function') {
+            this.ui.showNotification(
+                this.is3DMode
+                    ? "🌐 3D Perspective Mode Activated! (Right-Drag: Orbit, Wheel: Zoom, WASD: Pan)"
+                    : "🗺️ 2D Tactical View Activated!",
+                "info"
+            );
+        }
+    }
+
     shakeCamera(intensity = 10, duration = 20) {
         if (this.settings && this.settings.shake === false) return;
         this.shakeIntensity = Math.max(this.shakeIntensity, intensity);
@@ -113,6 +168,10 @@ class Game {
         if (preset !== 'flat' && preset !== 'ocean') {
             this.seedStarterCivilizations();
         }
+
+        if (this.renderer3D) {
+            this.renderer3D.setTarget(this.world.width / 2, this.world.height / 2, 2.5);
+        }
     }
 
     setWorldSize(width, height) {
@@ -126,6 +185,9 @@ class Game {
         this.renderer.camera.x = width / 2;
         this.renderer.camera.y = height / 2;
         this.renderer.camera.zoom = width >= 800 ? 1.4 : (width >= 600 ? 1.8 : 2.2);
+        if (this.renderer3D) {
+            this.renderer3D.setTarget(width / 2, height / 2, 2.5);
+        }
     }
 
     seedStarterCivilizations() {
@@ -167,20 +229,22 @@ class Game {
     }
 
     setupInputs() {
+        const container = document.getElementById('canvas-container') || this.canvas;
+
         // Pointer down
-        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         window.addEventListener('mouseup', (e) => this.handleMouseUp(e));
-        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        container.addEventListener('contextmenu', (e) => e.preventDefault());
 
         // Wheel zoom
-        this.canvas.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+        container.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
 
         // Touch support (1-finger tool / attack, 2-finger pinch-to-zoom & camera pan)
-        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
-        this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
-        this.canvas.addEventListener('touchcancel', (e) => this.handleTouchEnd(e));
+        container.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        container.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        container.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+        container.addEventListener('touchcancel', (e) => this.handleTouchEnd(e));
 
         // Mobile Web Audio Unlock (User gesture requirement)
         const unlockAudio = () => {
@@ -221,14 +285,31 @@ class Game {
             }
         }
 
-        if (e.button === 1 || e.button === 2 || (e.button === 0 && e.shiftKey)) {
-            // Pan camera
-            this.mouse.isPanning = true;
-            this.mouse.panStartX = e.clientX;
-            this.mouse.panStartY = e.clientY;
-            this.mouse.camStartX = this.renderer.camera.x;
-            this.mouse.camStartY = this.renderer.camera.y;
-            return;
+        // Camera Orbiting / Panning
+        if (this.is3DMode && this.renderer3D) {
+            if (e.button === 2 || (e.button === 0 && e.altKey)) {
+                // 3D Camera Orbit
+                this.mouse.isOrbiting3D = true;
+                this.mouse.lastX = e.clientX;
+                this.mouse.lastY = e.clientY;
+                return;
+            } else if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+                // 3D Camera Pan
+                this.mouse.isPanning3D = true;
+                this.mouse.lastX = e.clientX;
+                this.mouse.lastY = e.clientY;
+                return;
+            }
+        } else {
+            if (e.button === 1 || e.button === 2 || (e.button === 0 && e.shiftKey)) {
+                // 2D Pan camera
+                this.mouse.isPanning = true;
+                this.mouse.panStartX = e.clientX;
+                this.mouse.panStartY = e.clientY;
+                this.mouse.camStartX = this.renderer.camera.x;
+                this.mouse.camStartY = this.renderer.camera.y;
+                return;
+            }
         }
 
         if (e.button === 0) {
@@ -241,16 +322,34 @@ class Game {
         this.mouse.screenX = e.clientX;
         this.mouse.screenY = e.clientY;
 
-        const wPos = this.renderer.screenToWorld(e.clientX, e.clientY);
+        const wPos = (this.is3DMode && this.renderer3D)
+            ? this.renderer3D.screenToWorld(e.clientX, e.clientY, this.world)
+            : this.renderer.screenToWorld(e.clientX, e.clientY);
         this.mouse.worldX = wPos.x;
         this.mouse.worldY = wPos.y;
 
-        if (this.mouse.isPanning) {
-            const dx = (e.clientX - this.mouse.panStartX) / this.renderer.camera.zoom;
-            const dy = (e.clientY - this.mouse.panStartY) / this.renderer.camera.zoom;
-            this.renderer.camera.x = this.mouse.camStartX - dx;
-            this.renderer.camera.y = this.mouse.camStartY - dy;
-            return;
+        if (this.is3DMode && this.renderer3D) {
+            const dx = e.clientX - this.mouse.lastX;
+            const dy = e.clientY - this.mouse.lastY;
+            this.mouse.lastX = e.clientX;
+            this.mouse.lastY = e.clientY;
+
+            if (this.mouse.isOrbiting3D) {
+                this.renderer3D.orbit(dx, dy);
+                return;
+            }
+            if (this.mouse.isPanning3D) {
+                this.renderer3D.pan(dx, dy);
+                return;
+            }
+        } else {
+            if (this.mouse.isPanning) {
+                const dx = (e.clientX - this.mouse.panStartX) / this.renderer.camera.zoom;
+                const dy = (e.clientY - this.mouse.panStartY) / this.renderer.camera.zoom;
+                this.renderer.camera.x = this.mouse.camStartX - dx;
+                this.renderer.camera.y = this.mouse.camStartY - dy;
+                return;
+            }
         }
 
         if (this.mouse.isDown && !this.controlledEntity) {
@@ -259,9 +358,10 @@ class Game {
     }
 
     handleMouseUp(e) {
-        if (this.mouse.isPanning) {
-            this.mouse.isPanning = false;
-        }
+        if (this.mouse.isOrbiting3D) this.mouse.isOrbiting3D = false;
+        if (this.mouse.isPanning3D) this.mouse.isPanning3D = false;
+        if (this.mouse.isPanning) this.mouse.isPanning = false;
+
         if (this.mouse.isDown) {
             this.mouse.isDown = false;
             // If dragging an entity with God's Hand, fling it!
@@ -280,6 +380,11 @@ class Game {
 
     handleWheel(e) {
         e.preventDefault();
+        if (this.is3DMode && this.renderer3D) {
+            this.renderer3D.zoom(e.deltaY);
+            return;
+        }
+
         const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
         const cam = this.renderer.camera;
 
@@ -381,6 +486,12 @@ class Game {
         // Escape to Unpossess / Exit Control
         if (e.key === 'Escape') {
             this.unpossess();
+            return;
+        }
+
+        // V key: Toggle 2D / 3D Perspective Mode
+        if (e.key === 'v' || e.key === 'V') {
+            this.toggle3D();
             return;
         }
 
@@ -1014,8 +1125,37 @@ class Game {
             }
 
             // Smooth camera tracking
-            this.renderer.camera.x += (ent.x - this.renderer.camera.x) * 0.15;
-            this.renderer.camera.y += (ent.y - this.renderer.camera.y) * 0.15;
+            if (this.is3DMode && this.renderer3D) {
+                const entZ = (this.world.getElevation ? this.world.getElevation(ent.x, ent.y) : 2.0) + 1.5;
+                this.renderer3D.camera.target[0] += (ent.x - this.renderer3D.camera.target[0]) * 0.15;
+                this.renderer3D.camera.target[1] += (ent.y - this.renderer3D.camera.target[1]) * 0.15;
+                this.renderer3D.camera.target[2] += (entZ - this.renderer3D.camera.target[2]) * 0.15;
+            } else {
+                this.renderer.camera.x += (ent.x - this.renderer.camera.x) * 0.15;
+                this.renderer.camera.y += (ent.y - this.renderer.camera.y) * 0.15;
+            }
+            return;
+        }
+
+        if (this.is3DMode && this.renderer3D) {
+            const panSpeed = 2.0;
+            const yaw = this.renderer3D.camera.yaw;
+            const sinY = Math.sin(yaw);
+            const cosY = Math.cos(yaw);
+            let fwd = 0, right = 0;
+            if (this.keys['w'] || this.keys['arrowup'] || (this.virtualKeys && this.virtualKeys.up)) fwd += 1;
+            if (this.keys['s'] || this.keys['arrowdown'] || (this.virtualKeys && this.virtualKeys.down)) fwd -= 1;
+            if (this.keys['a'] || this.keys['arrowleft'] || (this.virtualKeys && this.virtualKeys.left)) right -= 1;
+            if (this.keys['d'] || this.keys['arrowright'] || (this.virtualKeys && this.virtualKeys.right)) right += 1;
+
+            if (fwd !== 0 || right !== 0) {
+                const fx = -sinY;
+                const fy = cosY;
+                const rx = cosY;
+                const ry = sinY;
+                this.renderer3D.camera.target[0] += (fx * fwd + rx * right) * panSpeed;
+                this.renderer3D.camera.target[1] += (fy * fwd + ry * right) * panSpeed;
+            }
             return;
         }
 
@@ -1096,15 +1236,28 @@ class Game {
 
         // Render Frame
         const mouseWorld = { x: this.mouse.worldX, y: this.mouse.worldY };
-        this.renderer.render(
-            this.world,
-            this.entityManager,
-            this.disasterManager,
-            this.particleSystem,
-            this.ui.activeTool,
-            this.ui.brushSize,
-            mouseWorld
-        );
+        if (this.is3DMode && this.renderer3D) {
+            this.renderer3D.render(
+                this.world,
+                this.entityManager,
+                this.disasterManager,
+                this.particleSystem,
+                this.ui.activeTool,
+                this.ui.brushSize,
+                mouseWorld
+            );
+            this.renderer.renderMinimap(this.world, this.entityManager);
+        } else {
+            this.renderer.render(
+                this.world,
+                this.entityManager,
+                this.disasterManager,
+                this.particleSystem,
+                this.ui.activeTool,
+                this.ui.brushSize,
+                mouseWorld
+            );
+        }
     }
 
     updateStatsHUD() {

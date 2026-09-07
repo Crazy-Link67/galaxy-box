@@ -3,8 +3,8 @@
 > **The Ultimate Free God Sandbox Simulator**  
 > Crisp retro micro-pixel graphics, living cellular ecosystems, cataclysmic destruction, mythical dragons & titans, drivable combat vehicles, equippable weapons, and limitless god powers.
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)]()
-[![Platform](https://img.shields.io/badge/platform-HTML5%20Canvas%20%7C%20Web%20Audio-green.svg)]()
+[![Version](https://img.shields.io/badge/version-2.0.0--3D-blue.svg)]()
+[![Platform](https://img.shields.io/badge/platform-WebGL%202.0%20%7C%20HTML5%20Canvas%20%7C%20Web%20Audio-green.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)]()
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)]()
 
@@ -12,9 +12,25 @@
 
 ## 📖 Overview
 
-**GALAXYBOX** is a high-density 2D god sandbox simulator inspired by classic pixel world simulators. As an all-powerful deity, you command nature, unleash apocalypse upon civilizations, build thriving worlds from scratch, possess and pilot massive dragons, titans, mechs, and combat vehicles, equip weapons onto your subjects, and perform ancient cosmic rituals across a persistent cellular matrix.
+**GALAXYBOX** is an expansive God Sandbox Simulator featuring a dual-mode engine: classic **2D Pixel Art Mode** and full **3D WebGL 2.0 Perspective Mode**! As an all-powerful deity, you command nature, unleash apocalypse upon civilizations, build thriving worlds from scratch, possess and pilot massive dragons, titans, mechs, and combat vehicles, equip weapons onto your subjects, and perform ancient cosmic rituals across a persistent cellular matrix.
 
-Everything runs in real time at **60 FPS** with **zero build steps or external dependencies**—simply launch `index.html` in any web browser!
+Switch seamlessly between 2D and 3D at any time with the **`V`** key or top HUD button!
+
+Everything runs in real time at **60 FPS** with **zero build steps or external dependencies**—simply launch `index.html` in any modern web browser!
+
+---
+
+## 🌐 Dual 2D / 3D Engine Architecture
+
+* **Instant 2D / 3D Toggle**: Press **`V`** or click **`🌐 3D`** on the top bar to switch instantaneously between 2D tactical view and immersive 3D perspective view.
+* **Continuous Heightfield Elevation**: Every tile has true 3D elevation. Mountains rise into jagged peaks, valleys dip into deep ocean trenches, and nukes/meteors physically carve 3D craters!
+* **360° Orbit Camera**:
+  * **Right-Click Drag / Alt + Drag**: Orbit 360° around the world with polar tilt.
+  * **WASD / Middle-Click Drag**: Smoothly pan the camera across the landscape.
+  * **Mouse Wheel / Pinch**: Zoom from close-up unit inspection to planetary orbital view.
+* **Pinpoint 3D Raycasting**: All 60+ tools (brushes, powers, spawns, bombs, inspector) work with 100% accuracy in 3D using hardware heightfield raymarching.
+* **3D Dynamic Lighting & Atmosphere**: Directional sun lighting, water specular highlights, pulsing lava glow, acid sizzle, and atmospheric depth fog.
+* **Spatial Ground Drop Shadows**: Soft shadow billboards projected underneath walking, driving, and flying units. Flying dragons and helicopters soar high into the skies with proportional ground shadows!
 
 ---
 

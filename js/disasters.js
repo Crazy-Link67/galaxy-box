@@ -1464,6 +1464,9 @@ class DisasterManager {
 
         // 3. COMPLETE WORLD TERRAIN DESTRUCTION ACROSS EVERY TILE ON THE PLANET
         if (world) {
+            if (typeof world.carveCrater === 'function') {
+                world.carveCrater(cx, cy, 140, 24.0);
+            }
             for (let i = 0; i < world.size; i++) {
                 const tx = i % world.width;
                 const ty = Math.floor(i / world.width);
@@ -1522,6 +1525,10 @@ class DisasterManager {
 
         const radius = 65;
         const rad2 = radius * radius;
+
+        if (world && typeof world.carveCrater === 'function') {
+            world.carveCrater(cx, cy, radius * 0.85, 14.0);
+        }
 
         // Obliterate terrain & create massive layered crater
         for (let dy = -radius; dy <= radius; dy++) {
@@ -1629,6 +1636,9 @@ class DisasterManager {
         if (particleSystem) particleSystem.explosion(cx, cy, radius, intensity);
         if (audio) audio.playExplosion(intensity);
         if (window.game) window.game.shakeCamera(Math.min(20, 8 * intensity), 16);
+        if (world && typeof world.carveCrater === 'function') {
+            world.carveCrater(cx, cy, radius * 0.75, Math.min(9.0, intensity * 2.2));
+        }
 
         if (!world) return;
         const r2 = radius * radius;

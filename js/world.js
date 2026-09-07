@@ -80,6 +80,45 @@ const TILE_INFO = {
     [TILES.METEORITE_ORE]: { name: "Meteorite Ore", color: "#f97316", isLiquid: false, isSolid: true, flammability: 0 }
 };
 
+const TILE_BASE_ELEVATION = {
+    [TILES.VOID]: -4.0,
+    [TILES.DEEP_WATER]: 0.4,
+    [TILES.WATER]: 1.2,
+    [TILES.SAND]: 2.2,
+    [TILES.SOIL]: 2.6,
+    [TILES.GRASS]: 3.0,
+    [TILES.FOREST]: 3.5,
+    [TILES.STONE]: 5.2,
+    [TILES.HIGH_MOUNTAIN]: 8.0,
+    [TILES.SNOW]: 9.6,
+    [TILES.ICE]: 1.8,
+    [TILES.LAVA]: 1.6,
+    [TILES.ACID]: 1.4,
+    [TILES.BEDROCK]: 3.5,
+    [TILES.FALLOUT]: 2.8,
+    [TILES.ASH]: 2.4,
+    [TILES.CORRUPTED]: 3.0,
+    [TILES.SWAMP]: 1.8,
+    [TILES.ROAD]: 3.1,
+    [TILES.NEBULA]: 2.5,
+    [TILES.STARDUST]: 4.2,
+    [TILES.OBSIDIAN]: 3.8,
+    [TILES.CRYSTAL]: 4.8,
+    [TILES.MAGMA_ROCK]: 4.0,
+    [TILES.BIOLUMINESCENT_MOSS]: 2.8,
+    [TILES.QUICKSAND]: 1.8,
+    [TILES.MUSHROOM_SPORE]: 2.8,
+    [TILES.HONEY_COMB]: 3.2,
+    [TILES.GOLD_ORE]: 4.4,
+    [TILES.POISON_SWAMP]: 1.7,
+    [TILES.HOLY_GROUND]: 3.4,
+    [TILES.BLOOD_RIVER]: 1.4,
+    [TILES.PLASMA_FIELD]: 2.6,
+    [TILES.LIVING_BRAMBLE]: 3.2,
+    [TILES.AETHER_FLUID]: 2.2,
+    [TILES.METEORITE_ORE]: 5.0
+};
+
 // Compact Fast Perlin/Simplex-style Noise Generator
 class FastNoise {
     constructor(seed = 1337) {
@@ -150,6 +189,7 @@ class World {
 
         // Buffers
         this.tiles = new Uint8Array(this.size);
+        this.elevation = new Float32Array(this.size); // 3D height in world units
         this.variation = new Uint8Array(this.size);
         this.temperature = new Int16Array(this.size); // in °C (default 20)
         this.fire = new Uint8Array(this.size); // burning timer
@@ -158,10 +198,11 @@ class World {
         this.stepCount = 0;
         this.noise = new FastNoise(seed);
 
-        // Precompute color variations
+        // Precompute color variations and base elevations
         for (let i = 0; i < this.size; i++) {
             this.variation[i] = Math.floor(Math.random() * 5); // 0-4 variation offset
             this.temperature[i] = 20;
+            this.elevation[i] = 2.0;
         }
     }
 
@@ -171,6 +212,7 @@ class World {
         this.height = newHeight;
         this.size = newWidth * newHeight;
         this.tiles = new Uint8Array(this.size);
+        this.elevation = new Float32Array(this.size);
         this.variation = new Uint8Array(this.size);
         this.temperature = new Int16Array(this.size);
         this.fire = new Uint8Array(this.size);
@@ -178,6 +220,7 @@ class World {
         for (let i = 0; i < this.size; i++) {
             this.variation[i] = Math.floor(Math.random() * 5);
             this.temperature[i] = 20;
+            this.elevation[i] = 2.0;
         }
     }
 
@@ -194,6 +237,60 @@ class World {
         return this.tiles[this.idx(x, y)];
     }
 
+    getElevation(x, y) {
+        const ix = Math.floor(x);
+        const iy = Math.floor(y);
+        if (!this.inBounds(ix, iy)) return 0;
+        return this.elevation ? this.elevation[this.idx(ix, iy)] : (TILE_BASE_ELEVATION[this.getTile(ix, iy)] || 2.0);
+    }
+
+    setElevation(x, y, h) {
+        const ix = Math.floor(x);
+        const iy = Math.floor(y);
+        if (!this.inBounds(ix, iy)) return;
+        this.elevation[this.idx(ix, iy)] = Math.max(-5.0, Math.min(25.0, h));
+    }
+
+    carveCrater(cx, cy, radius, depth = 3.5) {
+        if (!this.elevation) return;
+        const r2 = radius * radius;
+        const x0 = Math.max(0, Math.floor(cx - radius));
+        const x1 = Math.min(this.width - 1, Math.ceil(cx + radius));
+        const y0 = Math.max(0, Math.floor(cy - radius));
+        const y1 = Math.min(this.height - 1, Math.ceil(cy + radius));
+
+        for (let y = y0; y <= y1; y++) {
+            for (let x = x0; x <= x1; x++) {
+                const dist2 = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+                if (dist2 <= r2) {
+                    const factor = 1.0 - Math.sqrt(dist2) / radius;
+                    const i = this.idx(x, y);
+                    this.elevation[i] = Math.max(-3.5, this.elevation[i] - depth * factor);
+                }
+            }
+        }
+    }
+
+    raiseElevation(cx, cy, radius, heightAdd = 2.0) {
+        if (!this.elevation) return;
+        const r2 = radius * radius;
+        const x0 = Math.max(0, Math.floor(cx - radius));
+        const x1 = Math.min(this.width - 1, Math.ceil(cx + radius));
+        const y0 = Math.max(0, Math.floor(cy - radius));
+        const y1 = Math.min(this.height - 1, Math.ceil(cy + radius));
+
+        for (let y = y0; y <= y1; y++) {
+            for (let x = x0; x <= x1; x++) {
+                const dist2 = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+                if (dist2 <= r2) {
+                    const factor = 1.0 - Math.sqrt(dist2) / radius;
+                    const i = this.idx(x, y);
+                    this.elevation[i] = Math.min(24.0, this.elevation[i] + heightAdd * factor);
+                }
+            }
+        }
+    }
+
     setTile(x, y, type) {
         if (!this.inBounds(x, y)) return;
         const i = this.idx(x, y);
@@ -203,12 +300,21 @@ class World {
         if (type === TILES.LAVA) this.temperature[i] = 800;
         else if (type === TILES.ICE || type === TILES.SNOW) this.temperature[i] = -10;
         else if (type === TILES.WATER || type === TILES.DEEP_WATER) this.temperature[i] = 15;
+
+        // Auto-adjust 3D elevation baseline if tile type changes significantly
+        if (type === TILES.HIGH_MOUNTAIN && this.elevation[i] < 6.0) this.elevation[i] = 7.8;
+        else if (type === TILES.STONE && this.elevation[i] < 4.0) this.elevation[i] = 5.2;
+        else if (type === TILES.SNOW && this.elevation[i] < 7.0) this.elevation[i] = 9.2;
+        else if (type === TILES.DEEP_WATER && this.elevation[i] > 1.2) this.elevation[i] = 0.5;
+        else if (type === TILES.VOID) this.elevation[i] = -4.0;
     }
 
     clear(defaultTile = TILES.DEEP_WATER) {
         this.tiles.fill(defaultTile);
         this.fire.fill(0);
         this.temperature.fill(20);
+        const baseH = TILE_BASE_ELEVATION[defaultTile] !== undefined ? TILE_BASE_ELEVATION[defaultTile] : 1.0;
+        this.elevation.fill(baseH);
         if (typeof window !== 'undefined' && window.game && window.game.entityManager) {
             window.game.entityManager.corpses = [];
             window.game.entityManager.floatingTexts = [];
@@ -267,15 +373,17 @@ class World {
                     if (r < 0.14) {
                         // Radiant Galactic Core
                         this.tiles[i] = TILES.STARDUST;
+                        this.elevation[i] = 4.8;
                         continue;
                     } else if (armDist < 0.38 && r < 0.9) {
                         const n = this.noise.fractal(nx * 8, ny * 8, 3, 0.5);
-                        if (n > 0.62) this.tiles[i] = TILES.STARDUST;
-                        else if (n > 0.38) this.tiles[i] = TILES.NEBULA;
-                        else this.tiles[i] = TILES.CORRUPTED;
+                        if (n > 0.62) { this.tiles[i] = TILES.STARDUST; this.elevation[i] = 3.8; }
+                        else if (n > 0.38) { this.tiles[i] = TILES.NEBULA; this.elevation[i] = 2.4; }
+                        else { this.tiles[i] = TILES.CORRUPTED; this.elevation[i] = 2.8; }
                         continue;
                     } else {
                         this.tiles[i] = TILES.VOID;
+                        this.elevation[i] = -4.0;
                         continue;
                     }
                 } else if (preset === 'binary_stars') {
@@ -284,18 +392,21 @@ class World {
                     const d2 = Math.hypot(dx + 0.28, dy);
                     if (d1 < 0.12 || d2 < 0.12) {
                         this.tiles[i] = TILES.STARDUST;
+                        this.elevation[i] = 5.0;
                         continue;
                     } else if (Math.abs(dy) < 0.05 && Math.abs(dx) < 0.35) {
                         this.tiles[i] = TILES.NEBULA;
+                        this.elevation[i] = 2.5;
                         continue;
                     } else if (Math.abs(distFromCenter - 0.55) < 0.12) {
                         const n = this.noise.fractal(nx * 10, ny * 10, 3, 0.5);
-                        if (n > 0.6) this.tiles[i] = TILES.CRYSTAL;
-                        else if (n > 0.35) this.tiles[i] = TILES.STARDUST;
-                        else this.tiles[i] = TILES.CORRUPTED;
+                        if (n > 0.6) { this.tiles[i] = TILES.CRYSTAL; this.elevation[i] = 4.6; }
+                        else if (n > 0.35) { this.tiles[i] = TILES.STARDUST; this.elevation[i] = 3.6; }
+                        else { this.tiles[i] = TILES.CORRUPTED; this.elevation[i] = 2.8; }
                         continue;
                     } else {
                         this.tiles[i] = TILES.VOID;
+                        this.elevation[i] = -4.0;
                         continue;
                     }
                 } else if (preset === 'deep_nebula') {
@@ -304,21 +415,33 @@ class World {
                     const neb = this.noise.fractal(nx * 3, ny * 3, 3, 0.4);
                     if (n > 0.65) {
                         this.tiles[i] = TILES.CRYSTAL;
+                        this.elevation[i] = 4.8;
                     } else if (n > 0.45) {
                         this.tiles[i] = TILES.STARDUST;
+                        this.elevation[i] = 3.6;
                     } else if (neb > 0.42) {
                         this.tiles[i] = TILES.NEBULA;
+                        this.elevation[i] = 2.2;
                     } else {
                         this.tiles[i] = TILES.VOID;
+                        this.elevation[i] = -4.0;
                     }
                     continue;
                 } else if (preset === 'flat') {
                     this.tiles[i] = TILES.GRASS;
+                    this.elevation[i] = 3.0;
                     continue;
                 } else if (preset === 'ocean') {
                     this.tiles[i] = TILES.WATER;
+                    this.elevation[i] = 1.0;
                     continue;
                 }
+
+                // Continuous 3D heightfield
+                let h3d = (elevation - 0.28) * 13.0;
+                if (h3d < 0) h3d = h3d * 0.4 + 0.4;
+                else h3d = h3d + 1.2;
+                this.elevation[i] = Math.max(-2.0, Math.min(18.0, h3d));
 
                 // Elevation to Tile Mapping
                 if (elevation < 0.28) {
@@ -433,6 +556,8 @@ class World {
     }
 
     raiseTile(x, y) {
+        const i = this.idx(x, y);
+        if (this.elevation) this.elevation[i] = Math.min(22.0, this.elevation[i] + 0.9);
         const current = this.getTile(x, y);
         if (current === TILES.DEEP_WATER) this.setTile(x, y, TILES.WATER);
         else if (current === TILES.WATER) this.setTile(x, y, TILES.SAND);
@@ -445,6 +570,8 @@ class World {
     }
 
     lowerTile(x, y) {
+        const i = this.idx(x, y);
+        if (this.elevation) this.elevation[i] = Math.max(-3.5, this.elevation[i] - 0.9);
         const current = this.getTile(x, y);
         if (current === TILES.SNOW) this.setTile(x, y, TILES.HIGH_MOUNTAIN);
         else if (current === TILES.HIGH_MOUNTAIN) this.setTile(x, y, TILES.STONE);
@@ -771,11 +898,16 @@ class World {
 
     // Save & Load Serializer
     serialize() {
+        const elevInt = new Int16Array(this.size);
+        for (let i = 0; i < this.size; i++) {
+            elevInt[i] = Math.round((this.elevation ? this.elevation[i] : 2.0) * 10);
+        }
         return {
             width: this.width,
             height: this.height,
             seed: this.seed,
-            tilesRLE: this.encodeRLE(this.tiles)
+            tilesRLE: this.encodeRLE(this.tiles),
+            elevationRLE: this.encodeRLE(elevInt)
         };
     }
 
@@ -786,6 +918,7 @@ class World {
         this.size = this.width * this.height;
         this.seed = data.seed || 12345;
         this.tiles = new Uint8Array(this.size);
+        this.elevation = new Float32Array(this.size);
         this.variation = new Uint8Array(this.size);
         this.temperature = new Int16Array(this.size);
         this.fire = new Uint8Array(this.size);
@@ -795,6 +928,20 @@ class World {
         } else if (data.tiles && Array.isArray(data.tiles)) {
             // Backward-compatibility with legacy uncompressed array format
             this.tiles.set(data.tiles);
+        }
+
+        if (data.elevationRLE) {
+            const elevInt = new Int16Array(this.size);
+            this.decodeRLE(data.elevationRLE, elevInt);
+            for (let i = 0; i < this.size; i++) {
+                this.elevation[i] = elevInt[i] / 10.0;
+            }
+        } else {
+            // Backward-compatibility: reconstruct elevation from tile types
+            for (let i = 0; i < this.size; i++) {
+                const t = this.tiles[i];
+                this.elevation[i] = TILE_BASE_ELEVATION[t] !== undefined ? TILE_BASE_ELEVATION[t] : 2.5;
+            }
         }
 
         for (let i = 0; i < this.size; i++) {
