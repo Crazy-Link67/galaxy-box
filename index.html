@@ -18,6 +18,11 @@
     <div id="canvas-container">
         <canvas id="game-canvas"></canvas>
         <canvas id="game-canvas-3d" style="display: none;"></canvas>
+        <!-- First-Person Viewport Reticle & Info Overlay -->
+        <div id="fpv-overlay" style="display: none;">
+            <div class="fpv-crosshair"></div>
+            <div class="fpv-hud-badge">FIRST-PERSON VIEW [F: EXIT | WASD: MOVE | CLICK: ATTACK]</div>
+        </div>
     </div>
 
     <!-- Top HUD -->
@@ -43,7 +48,8 @@
             <button class="time-btn" data-speed="10" title="Ultra Fast Speed">10x</button>
             <button class="time-btn" id="btn-quick-save" title="World Save & Load Menu (Ctrl+S)">💾 Save</button>
             <button class="time-btn" id="btn-toggle-3d" title="Toggle 2D / 3D Perspective Mode (V)">🌐 3D</button>
-            <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">👁️</button>
+            <button class="time-btn" id="btn-toggle-fpv" title="Toggle First-Person Mode (F)">👁️ FPV</button>
+            <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">🎬</button>
             <button class="time-btn" id="btn-install-pwa" title="Install GalaxyBox as App" style="display:none; background: linear-gradient(135deg, #4f46e5, #9333ea); color:#fff; border-color:#818cf8; font-weight:bold;">📲 Install</button>
         </div>
     </div>
@@ -466,6 +472,12 @@
                                 <option value="vampire_lord">Vampire Lord</option>
                                 <option value="frost_titan">Frost Titan (Elemental Giant)</option>
                                 <option value="golem">Rock Golem (Stonemason)</option>
+                                <option value="astral_phoenix">Astral Phoenix (Cosmic Starbird)</option>
+                                <option value="frost_giant">Frost Giant (Glacial Titan)</option>
+                                <option value="dread_reaper">Dread Reaper (Soul Harvester)</option>
+                                <option value="dune_scorpion_king">Dune Scorpion King (Desert Overlord)</option>
+                                <option value="titan_golem">Titan Golem (Bedrock Bastion)</option>
+                                <option value="pegasus">Pegasus (Celestial Winged Steed)</option>
                             </select>
                         </div>
                         <!-- 3 Color Customizers -->
@@ -487,11 +499,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Live Pixel Preview Box -->
+                    <!-- 3D Turntable Studio Box -->
                     <div class="creator-preview-box">
-                        <div class="preview-badge">LIVE PIXEL PREVIEW</div>
-                        <canvas id="creator-preview-canvas" width="100" height="100" class="creator-canvas"></canvas>
-                        <span id="preview-species-tag" style="font-size:0.68rem; color:#38bdf8; font-family:monospace; margin-top:4px;">ANIMATED SPRITE</span>
+                        <div class="preview-badge">3D TURNTABLE STUDIO</div>
+                        <canvas id="creator-preview-canvas" width="160" height="160" class="creator-canvas" style="width:140px; height:140px; border-radius:12px; border:1px solid rgba(56,189,248,0.3); background:#060812;"></canvas>
+                        <span id="preview-species-tag" style="font-size:0.68rem; color:#38bdf8; font-family:monospace; margin-top:4px;">DRAG TO ROTATE 3D</span>
                     </div>
                 </div>
 

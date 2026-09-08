@@ -42,7 +42,12 @@ const CATEGORY_TOOLS = {
         { id: 'tnt', name: 'TNT Explosive', icon: '🧨', desc: 'Heavy explosive block causing fiery shockwave.' },
         { id: 'supernova', name: 'Supernova', icon: '⭐', desc: 'Colossal 85-tile cosmic star detonation.' },
         { id: 'supernova_implosion', name: 'Supernova Collapse', icon: '💫', desc: 'SECRET: Catastrophic stellar collapse obliterating the regional cosmos.' },
-        { id: 'corrosion', name: 'Corrosion Bomb', icon: '🧪', desc: 'Shower of bubbling acid melting everything.' }
+        { id: 'corrosion', name: 'Corrosion Bomb', icon: '🧪', desc: 'Shower of bubbling acid melting everything.' },
+        { id: 'cryo_bomb', name: 'Cryo Cascade Bomb', icon: '❄️', desc: 'Explosive sub-zero ordinance glaciating the surrounding region into permanent permafrost and freezing entities.' },
+        { id: 'orbital_death_ray', name: 'Solaris Death Ray', icon: '🛰️', desc: 'Devastating high-intensity continuous orbital death ray disintegrating all matter and leaving molten slag.' },
+        { id: 'plague_comet', name: 'Plague Comet', icon: '☄️', desc: 'Infectious interstellar comet seeding toxic biovirus and zombie plague in a colossal necrotic crater.' },
+        { id: 'tectonic_rupture', name: 'Tectonic Rupture', icon: '🌋', desc: 'Seismic faultline fracture tearing open deep bedrock fissures and venting molten magma.' },
+        { id: 'nanite_swarm', name: 'Nanite Swarm', icon: '🤖', desc: 'Self-replicating microscopic gray goo nanobots devouring all minerals, buildings, and organics.' }
     ],
     nature: [
         { id: 'volcano', name: 'Volcano', icon: '🌋', desc: 'Spews endless ash, smoke, and molten lava.' },
@@ -70,7 +75,11 @@ const CATEGORY_TOOLS = {
         { id: 'acidrain', name: 'Acid Storm', icon: '☣️', desc: 'Toxic green rain dissolving vegetation.' },
         { id: 'sandstorm', name: 'Sandstorm', icon: '🏜️', desc: 'Fierce desert gale eroding terrain and vegetation into sand.' },
         { id: 'clone_rain', name: 'Clone Rain', icon: '🔮', desc: 'Arcane celestial tempest raining cloned creatures from heaven!' },
-        { id: 'wildfire', name: 'Wildfire', icon: '🔥', desc: 'Rapidly propagating forest fire.' }
+        { id: 'wildfire', name: 'Wildfire', icon: '🔥', desc: 'Rapidly propagating forest fire.' },
+        { id: 'gravity_inversion', name: 'Gravity Inversion', icon: '🌌', desc: 'Gravitational anomaly launching caught creatures and debris skyward before crushing them back down.' },
+        { id: 'monsoon', name: 'Tropical Monsoon', icon: '🌧️', desc: 'Cataclysmic deluge flooding land, extinguishing wildfires, and replenishing global plant growth.' },
+        { id: 'solar_eclipse', name: 'Solar Eclipse', icon: '🌑', desc: 'Cosmic shadow plunging the world into darkness, chilling temperatures, and empowering shadows.' },
+        { id: 'ash_storm', name: 'Volcanic Ash Storm', icon: '🌋', desc: 'Dense suffocating cloud of volcanic fallout blanketing vegetation and terrain in dark ash.' }
     ],
     landscaping: [
         { id: 'deep_water', name: 'Deep Ocean', icon: '🌊', desc: 'Dark, deep oceanic waters.' },
@@ -111,7 +120,15 @@ const CATEGORY_TOOLS = {
         { id: 'raise', name: 'Shovel (Raise)', icon: '⬆️', desc: 'Elevates terrain towards mountains.' },
         { id: 'lower', name: 'Shovel (Lower)', icon: '⬇️', desc: 'Carves valleys and ocean trenches.' },
         { id: 'sponge', name: 'Sponge Cake', icon: '🧽', desc: 'Absorbs fluids without altering ground.' },
-        { id: 'fertilizer', name: 'Life Sprout', icon: '🌾', desc: 'Sprouts dense flora, trees and crops.' }
+        { id: 'fertilizer', name: 'Life Sprout', icon: '🌾', desc: 'Sprouts dense flora, trees and crops.' },
+        { id: 'coral_reef', name: 'Coral Reef', icon: '🪸', desc: 'Vibrant living marine ecosystem that enriches shallow coastal waters.' },
+        { id: 'tar_pit', name: 'Tar Pit', icon: '🛢️', desc: 'Viscous sticky hydrocarbon mire trapping and suffocating unwary creatures.' },
+        { id: 'glowcap_mushroom', name: 'Glowcap Mycelium', icon: '🍄', desc: 'Bioluminescent deep-spore fungal colony pulsing with azure light.' },
+        { id: 'aether_crystal', name: 'Aether Crystal Spire', icon: '🔮', desc: 'Resonant extraterrestrial crystalline formations humming with arcane mana.' },
+        { id: 'volcanic_caldera', name: 'Volcanic Caldera', icon: '🌋', desc: 'Superheated volcanic magma crater with hardened volcanic rock crust.' },
+        { id: 'enchanted_grove', name: 'Enchanted Grove', icon: '🌸', desc: 'Mystical sacred flora blessing nearby life and purging corrupted tiles.' },
+        { id: 'sculpt_peak', name: 'Sculpt Mountain Peak', icon: '⛰️', desc: 'Raise a grand high mountain summit surrounded by rugged crags and foothills.' },
+        { id: 'carve_canyon', name: 'Carve Ocean Trench', icon: '🌊', desc: 'Excavate a deep sea chasm or river canyon into surrounding terrain.' }
     ],
     powers: [
         { id: 'hand', name: "God's Hand", icon: '✋', desc: 'Grab any creature and fling with momentum!' },
@@ -153,6 +170,9 @@ const CATEGORY_TOOLS = {
         { id: 'equip_galaxy_blade', name: 'Equip: Galaxy Blade', icon: '🌟', desc: 'SECRET: Bestow celestial crescent sword launching stellar waves (+45 Atk)!' },
         { id: 'equip_laser_shotgun', name: 'Equip: Laser Shotgun', icon: '🔫', desc: 'Arm creature with multi-beam scatter blaster (+28 Atk).' },
         { id: 'equip_chain_lightning_staff', name: 'Equip: Chain Lightning Staff', icon: '🪄', desc: 'Arm creature with storm staff arcing electric surges to 3 targets (+32 Atk).' },
+        { id: 'first_person', name: 'First-Person Mode', icon: '👁️', desc: 'Immerse into the creature eyes in full 3D First-Person view with WASD and mouse look!' },
+        { id: 'equip_death_scythe', name: 'Equip: Death Scythe', icon: '💀', desc: 'Arm creature with grim reaper scythe harvesting souls and draining health (+40 Atk).' },
+        { id: 'equip_frost_bow', name: 'Equip: Glacial Frost Bow', icon: '🏹', desc: 'Arm creature with elven ice bow firing triple piercing freezing frost arrows (+30 Atk).' },
         { id: 'cosmic_oblivion', name: 'Cosmic Oblivion', icon: '🔱', desc: 'SECRET: Unfurl absolute divine annihilation ray upon the universe!' },
         { id: 'galaxy_sacrifice', name: 'Galaxy Sacrifice', icon: '🌌', desc: 'Trigger the Great Galaxy Sacrifice to unlock the Cosmic Vault!' },
         { id: 'heatray', name: 'Heat Ray', icon: '☀️', desc: 'Intense thermal beam to melt or ignite.' },
@@ -185,6 +205,12 @@ const CATEGORY_TOOLS = {
         { id: 'dark_matter_colossus', name: 'Dark Matter Colossus', icon: '🗿', desc: 'Controllable abyssal juggernaut firing gravitational crush pulses and singularity collapse!' },
         { id: 'swamp_behemoth', name: 'Swamp Behemoth', icon: '🐊', desc: 'Controllable primeval mire predator with toxic bile spew and tail slam wave!' },
         { id: 'mammoth', name: 'Woolly Mammoth', icon: '🦣', desc: 'Controllable prehistoric titan with glacial tusk sweep and seismic glacier stomp!' },
+        { id: 'astral_phoenix', name: 'Astral Phoenix', icon: '🔥', desc: 'Controllable cosmic firebird with stellar plasma barrage and supernova rebirth!' },
+        { id: 'frost_giant', name: 'Frost Giant Juggernaut', icon: '❄️', desc: 'Controllable glacial titan hurling ice boulders and triggering crushing avalanches!' },
+        { id: 'dread_reaper', name: 'Dread Reaper', icon: '💀', desc: 'Controllable harbinger of death wielding soul siphon orbs and soul harvest shockwave!' },
+        { id: 'dune_scorpion_king', name: 'Dune Scorpion King', icon: '🦂', desc: 'Controllable desert overlord with venom barb piercers and toxic sand tremors!' },
+        { id: 'titan_golem', name: 'Titan Golem', icon: '🗿', desc: 'Controllable ancient bedrock colossus with earthshaking quake slams and bedrock fortress!' },
+        { id: 'pegasus', name: 'Celestial Pegasus', icon: '🦄', desc: 'Controllable winged celestial steed firing stardust volleys and aurora blessing gales!' },
         { id: 'duck', name: 'Exploding Duck', icon: '🦆', desc: 'Quacking aquatic fowl that lays ticking explosive eggs and detonates upon death!' },
         { id: 'evermean', name: 'Evermean Treant', icon: '🌲', desc: 'Eyeless walking tree with sharp needle legs that headslams foes and forest trees!' },
         { id: 'frog', name: 'Poison Dart Frog', icon: '🐸', desc: 'Agile amphibious hopper that spits venom darts and tongue-snatches prey.' },
@@ -479,6 +505,15 @@ class UIManager {
             btnToggle3D.onclick = () => {
                 if (this.game.audio) this.game.audio.playClick();
                 this.game.toggle3D();
+            };
+        }
+
+        // First-Person Mode toggle button
+        const btnToggleFPV = document.getElementById('btn-toggle-fpv');
+        if (btnToggleFPV) {
+            btnToggleFPV.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                this.game.toggleFirstPerson();
             };
         }
 
@@ -1807,6 +1842,42 @@ class UIManager {
                 head: 'dragon_snout', body: 'dragon_scales', arms: 'dragon_wings', legs: 'quadruped_paws', back: 'dragon_wings',
                 col: '#0891b2', colSec: '#06b6d4', colGlow: '#facc15',
                 hp: 4600, atk: 90, spd: 1.0, scale: 3.0
+            },
+            astral_phoenix: {
+                name: 'Astral Phoenix',
+                head: 'pterosaur_beak', body: 'avian_feather', arms: 'dragon_wings', legs: 'duck_webbed', back: 'starlight_halo',
+                col: '#a855f7', colSec: '#ec4899', colGlow: '#38bdf8',
+                hp: 3600, atk: 85, spd: 1.15, scale: 2.8
+            },
+            frost_giant: {
+                name: 'Frost Giant Juggernaut',
+                head: 'cyclops', body: 'crystalline', arms: 'bipedal_arms', legs: 'bipedal_legs', back: 'spiky_carapace',
+                col: '#0284c7', colSec: '#38bdf8', colGlow: '#bae6fd',
+                hp: 5500, atk: 88, spd: 0.6, scale: 3.4
+            },
+            dread_reaper: {
+                name: 'Dread Reaper',
+                head: 'skull', body: 'armored', arms: 'blade_arms', legs: 'ethereal_wisp', back: 'demon_wings',
+                col: '#0f172a', colSec: '#10b981', colGlow: '#34d399',
+                hp: 4000, atk: 92, spd: 1.05, scale: 2.8
+            },
+            dune_scorpion_king: {
+                name: 'Dune Scorpion King',
+                head: 'cyclops', body: 'dino_armored', arms: 'raptor_claws', legs: 'arachnid_legs', back: 'spiky_carapace',
+                col: '#ca8a04', colSec: '#854d0e', colGlow: '#22c55e',
+                hp: 4400, atk: 82, spd: 0.85, scale: 3.0
+            },
+            titan_golem: {
+                name: 'Titan Golem',
+                head: 'cyclops', body: 'sauropod_bulk', arms: 'blade_arms', legs: 'sauropod_pillars', back: 'dino_spikes',
+                col: '#78716c', colSec: '#d97706', colGlow: '#f59e0b',
+                hp: 6800, atk: 96, spd: 0.45, scale: 3.8
+            },
+            pegasus: {
+                name: 'Celestial Pegasus',
+                head: 'humanoid', body: 'standard', arms: 'feather_wings', legs: 'quadruped_paws', back: 'angel_wings',
+                col: '#f8fafc', colSec: '#38bdf8', colGlow: '#fef08a',
+                hp: 3200, atk: 72, spd: 1.25, scale: 2.6
             }
         };
 
@@ -1836,18 +1907,80 @@ class UIManager {
         }
 
         let previewAnim = 0;
+        let studioOrbitAngle = 0;
+        let isStudioDragging = false;
+        let studioLastX = 0;
+
+        previewCanvas.addEventListener('mousedown', (e) => {
+            isStudioDragging = true;
+            studioLastX = e.clientX;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isStudioDragging) {
+                const dx = e.clientX - studioLastX;
+                studioLastX = e.clientX;
+                studioOrbitAngle += dx * 0.025;
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            isStudioDragging = false;
+        });
+        previewCanvas.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                isStudioDragging = true;
+                studioLastX = e.touches[0].clientX;
+            }
+        }, { passive: true });
+        window.addEventListener('touchmove', (e) => {
+            if (isStudioDragging && e.touches && e.touches.length === 1) {
+                const dx = e.touches[0].clientX - studioLastX;
+                studioLastX = e.touches[0].clientX;
+                studioOrbitAngle += dx * 0.025;
+            }
+        }, { passive: true });
+        window.addEventListener('touchend', () => {
+            isStudioDragging = false;
+        });
+
         const renderPreview = () => {
             const modal = document.getElementById('modal-creator');
             if (modal && modal.classList.contains('active')) {
-                previewAnim += 0.05;
-                ctx.clearRect(0, 0, 100, 100);
+                previewAnim += 0.035;
+                if (!isStudioDragging) {
+                    studioOrbitAngle += 0.015;
+                }
 
-                const cx = 50;
-                const cy = 54;
-                const bob = Math.sin(previewAnim * 3) * 2;
+                const head = headEl ? headEl.value : 'humanoid';
+                const body = bodyEl ? bodyEl.value : 'standard';
+                const arms = armsEl ? armsEl.value : 'bipedal_arms';
+                const legs = legsEl ? legsEl.value : 'bipedal_legs';
+                const back = backEl ? backEl.value : 'none';
                 const col = colEl ? colEl.value : '#ea580c';
                 const sec = colSecEl ? colSecEl.value : '#38bdf8';
                 const glow = colGlowEl ? colGlowEl.value : '#facc15';
+
+                const customData = {
+                    archetype: archetypeEl ? archetypeEl.value : 'human',
+                    name: nameEl ? nameEl.value : 'Omega Chimera',
+                    color: col,
+                    secColor: sec,
+                    glowColor: glow,
+                    head: head,
+                    body: body,
+                    arms: arms,
+                    legs: legs,
+                    back: back,
+                    scale: scaleEl ? (parseFloat(scaleEl.value) || 2.0) : 2.0
+                };
+
+                if (this.game && this.game.renderer3D && typeof this.game.renderer3D.renderCreatureStudio3D === 'function') {
+                    this.game.renderer3D.renderCreatureStudio3D(customData, previewCanvas, previewAnim, studioOrbitAngle);
+                } else {
+                    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+                    const cx = previewCanvas.width * 0.5;
+                    const cy = previewCanvas.height * 0.54;
+                    const bob = Math.sin(previewAnim * 3) * 2;
 
                 const head = headEl ? headEl.value : 'humanoid';
                 const body = bodyEl ? bodyEl.value : 'standard';
@@ -2168,8 +2301,9 @@ class UIManager {
                     ctx.fillRect(cx - 9, cy - 28 + bob, 18, 5);
                 }
             }
-            requestAnimationFrame(renderPreview);
-        };
+        }
+        requestAnimationFrame(renderPreview);
+    };
         requestAnimationFrame(renderPreview);
 
         const spawnCustomBtn = document.getElementById('btn-spawn-custom');

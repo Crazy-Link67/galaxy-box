@@ -23,6 +23,7 @@ class Game {
         // 3D Perspective WebGL 2.0 Renderer Engine
         this.renderer3D = (typeof Renderer3D !== 'undefined' && this.canvas3D) ? new Renderer3D(this.canvas3D) : null;
         this.is3DMode = false;
+        this.isFirstPerson = false;
 
         this.ui = new UIManager(this);
         window.game = this;
@@ -103,6 +104,9 @@ class Game {
     }
 
     unpossess() {
+        if (this.isFirstPerson) {
+            this.toggleFirstPerson(false);
+        }
         if (this.controlledEntity) {
             this.controlledEntity.isControlled = false;
             this.controlledEntity = null;
@@ -127,6 +131,10 @@ class Game {
             this.canvas3D.style.display = 'block';
             this.renderer3D.resize();
         } else {
+            // If leaving 3D mode, also exit First Person
+            if (this.isFirstPerson) {
+                this.toggleFirstPerson(false);
+            }
             // Sync 2D camera focus to 3D target
             this.renderer.camera.x = this.renderer3D.camera.target[0];
             this.renderer.camera.y = this.renderer3D.camera.target[1];
@@ -144,8 +152,63 @@ class Game {
         if (this.ui && typeof this.ui.showNotification === 'function') {
             this.ui.showNotification(
                 this.is3DMode
-                    ? "🌐 3D Perspective Mode Activated! (Right-Drag: Orbit, Wheel: Zoom, WASD: Pan)"
+                    ? "🌐 3D Perspective Mode Activated! (Right-Drag: Orbit, Wheel: Zoom, WASD: Pan, F: First-Person)"
                     : "🗺️ 2D Tactical View Activated!",
+                "info"
+            );
+        }
+    }
+
+    toggleFirstPerson(forceState = null) {
+        if (!this.renderer3D || !this.renderer3D.gl) {
+            if (this.ui && typeof this.ui.showNotification === 'function') {
+                this.ui.showNotification("⚠️ WebGL 2.0 required for First-Person View", "error");
+            }
+            return;
+        }
+
+        const nextState = forceState !== null ? forceState : !this.isFirstPerson;
+
+        // If turning on and not yet in 3D mode, activate 3D mode first
+        if (nextState && !this.is3DMode) {
+            this.toggle3D(true);
+        }
+
+        this.isFirstPerson = nextState;
+        this.renderer3D.isFirstPerson = this.isFirstPerson;
+
+        // If entering FPV without a controlled entity, auto-possess nearest creature or first creature
+        if (this.isFirstPerson && (!this.controlledEntity || !this.controlledEntity.active)) {
+            let candidate = this.entityManager.findNearestEntity({ id: -1, x: this.mouse.worldX || this.world.width / 2, y: this.mouse.worldY || this.world.height / 2 });
+            if (!candidate && this.entityManager.entities.length > 0) {
+                candidate = this.entityManager.entities[0];
+            }
+            if (!candidate) {
+                // If world has no creatures, spawn a hero knight to possess!
+                candidate = this.entityManager.spawn('phoenix_knight', this.world.width / 2, this.world.height / 2);
+            }
+            if (candidate) {
+                this.possess(candidate);
+            }
+        }
+
+        const fpvOverlay = document.getElementById('fpv-overlay');
+        if (fpvOverlay) {
+            fpvOverlay.style.display = this.isFirstPerson ? 'flex' : 'none';
+        }
+
+        const btnFpv = document.getElementById('btn-toggle-fpv');
+        if (btnFpv) {
+            btnFpv.classList.toggle('active', this.isFirstPerson);
+        }
+
+        if (this.audio) this.audio.playMagic();
+
+        if (this.ui && typeof this.ui.showNotification === 'function') {
+            this.ui.showNotification(
+                this.isFirstPerson
+                    ? "👁️ First-Person Mode Activated! (WASD: Move, Mouse/Drag: Look, Left-Click/Space: Attack, Q/E: Special, F: Exit)"
+                    : "🌐 Exited First-Person Mode",
                 "info"
             );
         }
@@ -329,10 +392,18 @@ class Game {
         this.mouse.worldY = wPos.y;
 
         if (this.is3DMode && this.renderer3D) {
-            const dx = e.clientX - this.mouse.lastX;
-            const dy = e.clientY - this.mouse.lastY;
+            const dx = (e.movementX !== undefined && document.pointerLockElement) ? e.movementX : (e.clientX - this.mouse.lastX);
+            const dy = (e.movementY !== undefined && document.pointerLockElement) ? e.movementY : (e.clientY - this.mouse.lastY);
             this.mouse.lastX = e.clientX;
             this.mouse.lastY = e.clientY;
+
+            if (this.isFirstPerson) {
+                // First-person mouse look with pointer lock, mouse drag, or right button
+                if (document.pointerLockElement || this.mouse.isOrbiting3D || this.mouse.button === 2 || this.mouse.isDown || (e.buttons && e.buttons > 0)) {
+                    this.renderer3D.rotateCamera(dx * 0.75, dy * 0.75);
+                }
+                return;
+            }
 
             if (this.mouse.isOrbiting3D) {
                 this.renderer3D.orbit(dx, dy);
@@ -495,6 +566,12 @@ class Game {
             return;
         }
 
+        // F key: Toggle First-Person Control Mode
+        if (e.key === 'f' || e.key === 'F') {
+            this.toggleFirstPerson();
+            return;
+        }
+
         // Q or E: Special Ability when controlled
         if ((e.key === 'q' || e.key === 'e') && this.controlledEntity && this.controlledEntity.active) {
             this.controlledEntity.useSpecialAbility(this.world, this.entityManager, this.disasterManager, this.particleSystem, this.audio);
@@ -617,6 +694,16 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerIonStormBarrage(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         } else if (tool === 'chronos_rift') {
             if (isFirstClick) this.disasterManager.triggerChronosRift(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'cryo_bomb') {
+            if (isFirstClick) this.disasterManager.triggerCryoBomb(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'orbital_death_ray') {
+            if (isFirstClick) this.disasterManager.triggerOrbitalDeathRay(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'plague_comet') {
+            if (isFirstClick) this.disasterManager.triggerPlagueComet(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'tectonic_rupture') {
+            if (isFirstClick) this.disasterManager.triggerTectonicRupture(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'nanite_swarm') {
+            if (isFirstClick) this.disasterManager.triggerNaniteSwarm(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
         }
 
         // 2. NATURE & DISASTERS
@@ -678,6 +765,14 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerGeyser(wx, wy, this.world, this.particleSystem, this.audio);
         } else if (tool === 'wildfire') {
             this.world.ignite(tx, ty, 80);
+        } else if (tool === 'gravity_inversion') {
+            if (isFirstClick) this.disasterManager.triggerGravityInversion(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'monsoon') {
+            if (isFirstClick) this.disasterManager.triggerMonsoon(this.world, this.disasterManager, this.particleSystem, this.audio);
+        } else if (tool === 'solar_eclipse') {
+            if (isFirstClick) this.disasterManager.triggerSolarEclipse(this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'ash_storm') {
+            this.disasterManager.startStorm('ash', 800);
         }
 
         // 3. LANDSCAPING
@@ -723,6 +818,41 @@ class Game {
         else if (tool === 'lower') this.world.applyBrush(wx, wy, bSize, 'lower');
         else if (tool === 'sponge') this.world.applyBrush(wx, wy, bSize, 'sponge');
         else if (tool === 'fertilizer') this.world.applyBrush(wx, wy, bSize, 'fertilizer');
+        else if (tool === 'coral_reef') this.world.applyBrush(wx, wy, bSize, TILES.CORAL_REEF);
+        else if (tool === 'tar_pit') this.world.applyBrush(wx, wy, bSize, TILES.TAR_PIT);
+        else if (tool === 'glowcap_mushroom') this.world.applyBrush(wx, wy, bSize, TILES.GLOWCAP_MUSHROOM);
+        else if (tool === 'aether_crystal') this.world.applyBrush(wx, wy, bSize, TILES.AETHER_CRYSTAL);
+        else if (tool === 'volcanic_caldera') this.world.applyBrush(wx, wy, bSize, TILES.VOLCANIC_CALDERA);
+        else if (tool === 'enchanted_grove') this.world.applyBrush(wx, wy, bSize, TILES.ENCHANTED_GROVE);
+        else if (tool === 'sculpt_peak') {
+            for (let dy = -bSize * 2; dy <= bSize * 2; dy++) {
+                for (let dx = -bSize * 2; dx <= bSize * 2; dx++) {
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq <= bSize * bSize * 4) {
+                        const px = Math.floor(wx + dx), py = Math.floor(wy + dy);
+                        if (this.world.inBounds(px, py)) {
+                            const d = Math.sqrt(distSq) / (bSize * 2);
+                            const t = d < 0.35 ? TILES.HIGH_MOUNTAIN : (d < 0.7 ? TILES.STONE : TILES.SOIL);
+                            this.world.setTile(px, py, t);
+                        }
+                    }
+                }
+            }
+            this.particleSystem.burst(wx, wy, 15, ['#94a3b8', '#64748b', '#ffffff'], 1.5, 4, 1, 2);
+        }
+        else if (tool === 'carve_canyon') {
+            for (let dy = -bSize; dy <= bSize; dy++) {
+                for (let dx = -bSize; dx <= bSize; dx++) {
+                    if (dx * dx + dy * dy <= bSize * bSize) {
+                        const px = Math.floor(wx + dx), py = Math.floor(wy + dy);
+                        if (this.world.inBounds(px, py)) {
+                            this.world.setTile(px, py, TILES.DEEP_WATER);
+                        }
+                    }
+                }
+            }
+            this.particleSystem.burst(wx, wy, 12, ['#0284c7', '#0369a1'], 1.5, 3, 1, 2);
+        }
 
         // 4. VARIOUS POWERS & MIRACLES
         else if (tool === 'hand') {
@@ -913,6 +1043,24 @@ class Game {
                 const ent = this.entityManager.equipNearest(wx, wy, 'chain_lightning_staff');
                 if (ent) this.particleSystem.burst(ent.x, ent.y, 14, ['#38bdf8', '#818cf8', '#ffffff'], 1.2, 3.5, 1, 2);
             }
+        } else if (tool === 'equip_death_scythe') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'death_scythe');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#a855f7', '#22c55e', '#111827'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'equip_frost_bow') {
+            if (isFirstClick) {
+                const ent = this.entityManager.equipNearest(wx, wy, 'frost_bow');
+                if (ent) this.particleSystem.burst(ent.x, ent.y, 16, ['#38bdf8', '#bae6fd', '#ffffff'], 1.5, 4, 1.5, 3);
+            }
+        } else if (tool === 'first_person') {
+            if (isFirstClick) {
+                const ent = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (ent && Math.hypot(ent.x - wx, ent.y - wy) < 20) {
+                    this.possess(ent);
+                }
+                this.toggleFirstPerson();
+            }
         } else if (tool === 'chronos_stasis') {
             if (isFirstClick) {
                 for (const ent of this.entityManager.entities) {
@@ -995,7 +1143,8 @@ class Game {
                 'valkyrie', 'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship',
                 'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
                 'frost_dragon', 'shadow_dragon', 'storm_dragon',
-                'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth'
+                'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth',
+                'astral_phoenix', 'frost_giant', 'dread_reaper', 'dune_scorpion_king', 'titan_golem', 'pegasus'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);
@@ -1011,7 +1160,8 @@ class Game {
                     'pirate_ship', 'valkyrie', 'gargoyle', 'necromancer', 'frost_wolf', 'sand_scorpion',
                     'trex', 'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus',
                     'frost_dragon', 'shadow_dragon', 'storm_dragon',
-                    'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth'
+                    'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon', 'swamp_behemoth', 'mammoth',
+                    'astral_phoenix', 'frost_giant', 'dread_reaper', 'dune_scorpion_king', 'titan_golem', 'pegasus'
                 ];
                 if (autoPossessList.includes(tool)) {
                     this.possess(ent);
@@ -1103,24 +1253,55 @@ class Game {
     updateCameraKeys() {
         if (this.controlledEntity && this.controlledEntity.active) {
             const ent = this.controlledEntity;
-            let mx = 0, my = 0;
-            if (this.keys['w'] || this.keys['arrowup'] || (this.virtualKeys && this.virtualKeys.up)) my -= 1;
-            if (this.keys['s'] || this.keys['arrowdown'] || (this.virtualKeys && this.virtualKeys.down)) my += 1;
-            if (this.keys['a'] || this.keys['arrowleft'] || (this.virtualKeys && this.virtualKeys.left)) mx -= 1;
-            if (this.keys['d'] || this.keys['arrowright'] || (this.virtualKeys && this.virtualKeys.right)) mx += 1;
+            if (this.isFirstPerson && this.renderer3D) {
+                const yaw = this.renderer3D.camera.yaw;
+                const fx = -Math.sin(yaw);
+                const fy = Math.cos(yaw);
+                const rx = Math.cos(yaw);
+                const ry = Math.sin(yaw);
 
-            if (!ent.isDying && (mx !== 0 || my !== 0)) {
-                if (mx < 0) ent.facingLeft = true;
-                else if (mx > 0) ent.facingLeft = false;
-                const len = Math.hypot(mx, my);
-                const spd = ent.speed * 1.8;
-                ent.x += (mx / len) * spd;
-                ent.y += (my / len) * spd;
-                ent.x = Math.max(2, Math.min(this.world.width - 2, ent.x));
-                ent.y = Math.max(2, Math.min(this.world.height - 2, ent.y));
+                let moveFwd = 0, moveRight = 0;
+                if (this.keys['w'] || this.keys['arrowup'] || (this.virtualKeys && this.virtualKeys.up)) moveFwd += 1;
+                if (this.keys['s'] || this.keys['arrowdown'] || (this.virtualKeys && this.virtualKeys.down)) moveFwd -= 1;
+                if (this.keys['a'] || this.keys['arrowleft'] || (this.virtualKeys && this.virtualKeys.left)) moveRight -= 1;
+                if (this.keys['d'] || this.keys['arrowright'] || (this.virtualKeys && this.virtualKeys.right)) moveRight += 1;
 
-                if (ent.hasTrait('super_speed') && Math.random() < 0.4) {
-                    this.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, ent.color, 10, 'spark');
+                if (!ent.isDying && (moveFwd !== 0 || moveRight !== 0)) {
+                    const vx = fx * moveFwd + rx * moveRight;
+                    const vy = fy * moveFwd + ry * moveRight;
+                    const len = Math.hypot(vx, vy) || 1;
+                    const spd = ent.speed * 1.8;
+                    ent.x += (vx / len) * spd;
+                    ent.y += (vy / len) * spd;
+                    ent.x = Math.max(2, Math.min(this.world.width - 2, ent.x));
+                    ent.y = Math.max(2, Math.min(this.world.height - 2, ent.y));
+                    if (vx < 0) ent.facingLeft = true;
+                    else if (vx > 0) ent.facingLeft = false;
+
+                    if (ent.hasTrait('super_speed') && Math.random() < 0.4) {
+                        this.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, ent.color, 10, 'spark');
+                    }
+                }
+            } else {
+                let mx = 0, my = 0;
+                if (this.keys['w'] || this.keys['arrowup'] || (this.virtualKeys && this.virtualKeys.up)) my -= 1;
+                if (this.keys['s'] || this.keys['arrowdown'] || (this.virtualKeys && this.virtualKeys.down)) my += 1;
+                if (this.keys['a'] || this.keys['arrowleft'] || (this.virtualKeys && this.virtualKeys.left)) mx -= 1;
+                if (this.keys['d'] || this.keys['arrowright'] || (this.virtualKeys && this.virtualKeys.right)) mx += 1;
+
+                if (!ent.isDying && (mx !== 0 || my !== 0)) {
+                    if (mx < 0) ent.facingLeft = true;
+                    else if (mx > 0) ent.facingLeft = false;
+                    const len = Math.hypot(mx, my);
+                    const spd = ent.speed * 1.8;
+                    ent.x += (mx / len) * spd;
+                    ent.y += (my / len) * spd;
+                    ent.x = Math.max(2, Math.min(this.world.width - 2, ent.x));
+                    ent.y = Math.max(2, Math.min(this.world.height - 2, ent.y));
+
+                    if (ent.hasTrait('super_speed') && Math.random() < 0.4) {
+                        this.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, ent.color, 10, 'spark');
+                    }
                 }
             }
 

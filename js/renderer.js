@@ -372,31 +372,116 @@ class Renderer {
                                 r = 255; g = 240; b = 180;
                             }
                             break;
+                        case TILES.CORAL_REEF:
+                            // Vibrant Marine Coral Reef
+                            r = 244 - varOffset;
+                            g = 63 + Math.sin(this.animTime * 3.5 + x * 0.3) * 25;
+                            b = 94 + waterWave * 0.5;
+                            if ((x * 7 + y * 13) % 4 === 0) { r += 20; g += 80; b += 90; } // Bioluminescent polyp
+                            break;
+                        case TILES.TAR_PIT:
+                            // Viscous Bubbling Black Tar Pit
+                            r = 24 - varOffset * 0.5;
+                            g = 24 - varOffset * 0.5;
+                            b = 27 - varOffset * 0.5;
+                            if ((x * 11 + y * 17 + Math.floor(this.animTime * 2)) % 23 === 0) {
+                                r = 60; g = 45; b = 20; // Tar bubble pop
+                            }
+                            break;
+                        case TILES.GLOWCAP_MUSHROOM:
+                            // Radiant Cyan/Emerald Bioluminescent Fungal Spores
+                            r = 6;
+                            g = 182 - varOffset + Math.sin(this.animTime * 3 + (x + y) * 0.25) * 35;
+                            b = 212 + Math.cos(this.animTime * 2.5 + x * 0.2) * 40;
+                            if ((x * 9 + y * 5) % 6 === 0) { r = 220; g = 255; b = 255; }
+                            break;
+                        case TILES.AETHER_CRYSTAL:
+                            // Floating Iridescent Celestial Prisms
+                            r = 56 + Math.sin(this.animTime * 4 + x * 0.3) * 50;
+                            g = 189 + Math.cos(this.animTime * 3.5 + y * 0.3) * 45;
+                            b = 248;
+                            if ((x * 13 + y * 19 + Math.floor(this.animTime * 6)) % 17 === 0) {
+                                r = 255; g = 255; b = 255;
+                            }
+                            break;
+                        case TILES.VOLCANIC_CALDERA:
+                            // Basalt Ring with Glowing Magma Fractures
+                            r = 69 - varOffset;
+                            g = 10 - varOffset * 0.5;
+                            b = 10 - varOffset * 0.5;
+                            if ((x * 3 + y * 5 + Math.floor(this.animTime * 3)) % 5 === 0) {
+                                r = 255; g = 100 + Math.sin(this.animTime * 4) * 40; b = 0; // Magma fracture
+                            }
+                            break;
+                        case TILES.ENCHANTED_GROVE:
+                            // Mystic Pink Cherry Blossom & Twilight Starlight Woodland
+                            r = 244 - varOffset;
+                            g = 114 - varOffset;
+                            b = 182 + Math.sin(this.animTime * 2.5 + (x + y) * 0.15) * 25;
+                            if ((x * 11 + y * 7 + Math.floor(this.animTime * 3)) % 11 === 0) {
+                                r = 255; g = 220; b = 245; // Drifting petal glint
+                            }
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
                 }
 
-                // Micro-pixel Edge Shading & Coastal Foam
-                if (fire === 0 && y > 0) {
-                    const topTile = world.tiles[i - world.width];
-                    // Shoreline wave foam
-                    if ((t === TILES.WATER || t === TILES.DEEP_WATER) && 
-                        (topTile === TILES.SAND || topTile === TILES.GRASS || topTile === TILES.SOIL || topTile === TILES.STONE)) {
-                        const waveFoam = Math.sin(this.animTime * 4 + x * 0.6);
-                        if (waveFoam > 0.1) {
-                            r += 65; g += 75; b += 95;
+                // --- High-Definition Multi-Directional Edge Shading & Coastal Surf ---
+                if (fire === 0) {
+                    const curElev = world.elevation ? world.elevation[i] : (TILE_BASE_ELEVATION[t] || 2.0);
+                    const topIdx = (y > 0) ? i - world.width : i;
+                    const leftIdx = (x > 0) ? i - 1 : i;
+                    const botIdx = (y < world.height - 1) ? i + world.width : i;
+                    const rightIdx = (x < world.width - 1) ? i + 1 : i;
+
+                    const topElev = world.elevation ? world.elevation[topIdx] : curElev;
+                    const leftElev = world.elevation ? world.elevation[leftIdx] : curElev;
+                    const botElev = world.elevation ? world.elevation[botIdx] : curElev;
+                    const rightElev = world.elevation ? world.elevation[rightIdx] : curElev;
+
+                    const topTile = world.tiles[topIdx];
+                    const leftTile = world.tiles[leftIdx];
+                    const botTile = world.tiles[botIdx];
+                    const rightTile = world.tiles[rightIdx];
+
+                    // 1. Rolling Shoreline Wave Foam on Water & Coasts
+                    if (t === TILES.WATER || t === TILES.DEEP_WATER || t === TILES.CORAL_REEF) {
+                        const isCoast = (topElev > 1.8 || leftElev > 1.8 || botElev > 1.8 || rightElev > 1.8 ||
+                                         topTile === TILES.SAND || leftTile === TILES.SAND || botTile === TILES.SAND || rightTile === TILES.SAND ||
+                                         topTile === TILES.GRASS || leftTile === TILES.GRASS || botTile === TILES.GRASS || rightTile === TILES.GRASS);
+                        if (isCoast) {
+                            const surf = Math.sin(this.animTime * 4.2 + x * 0.45) * 0.5 + Math.cos(this.animTime * 3.4 + y * 0.45) * 0.5;
+                            if (surf > 0.15) {
+                                r += 75; g += 90; b += 115;
+                            }
                         }
-                    } 
-                    // Top edge directional sunlight highlight for terrain
-                    else if ((t === TILES.STONE || t === TILES.HIGH_MOUNTAIN || t === TILES.SOIL || t === TILES.OBSIDIAN) && topTile !== t) {
-                        r += 18; g += 18; b += 22;
+                    }
+
+                    // 2. Directional Sunlit Cliff Highlight (Top & Left Edges)
+                    const elevDeltaTop = curElev - topElev;
+                    const elevDeltaLeft = curElev - leftElev;
+                    if (elevDeltaTop > 0.4 || elevDeltaLeft > 0.4) {
+                        const sunHighlight = Math.min(45, (Math.max(elevDeltaTop, elevDeltaLeft) * 16));
+                        r += sunHighlight;
+                        g += sunHighlight;
+                        b += sunHighlight * 1.15;
+                    }
+
+                    // 3. Drop Shadow on Lower Adjacent Terrain (Cast to South & East)
+                    const shadowFromTop = topElev - curElev;
+                    const shadowFromLeft = leftElev - curElev;
+                    if (shadowFromTop > 0.5 || shadowFromLeft > 0.5) {
+                        const shadowDepth = Math.min(50, Math.max(shadowFromTop, shadowFromLeft) * 18);
+                        r -= shadowDepth;
+                        g -= shadowDepth;
+                        b -= shadowDepth * 0.85;
                     }
                 }
 
-                // Star glints in cosmic tiles
-                if ((t === TILES.NEBULA || t === TILES.STARDUST || t === TILES.CRYSTAL || t === TILES.PLASMA_FIELD || t === TILES.AETHER_FLUID) && fire === 0) {
-                    if (((x * 31 + y * 17 + Math.floor(this.animTime * 5)) % 47) === 0) {
+                // Star glints in cosmic & prismatic tiles
+                if ((t === TILES.NEBULA || t === TILES.STARDUST || t === TILES.CRYSTAL || t === TILES.PLASMA_FIELD || t === TILES.AETHER_FLUID || t === TILES.AETHER_CRYSTAL) && fire === 0) {
+                    if (((x * 31 + y * 17 + Math.floor(this.animTime * 5)) % 43) === 0) {
                         r = 255; g = 255; b = 255;
                     }
                 }

@@ -220,42 +220,85 @@ void main() {
 
     // Lambertian Diffuse Lighting
     float diff = max(dot(normal, lightDir), 0.0);
-    float ambient = 0.42;
-    float light = ambient + diff * 0.58;
+    float ambient = 0.44;
+    float light = ambient + diff * 0.56;
 
     vec3 baseColor = v_color.rgb;
 
-    // Specular wave highlights on water / crystal / ice
-    if (v_tileType == 1.0 || v_tileType == 2.0 || v_tileType == 10.0 || v_tileType == 22.0) {
-        vec3 reflectDir = reflect(-lightDir, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        baseColor += vec3(0.35, 0.55, 0.75) * spec;
+    // Slope-based Craggy Cliff Rock Striations
+    float slope = clamp(1.0 - normal.z, 0.0, 1.0);
+    if (slope > 0.22 && v_tileType != 1.0 && v_tileType != 2.0 && v_tileType != 11.0 && v_tileType != 36.0) {
+        float strata = sin(v_worldPos.z * 18.0) * 0.12 + sin(v_worldPos.x * 3.5 + v_worldPos.y * 3.5) * 0.07;
+        vec3 cliffRock = vec3(0.24, 0.24, 0.28) + vec3(strata);
+        float cliffFactor = smoothstep(0.22, 0.65, slope);
+        baseColor = mix(baseColor, cliffRock, cliffFactor);
     }
 
-    // Molten Lava Glow
-    if (v_tileType == 11.0) {
-        float pulse = sin(u_time * 4.0 + v_worldPos.x * 0.2 + v_worldPos.y * 0.2) * 0.15 + 0.85;
-        baseColor *= pulse * 1.25;
-        light = max(light, 0.85); // Self-illuminated
+    // Coastal Water / Shoreline Wave Surf Foam
+    if (v_worldPos.z >= 0.75 && v_worldPos.z <= 1.55 && (v_tileType == 2.0 || v_tileType == 3.0 || v_tileType == 36.0)) {
+        float foamWave = sin(u_time * 4.0 + v_worldPos.x * 2.6 + v_worldPos.y * 2.6);
+        if (foamWave > 0.42) {
+            baseColor = mix(baseColor, vec3(0.88, 0.96, 1.0), 0.65);
+        }
+    }
+
+    // Specular wave highlights on water / crystal / ice / coral
+    if (v_tileType == 1.0 || v_tileType == 2.0 || v_tileType == 10.0 || v_tileType == 22.0 || v_tileType == 36.0 || v_tileType == 39.0) {
+        vec3 reflectDir = reflect(-lightDir, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 30.0);
+        baseColor += vec3(0.38, 0.58, 0.82) * spec;
+    }
+
+    // Molten Lava Glow & Caldera Veins
+    if (v_tileType == 11.0 || v_tileType == 40.0) {
+        float pulse = sin(u_time * 4.0 + v_worldPos.x * 0.25 + v_worldPos.y * 0.25) * 0.2 + 0.9;
+        baseColor *= pulse * 1.35;
+        light = max(light, 0.9); // Self-illuminated
     }
 
     // Radioactive Acid Sizzle Glow
     if (v_tileType == 12.0) {
-        baseColor *= (sin(u_time * 5.0) * 0.1 + 0.95);
-        light = max(light, 0.75);
+        baseColor *= (sin(u_time * 5.0) * 0.12 + 0.95);
+        light = max(light, 0.8);
     }
 
-    // Ambient Occlusion in deep crevices
-    if (v_worldPos.z < 0.8) {
-        light *= 0.85;
+    // Bioluminescent Mushroom Spore Glow (tile 38)
+    if (v_tileType == 38.0) {
+        float mGlow = sin(u_time * 3.5 + v_worldPos.x * 0.5) * 0.25 + 0.9;
+        baseColor += vec3(0.18, 0.05, 0.26) * mGlow;
+        light = max(light, 0.82);
     }
+
+    // Aether Crystal refraction (tile 39)
+    if (v_tileType == 39.0) {
+        float shimmer = sin(u_time * 6.0 + v_worldPos.y * 0.8) * 0.25 + 0.95;
+        baseColor += vec3(0.16, 0.28, 0.38) * shimmer;
+        light = max(light, 0.84);
+    }
+
+    // Prehistoric Tar Pit gloss (tile 37)
+    if (v_tileType == 37.0) {
+        vec3 reflectDir = reflect(-lightDir, normal);
+        float tarSpec = pow(max(dot(viewDir, reflectDir), 0.0), 45.0);
+        baseColor += vec3(0.2, 0.15, 0.25) * tarSpec;
+    }
+
+    // High mountain snow caps
+    if (v_worldPos.z > 14.0 && normal.z > 0.55 && (v_tileType == 8.0 || v_tileType == 9.0)) {
+        float snowBlend = smoothstep(14.0, 20.0, v_worldPos.z);
+        baseColor = mix(baseColor, vec3(0.92, 0.95, 1.0), snowBlend * 0.85);
+    }
+
+    // Multi-tier Crevice Ambient Occlusion
+    float ao = clamp((v_worldPos.z + 0.6) / 3.2, 0.58, 1.0);
+    light *= ao;
 
     vec3 finalColor = baseColor * light;
 
-    // Cosmic distance fog blending into dark space
+    // Cosmic distance fog blending into dark starry twilight
     float dist = length(u_viewPos - v_worldPos);
-    float fogFactor = clamp((dist - 90.0) / 280.0, 0.0, 0.85);
-    vec3 fogColor = vec3(0.04, 0.04, 0.08);
+    float fogFactor = clamp((dist - 100.0) / 320.0, 0.0, 0.85);
+    vec3 fogColor = vec3(0.04, 0.04, 0.09);
     finalColor = mix(finalColor, fogColor, fogFactor);
 
     fragColor = vec4(finalColor, v_color.a);
@@ -398,6 +441,19 @@ class Renderer3D {
         this.isPanning = false;
         this.lastMouseX = 0;
         this.lastMouseY = 0;
+
+        // First-Person Control Mode State
+        this.isFirstPerson = false;
+        this.possessedEntity = null;
+    }
+
+    setFirstPerson(active, entity = null) {
+        this.isFirstPerson = !!active;
+        this.possessedEntity = entity;
+        if (this.isFirstPerson && entity) {
+            this.camera.yaw = (entity.facingLeft ? -Math.PI / 2 : Math.PI / 2);
+            this.camera.pitch = 0.05;
+        }
     }
 
     createShader(type, source) {
@@ -524,14 +580,15 @@ class Renderer3D {
             alert: getCellUV(9, 0),
             skull: getCellUV(10, 0),
             heart: getCellUV(11, 0),
-            defaultSprite: getCellUV(24, 0)
+            defaultSprite: getCellUV(26, 0)
         };
 
-        // 2. Draw Weapon Sprites into Row 0 (cols 12..23)
+        // 2. Draw Weapon Sprites into Row 0 (cols 12..25)
         this.drawWeaponSprites(ctx);
         const weaponNames = [
             'sword', 'bow', 'staff', 'laser_cannon', 'hammer', 'axe',
-            'plasma_rifle', 'spear', 'energy_shield', 'poison_dagger', 'void_scythe', 'galaxy_blade'
+            'plasma_rifle', 'spear', 'energy_shield', 'poison_dagger', 'void_scythe', 'galaxy_blade',
+            'death_scythe', 'frost_bow'
         ];
         this.weaponUVs = {};
         for (let i = 0; i < weaponNames.length; i++) {
@@ -541,12 +598,12 @@ class Renderer3D {
         this.weaponUVs['blaster'] = this.weaponUVs['laser_cannon'];
         this.weaponUVs['fire_staff'] = this.weaponUVs['staff'];
 
-        // 3. Draw Default Sprite in Row 0 cols 24 & 25
-        this.drawSpeciesSprite(ctx, 'default', 24 * 64 + 32, 32, 0);
-        this.drawSpeciesSprite(ctx, 'default', 25 * 64 + 32, 32, 1);
+        // 3. Draw Default Sprite in Row 0 cols 26 & 27
+        this.drawSpeciesSprite(ctx, 'default', 26 * 64 + 32, 32, 0);
+        this.drawSpeciesSprite(ctx, 'default', 27 * 64 + 32, 32, 1);
 
         // 4. Draw All 63 Species into Rows 1..4 (2 frames each: Frame 0 and Frame 1)
-        const speciesList = ["crabzilla","kaiju","phoenix","kraken","hydra","frost_titan","galaxy_guardian","colossus_mech","seraph_angel","dune_leviathan","vampire_lord","void_titan","evermean","tank","warship","helicopter","starfighter","mech","wizard","human","elf","orc","dwarf","sheep","cow","wolf","bear","dragon","golem","zombie","skeleton","demon","alien","duck","crystal_golem","shadow_assassin","frog","cyber_ninja","laser_shark","frost_wolf","sand_scorpion","necromancer","valkyrie","gargoyle","mecha_rex","golden_dragon","space_worm","goblin","pirate_ship","trex","triceratops","velociraptor","pterodactyl","brachiosaurus","frost_dragon","shadow_dragon","storm_dragon","dark_matter_colossus","phoenix_knight","thunder_bird","cyber_dragon","swamp_behemoth","mammoth"];
+        const speciesList = ["crabzilla","kaiju","phoenix","kraken","hydra","frost_titan","galaxy_guardian","colossus_mech","seraph_angel","dune_leviathan","vampire_lord","void_titan","evermean","tank","warship","helicopter","starfighter","mech","wizard","human","elf","orc","dwarf","sheep","cow","wolf","bear","dragon","golem","zombie","skeleton","demon","alien","duck","crystal_golem","shadow_assassin","frog","cyber_ninja","laser_shark","frost_wolf","sand_scorpion","necromancer","valkyrie","gargoyle","mecha_rex","golden_dragon","space_worm","goblin","pirate_ship","trex","triceratops","velociraptor","pterodactyl","brachiosaurus","frost_dragon","shadow_dragon","storm_dragon","dark_matter_colossus","phoenix_knight","thunder_bird","cyber_dragon","swamp_behemoth","mammoth","astral_phoenix","frost_giant","dread_reaper","dune_scorpion_king","titan_golem","pegasus"];
         this.spriteUVs = {};
 
         for (let i = 0; i < speciesList.length; i++) {
@@ -1003,6 +1060,73 @@ class Renderer3D {
             ctx.fillRect(cx - 2, cy + 9, 5, 10);
             ctx.fillStyle = '#38bdf8';
             ctx.fillRect(cx - 3, cy + 19, 7, 5);
+        }
+
+        // 24: death_scythe
+        {
+            const cx = 24 * 64 + 32, cy = 32;
+            // Pole (dark bone obsidian)
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(cx - 2, cy - 18, 4, 44);
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(cx - 1, cy - 18, 2, 44);
+            // Bone ribs
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(cx - 4, cy - 6, 8, 3);
+            ctx.fillRect(cx - 4, cy + 6, 8, 3);
+            // Curved razor blade
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 18);
+            ctx.bezierCurveTo(cx + 26, cy - 28, cx + 26, cy - 2, cx + 8, cy + 8);
+            ctx.lineTo(cx + 6, cy + 4);
+            ctx.bezierCurveTo(cx + 20, cy - 4, cx + 20, cy - 22, cx, cy - 16);
+            ctx.closePath();
+            ctx.fill();
+            // Necrotic venom edge
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(cx + 6, cy - 20, 14, 2);
+            ctx.fillRect(cx + 12, cy - 18, 10, 3);
+            ctx.fillStyle = '#86efac';
+            ctx.fillRect(cx + 16, cy - 16, 4, 2);
+        }
+
+        // 25: frost_bow
+        {
+            const cx = 25 * 64 + 32, cy = 32;
+            // Glacial Stave (crystalline ice)
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(cx - 4, cy, 22, -Math.PI * 0.44, Math.PI * 0.44);
+            ctx.stroke();
+            // Ice crystal inner rim
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx - 4, cy, 21, -Math.PI * 0.40, Math.PI * 0.40);
+            ctx.stroke();
+            // Starlight string
+            ctx.strokeStyle = '#e0f2fe';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx + 6, cy - 20);
+            ctx.lineTo(cx - 4, cy);
+            ctx.lineTo(cx + 6, cy + 20);
+            ctx.stroke();
+            // Frost Arrow
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(cx - 12, cy - 1.5, 26, 3);
+            // Glacial Tip
+            ctx.fillStyle = '#bae6fd';
+            ctx.beginPath();
+            ctx.moveTo(cx + 14, cy - 5);
+            ctx.lineTo(cx + 22, cy);
+            ctx.lineTo(cx + 14, cy + 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx + 17, cy - 1, 3, 2);
         }
     }
     
@@ -1702,6 +1826,184 @@ class Renderer3D {
                 break;
             }
 
+            // --- 6 New Legendary Creatures ---
+            case 'astral_phoenix': {
+                // Cosmic Stellar Firebird
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx - 26, cy - 18 + wingFlap);
+                ctx.lineTo(cx + 26, cy - 18 + wingFlap);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#38bdf8'; // Cyan secondary plumes
+                ctx.fillRect(cx - 20, cy - 14 + wingFlap, 10, 4);
+                ctx.fillRect(cx + 10, cy - 14 + wingFlap, 10, 4);
+                // Celestial Core Body
+                ctx.fillStyle = '#f0abfc';
+                ctx.fillRect(cx - 5, cy - 9, 10, 18);
+                // Glowing White Star Heart
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 2, cy - 4, 4, 8);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 2, cy - 16, 4, 7); // Starlight Crest
+                break;
+            }
+
+            case 'frost_giant': {
+                // Jötunn Glacial Titan
+                ctx.fillStyle = '#0369a1';
+                ctx.fillRect(cx - 11, cy + 7 + (f === 0 ? 3 : -3), 6, 12);
+                ctx.fillRect(cx + 5, cy + 7 + (f === 1 ? 3 : -3), 6, 12);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 14, cy - 10, 28, 20);
+                // Glacier Shoulder Spikes
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(cx - 18, cy - 14, 6, 8);
+                ctx.fillRect(cx + 12, cy - 14, 6, 8);
+                // Frost Beard & Head
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 8, cy - 20, 16, 12);
+                ctx.fillStyle = '#e0f2fe'; // Ice Beard
+                ctx.fillRect(cx - 6, cy - 11, 12, 10);
+                ctx.fillStyle = '#ffffff'; // Blazing Ice Eyes
+                ctx.fillRect(cx - 5, cy - 16, 3, 2);
+                ctx.fillRect(cx + 2, cy - 16, 3, 2);
+                // Glacier Club
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(cx + 14, cy - 22, 6, 30);
+                break;
+            }
+
+            case 'dread_reaper': {
+                // Cloaked Spectral Soul Reaper
+                ctx.fillStyle = '#09090b';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 10);
+                ctx.lineTo(cx - 12, cy + 16 + (f === 1 ? 2 : 0));
+                ctx.lineTo(cx + 12, cy + 16 + (f === 1 ? 2 : 0));
+                ctx.closePath();
+                ctx.fill();
+                // Floating Skull Visage
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(cx - 5, cy - 14, 10, 9);
+                ctx.fillStyle = '#10b981'; // Green soul eyes
+                ctx.fillRect(cx - 3, cy - 12, 2, 2);
+                ctx.fillRect(cx + 1, cy - 12, 2, 2);
+                // Hood
+                ctx.fillStyle = '#18181b';
+                ctx.fillRect(cx - 7, cy - 18, 14, 6);
+                ctx.fillRect(cx - 7, cy - 14, 3, 8);
+                ctx.fillRect(cx + 4, cy - 14, 3, 8);
+                // Gleaming Death Scythe
+                ctx.fillStyle = '#71717a';
+                ctx.fillRect(cx + 8, cy - 22, 3, 38);
+                ctx.fillStyle = '#059669'; // Emerald Soul Blade
+                ctx.beginPath();
+                ctx.moveTo(cx + 9, cy - 22);
+                ctx.quadraticCurveTo(cx + 28, cy - 26, cx + 22, cy - 8);
+                ctx.lineTo(cx + 18, cy - 8);
+                ctx.quadraticCurveTo(cx + 22, cy - 20, cx + 9, cy - 18);
+                ctx.fill();
+                break;
+            }
+
+            case 'dune_scorpion_king': {
+                // Desert Emperor Scorpion
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 14, cy - 6, 28, 14);
+                ctx.fillStyle = '#f59e0b'; // Golden Carapace Plates
+                ctx.fillRect(cx - 10, cy - 4, 20, 10);
+                // 8 Spiked Legs
+                ctx.strokeStyle = '#92400e';
+                ctx.lineWidth = 2.5;
+                for (let l = -8; l <= 8; l += 4) {
+                    const lOff = f === 1 ? 4 : -4;
+                    ctx.beginPath(); ctx.moveTo(cx - 12, cy + l); ctx.lineTo(cx - 24, cy + l + lOff); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(cx + 12, cy + l); ctx.lineTo(cx + 24, cy + l - lOff); ctx.stroke();
+                }
+                // Giant Serrated Pincers
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 24, cy - 16, 10, 10);
+                ctx.fillRect(cx + 14, cy - 16, 10, 10);
+                // Twin Arched Laser Stinger Tails
+                ctx.strokeStyle = '#b45309';
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.moveTo(cx - 4, cy + 6);
+                ctx.quadraticCurveTo(cx - 14, cy + 20, cx - 12, cy - 14 + (f === 1 ? 4 : -4));
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx + 4, cy + 6);
+                ctx.quadraticCurveTo(cx + 14, cy + 20, cx + 12, cy - 14 + (f === 1 ? -4 : 4));
+                ctx.stroke();
+                // Twin Laser Stinger Nodes
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 14, cy - 18, 5, 5);
+                ctx.fillRect(cx + 9, cy - 18, 5, 5);
+                break;
+            }
+
+            case 'titan_golem': {
+                // Ancient Mechanical Stone Automaton
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 12, cy + 6 + (f === 0 ? 3 : -3), 7, 12);
+                ctx.fillRect(cx + 5, cy + 6 + (f === 1 ? 3 : -3), 7, 12);
+                // Heavy Monolithic Torso
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 16, cy - 12, 32, 22);
+                ctx.fillStyle = '#b45309'; // Bronze Gears & Bands
+                ctx.fillRect(cx - 14, cy - 10, 28, 4);
+                ctx.fillRect(cx - 14, cy + 4, 28, 4);
+                // Glowing Energy Furnace Core
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(cx - 5, cy - 4, 10, 8);
+                ctx.fillStyle = '#86efac';
+                ctx.fillRect(cx - 3, cy - 2, 6, 4);
+                // Crushing Hammer Fists
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 24, cy - 2 + (f === 0 ? 3 : -3), 9, 10);
+                ctx.fillRect(cx + 15, cy - 2 + (f === 1 ? 3 : -3), 9, 10);
+                break;
+            }
+
+            case 'pegasus': {
+                // Divine Winged Steed
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(cx - 10, cy + 7 + (f === 0 ? 2 : -2), 4, 9);
+                ctx.fillRect(cx - 4, cy + 7 + (f === 1 ? 2 : -2), 4, 9);
+                ctx.fillRect(cx + 4, cy + 7 + (f === 0 ? 2 : -2), 4, 9);
+                ctx.fillRect(cx + 9, cy + 7 + (f === 1 ? 2 : -2), 4, 9);
+                // Golden Hooves
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 10, cy + 14, 4, 3);
+                ctx.fillRect(cx - 4, cy + 14, 4, 3);
+                ctx.fillRect(cx + 4, cy + 14, 4, 3);
+                ctx.fillRect(cx + 9, cy + 14, 4, 3);
+                // White Equine Body
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 13, cy - 6, 26, 15);
+                // Feathered Pegasus Wings
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 4);
+                ctx.lineTo(cx - 22, cy - 20 + wingFlap);
+                ctx.lineTo(cx + 22, cy - 20 + wingFlap);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                // Head & Mane
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 18, cy - 14, 10, 10);
+                ctx.fillStyle = '#facc15'; // Golden Mane
+                ctx.fillRect(cx - 14, cy - 18, 5, 12);
+                ctx.fillStyle = '#38bdf8'; // Blue Eye
+                ctx.fillRect(cx - 16, cy - 12, 2, 2);
+                break;
+            }
+
             // --- Default Fallback ---
             default: {
                 const hash = type.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
@@ -1748,9 +2050,49 @@ class Renderer3D {
     }
 
     // --- Camera Controls ---
-    updateCamera() {
+    updateCamera(world = null) {
         const cam = this.camera;
         const aspect = this.canvas.width / this.canvas.height;
+
+        // First-Person Control Camera: eye sits at creature head looking forward
+        if (this.isFirstPerson && this.possessedEntity && this.possessedEntity.active) {
+            const ent = this.possessedEntity;
+            const groundZ = (world && typeof world.getElevation === 'function') ? world.getElevation(ent.x, ent.y) : 2.0;
+            const eyeHeight = (ent.size || 2.0) * 0.7 + 0.8;
+            cam.eye[0] = ent.x;
+            cam.eye[1] = ent.y;
+            cam.eye[2] = groundZ + eyeHeight;
+
+            const cosP = Math.cos(cam.pitch);
+            const sinP = Math.sin(cam.pitch);
+            const cosY = Math.cos(cam.yaw);
+            const sinY = Math.sin(cam.yaw);
+
+            cam.forward[0] = cosP * sinY;
+            cam.forward[1] = -cosP * cosY;
+            cam.forward[2] = sinP;
+            Vec3.normalize(cam.forward, cam.forward);
+
+            cam.target[0] = cam.eye[0] + cam.forward[0] * 10.0;
+            cam.target[1] = cam.eye[1] + cam.forward[1] * 10.0;
+            cam.target[2] = cam.eye[2] + cam.forward[2] * 10.0;
+
+            cam.right[0] = cam.forward[1];
+            cam.right[1] = -cam.forward[0];
+            cam.right[2] = 0.0;
+            Vec3.normalize(cam.right, cam.right);
+
+            cam.up[0] = cam.right[1] * cam.forward[2] - cam.right[2] * cam.forward[1];
+            cam.up[1] = cam.right[2] * cam.forward[0] - cam.right[0] * cam.forward[2];
+            cam.up[2] = cam.right[0] * cam.forward[1] - cam.right[1] * cam.forward[0];
+            Vec3.normalize(cam.up, cam.up);
+
+            Mat4.perspective(cam.projMat, 65 * Math.PI / 180, aspect, 0.2, 1200.0);
+            Mat4.lookAt(cam.viewMat, cam.eye, cam.target, cam.up);
+            Mat4.multiply(cam.viewProj, cam.projMat, cam.viewMat);
+            Mat4.invert(cam.invViewProj, cam.viewProj);
+            return;
+        }
 
         // Spherical coordinates around target
         // yaw: azimuth angle around Z axis
@@ -1811,10 +2153,14 @@ class Renderer3D {
         cam.yaw += deltaYaw * 0.0075;
         cam.pitch += deltaPitch * 0.0075;
 
-        // Constrain pitch to avoid flipping over pole
-        const minPitch = 0.12; // ~7 deg
-        const maxPitch = 1.48; // ~85 deg
-        cam.pitch = Math.max(minPitch, Math.min(maxPitch, cam.pitch));
+        if (this.isFirstPerson) {
+            cam.pitch = Math.max(-1.35, Math.min(1.35, cam.pitch));
+        } else {
+            // Constrain pitch to avoid flipping over pole
+            const minPitch = 0.12; // ~7 deg
+            const maxPitch = 1.48; // ~85 deg
+            cam.pitch = Math.max(minPitch, Math.min(maxPitch, cam.pitch));
+        }
     }
 
     orbit(deltaYaw, deltaPitch) {
@@ -2048,7 +2394,7 @@ class Renderer3D {
             gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         }
 
-        this.updateCamera();
+        this.updateCamera(world);
 
         gl.clearColor(0.04, 0.04, 0.08, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -2117,6 +2463,11 @@ class Renderer3D {
             for (let i = 0; i < ents.length; i++) {
                 const ent = ents[i];
                 if (!ent.active) continue;
+
+                // Skip possessed creature body in First-Person Mode
+                if (this.isFirstPerson && this.possessedEntity && ent.id === this.possessedEntity.id) {
+                    continue;
+                }
 
                 const groundZ = world ? (world.getElevation ? world.getElevation(ent.x, ent.y) : 2.0) : 2.0;
                 let flightZ = 0;
@@ -2240,6 +2591,31 @@ class Renderer3D {
                     addBillboard(ent.x, ent.y, groundZ + 0.08, entScale * 1.6 * retPulse, entScale * 1.6 * retPulse, 0.98, 0.85, 0.1, 0.9, this.animTime * 2.0, retUv.u0, retUv.v0, retUv.u1, retUv.v1);
                 }
             }
+        }
+
+        // First-Person Viewmodel in Foreground
+        if (this.isFirstPerson && this.possessedEntity && this.possessedEntity.active) {
+            const ent = this.possessedEntity;
+            const cam = this.camera;
+            const isMoving = Math.hypot(ent.vx || 0, ent.vy || 0) > 0.05;
+            const bob = Math.sin(this.animTime * 10.0) * (isMoving ? 0.035 : 0.008);
+            const sway = Math.cos(this.animTime * 5.0) * (isMoving ? 0.025 : 0.005);
+
+            const vmX = cam.eye[0] + cam.forward[0] * 0.72 + cam.right[0] * (0.32 + sway) - cam.up[0] * (0.24 + bob);
+            const vmY = cam.eye[1] + cam.forward[1] * 0.72 + cam.right[1] * (0.32 + sway) - cam.up[1] * (0.24 + bob);
+            const vmZ = cam.eye[2] + cam.forward[2] * 0.72 + cam.right[2] * (0.32 + sway) - cam.up[2] * (0.24 + bob);
+
+            let vmUv = null;
+            if (ent.weapon && this.weaponUVs[ent.weapon]) {
+                vmUv = this.weaponUVs[ent.weapon];
+            } else if (this.spriteUVs[ent.type]) {
+                vmUv = this.spriteUVs[ent.type][0];
+            } else {
+                vmUv = uUtil.defaultSprite;
+            }
+
+            const vmSize = 0.52;
+            addBillboard(vmX, vmY, vmZ, vmSize, vmSize, 1.0, 1.0, 1.0, 1.0, 0.12 + bob * 2.0, vmUv.u0, vmUv.v0, vmUv.u1, vmUv.v1);
         }
 
         // C. Render Buildings
@@ -2408,6 +2784,199 @@ class Renderer3D {
 
             gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, instanceCount);
             gl.bindVertexArray(null);
+        }
+    }
+
+    // --- 3D Creature Creator Turntable Studio ---
+    renderCreatureStudio3D(customData, targetCanvas, animTime = 0, orbitAngle = null) {
+        if (!targetCanvas) return;
+        const ctx = targetCanvas.getContext('2d');
+        if (!ctx) return;
+
+        const w = targetCanvas.width;
+        const h = targetCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const angle = orbitAngle !== null ? orbitAngle : (animTime * 1.2);
+        const cosA = Math.cos(angle);
+        const sinA = Math.sin(angle);
+        const isFacingAway = sinA < 0;
+
+        const cx = w * 0.5;
+        const cy = h * 0.52;
+
+        // 1. Studio Radial Ambient Glow
+        const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, w * 0.65);
+        bgGrad.addColorStop(0, 'rgba(30, 27, 75, 0.95)');
+        bgGrad.addColorStop(0.65, 'rgba(15, 23, 42, 0.98)');
+        bgGrad.addColorStop(1, 'rgba(3, 7, 18, 1.0)');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // 2. Multi-tier 3D Turntable Pedestal
+        const pedY = cy + 34;
+        const pedRx = w * 0.38;
+        const pedRy = pedRx * 0.38;
+
+        // Pedestal base cylinder rim (depth)
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.ellipse(cx, pedY + 8, pedRx, pedRy, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pedestal cylinder wall
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.moveTo(cx - pedRx, pedY);
+        ctx.lineTo(cx - pedRx, pedY + 8);
+        ctx.ellipse(cx, pedY + 8, pedRx, pedRy, 0, 0, Math.PI, false);
+        ctx.lineTo(cx + pedRx, pedY);
+        ctx.ellipse(cx, pedY, pedRx, pedRy, 0, 0, Math.PI, true);
+        ctx.closePath();
+        ctx.fill();
+
+        // Pedestal top surface
+        const surfGrad = ctx.createRadialGradient(cx, pedY - 4, 0, cx, pedY, pedRx);
+        surfGrad.addColorStop(0, '#334155');
+        surfGrad.addColorStop(0.7, '#1e293b');
+        surfGrad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = surfGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, pedY, pedRx, pedRy, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pedestal glowing rune ring
+        const glowCol = (customData && customData.colorGlow) || '#facc15';
+        ctx.strokeStyle = glowCol;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.7 + Math.sin(animTime * 3) * 0.25;
+        ctx.beginPath();
+        ctx.ellipse(cx, pedY, pedRx * 0.78, pedRy * 0.78, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 3D Rotating Arcane Rune notches along ring
+        for (let i = 0; i < 8; i++) {
+            const runeAngle = angle * 0.6 + i * (Math.PI / 4);
+            const rx = cx + Math.cos(runeAngle) * pedRx * 0.78;
+            const ry = pedY + Math.sin(runeAngle) * pedRy * 0.78;
+            ctx.fillStyle = glowCol;
+            ctx.fillRect(rx - 1.5, ry - 1.5, 3, 3);
+        }
+        ctx.globalAlpha = 1.0;
+
+        // 3. Dynamic Drop Shadow on Pedestal
+        const bob = Math.sin(animTime * 4.0) * 3;
+        const shadowScale = 1.0 - Math.min(0.2, (bob + 3) * 0.02);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.beginPath();
+        ctx.ellipse(cx, pedY - 2, pedRx * 0.45 * shadowScale, pedRy * 0.45 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 4. Creature 3D Perspective Billboard / Anatomy
+        const col = (customData && customData.color) || '#ea580c';
+        const sec = (customData && customData.colorSec) || '#38bdf8';
+        const glow = glowCol;
+        const head = (customData && customData.head) || 'humanoid';
+        const body = (customData && customData.body) || 'standard';
+        const arms = (customData && customData.arms) || 'bipedal_arms';
+        const legs = (customData && customData.legs) || 'bipedal_legs';
+        const back = (customData && customData.back) || 'none';
+        const weapon = (customData && customData.weapon) || 'none';
+
+        const creatureY = cy - 2 + bob;
+        // Horizontal perspective scaling
+        const xPerspective = Math.max(0.35, Math.abs(cosA));
+        const facingLeft = cosA < 0;
+
+        const drawBackParts = () => {
+            if (back === 'demon_wings' || back === 'angel_wings' || back === 'dragon_wings') {
+                const wingSpread = Math.sin(animTime * 5.0) * 4;
+                const wingCol = back === 'demon_wings' ? '#450a0a' : (back === 'angel_wings' ? '#ffffff' : sec);
+                // Left wing
+                ctx.fillStyle = wingCol;
+                ctx.fillRect(cx - 32 * xPerspective, creatureY - 18 + wingSpread, 16 * xPerspective, 20);
+                ctx.fillRect(cx - 38 * xPerspective, creatureY - 24 + wingSpread, 14 * xPerspective, 14);
+                // Right wing
+                ctx.fillRect(cx + 16 * xPerspective, creatureY - 18 - wingSpread, 16 * xPerspective, 20);
+                ctx.fillRect(cx + 24 * xPerspective, creatureY - 24 - wingSpread, 14 * xPerspective, 14);
+            } else if (back === 'starlight_halo') {
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.ellipse(cx, creatureY - 32, 18 * xPerspective, 6, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (back === 'spiky_carapace') {
+                ctx.fillStyle = sec;
+                ctx.fillRect(cx - 18 * xPerspective, creatureY - 14, 6 * xPerspective, 10);
+                ctx.fillRect(cx + 12 * xPerspective, creatureY - 14, 6 * xPerspective, 10);
+            }
+        };
+
+        // Draw back parts behind body if facing towards viewer
+        if (!isFacingAway) drawBackParts();
+
+        // Legs
+        ctx.fillStyle = sec;
+        const legBob = Math.sin(animTime * 6.0) * 2;
+        ctx.fillRect(cx - 12 * xPerspective, creatureY + 8, 8 * xPerspective, 16 + legBob);
+        ctx.fillRect(cx + 4 * xPerspective, creatureY + 8, 8 * xPerspective, 16 - legBob);
+
+        // Torso / Body
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - 14 * xPerspective, creatureY - 12, 28 * xPerspective, 22);
+        // Chest plate / secondary armor
+        ctx.fillStyle = sec;
+        ctx.fillRect(cx - 9 * xPerspective, creatureY - 8, 18 * xPerspective, 14);
+
+        // Head
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - 12 * xPerspective, creatureY - 28, 24 * xPerspective, 18);
+
+        // Eyes / Visor (only visible if facing frontwards)
+        if (!isFacingAway) {
+            ctx.fillStyle = glow;
+            if (facingLeft) {
+                ctx.fillRect(cx - 10 * xPerspective, creatureY - 22, 6 * xPerspective, 4);
+            } else {
+                ctx.fillRect(cx + 4 * xPerspective, creatureY - 22, 6 * xPerspective, 4);
+            }
+        }
+
+        // Arms & Weapon in hand
+        const handX = cx + (facingLeft ? -20 : 20) * xPerspective;
+        const handY = creatureY + 2;
+        ctx.fillStyle = sec;
+        ctx.fillRect(handX - 4 * xPerspective, handY - 4, 8 * xPerspective, 12);
+
+        // Weapon (drawn at hand)
+        if (weapon && weapon !== 'none') {
+            ctx.fillStyle = glow;
+            ctx.fillRect(handX - 2, handY - 14, 4, 20);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(handX - 4, handY - 16, 8, 4);
+        }
+
+        // Draw back parts in front of body if facing away from viewer
+        if (isFacingAway) drawBackParts();
+
+        // 5. 3D Floating Elemental Sparkles around Pedestal
+        for (let i = 0; i < 6; i++) {
+            const orbAng = animTime * 2.0 + i * (Math.PI / 3);
+            const ox = cx + Math.cos(orbAng) * (pedRx * 0.95);
+            const oy = creatureY - 10 + Math.sin(orbAng) * (pedRy * 0.95) + Math.sin(animTime * 3 + i) * 8;
+            ctx.fillStyle = glow;
+            ctx.globalAlpha = 0.8;
+            ctx.fillRect(ox - 1.5, oy - 1.5, 3, 3);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(ox - 0.5, oy - 0.5, 1, 1);
+        }
+        ctx.globalAlpha = 1.0;
+
+        // 6. Turntable Studio Overlay Labels
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.85)';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        if (typeof ctx.fillText === 'function') {
+            ctx.fillText('3D TURNTABLE ' + Math.round(((angle % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2) * 180 / Math.PI) + '°', cx, h - 8);
         }
     }
 }

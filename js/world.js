@@ -38,7 +38,13 @@ const TILES = {
     PLASMA_FIELD: 32,
     LIVING_BRAMBLE: 33,
     AETHER_FLUID: 34,
-    METEORITE_ORE: 35
+    METEORITE_ORE: 35,
+    CORAL_REEF: 36,
+    TAR_PIT: 37,
+    GLOWCAP_MUSHROOM: 38,
+    AETHER_CRYSTAL: 39,
+    VOLCANIC_CALDERA: 40,
+    ENCHANTED_GROVE: 41
 };
 
 const TILE_INFO = {
@@ -77,7 +83,13 @@ const TILE_INFO = {
     [TILES.PLASMA_FIELD]: { name: "Plasma Field", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.LIVING_BRAMBLE]: { name: "Living Bramble", color: "#15803d", isLiquid: false, isSolid: true, flammability: 0.8 },
     [TILES.AETHER_FLUID]: { name: "Aether Fluid", color: "#818cf8", isLiquid: true, isSolid: false, flammability: 0 },
-    [TILES.METEORITE_ORE]: { name: "Meteorite Ore", color: "#f97316", isLiquid: false, isSolid: true, flammability: 0 }
+    [TILES.METEORITE_ORE]: { name: "Meteorite Ore", color: "#f97316", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.CORAL_REEF]: { name: "Coral Reef", color: "#f43f5e", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.TAR_PIT]: { name: "Tar Pit", color: "#18181b", isLiquid: true, isSolid: false, flammability: 0.95 },
+    [TILES.GLOWCAP_MUSHROOM]: { name: "Glowcap Mushroom", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0.4 },
+    [TILES.AETHER_CRYSTAL]: { name: "Aether Crystal", color: "#38bdf8", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.VOLCANIC_CALDERA]: { name: "Volcanic Caldera", color: "#450a0a", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.ENCHANTED_GROVE]: { name: "Enchanted Grove", color: "#f472b6", isLiquid: false, isSolid: true, flammability: 0.7 }
 };
 
 const TILE_BASE_ELEVATION = {
@@ -116,7 +128,13 @@ const TILE_BASE_ELEVATION = {
     [TILES.PLASMA_FIELD]: 2.6,
     [TILES.LIVING_BRAMBLE]: 3.2,
     [TILES.AETHER_FLUID]: 2.2,
-    [TILES.METEORITE_ORE]: 5.0
+    [TILES.METEORITE_ORE]: 5.0,
+    [TILES.CORAL_REEF]: 0.8,
+    [TILES.TAR_PIT]: 1.5,
+    [TILES.GLOWCAP_MUSHROOM]: 2.8,
+    [TILES.AETHER_CRYSTAL]: 4.5,
+    [TILES.VOLCANIC_CALDERA]: 5.0,
+    [TILES.ENCHANTED_GROVE]: 3.2
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
