@@ -1,7 +1,8 @@
 // ==========================================
 // GALAXYBOX - WebGL 2.0 3D Rendering Engine
 // Hardware-Accelerated 3D Voxel Heightfield,
-// 360° Orbit Camera, 3D Lighting & Shadows
+// 360° Orbit Camera, 3D Lighting & Shadows,
+// Procedural Pixel-Art Sprite Texture Atlas
 // Zero External Dependencies (100% Vanilla WebGL)
 // ==========================================
 
@@ -261,7 +262,7 @@ void main() {
 }
 `;
 
-// Billboard Quad Shader for 3D Entities, Weapons & Particles
+// Instanced Billboard Quad Shader for 3D Sprites, Weapons, Health Bars & Particles
 const BILLBOARD_VS = `#version 300 es
 layout(location = 0) in vec2 a_quadCorner; // (-1..1, -1..1)
 layout(location = 1) in vec3 a_worldPos;
@@ -303,23 +304,14 @@ precision highp float;
 in vec2 v_uv;
 in vec4 v_color;
 
-uniform sampler2D u_texture;
-uniform bool u_useTexture;
+uniform sampler2D u_spriteTexture;
 
 out vec4 fragColor;
 
 void main() {
-    if (u_useTexture) {
-        vec4 texColor = texture(u_texture, v_uv);
-        if (texColor.a < 0.1) discard;
-        fragColor = texColor * v_color;
-    } else {
-        // Procedural radial falloff for drop shadows and circular particles
-        float dist = length(v_uv - 0.5) * 2.0;
-        if (dist > 1.0) discard;
-        float alpha = smoothstep(1.0, 0.7, dist) * v_color.a;
-        fragColor = vec4(v_color.rgb, alpha);
-    }
+    vec4 texColor = texture(u_spriteTexture, v_uv);
+    if (texColor.a < 0.05) discard;
+    fragColor = texColor * v_color;
 }
 `;
 
@@ -385,14 +377,18 @@ class Renderer3D {
         // Dynamic Entity/Particle Billboard Buffers
         this.initBillboardBuffers();
 
-        // 2D Offscreen Canvas for Sprite Generation / Texture Atlas
+        // 2048x2048 Texture Atlas for 64x64 Procedural Pixel-Art Creature Sprites
         this.spriteCanvas = document.createElement('canvas');
-        this.spriteCanvas.width = 1024;
-        this.spriteCanvas.height = 1024;
+        this.spriteCanvas.width = 2048;
+        this.spriteCanvas.height = 2048;
         this.spriteCtx = this.spriteCanvas.getContext('2d');
         this.spriteTexture = gl.createTexture();
-        this.textureDirty = true;
-        this.cachedSprites = new Map();
+        this.utilityUVs = {};
+        this.weaponUVs = {};
+        this.spriteUVs = {};
+
+        // Generate and Upload Texture Atlas
+        this.initSpriteAtlas();
 
         // Color Hex to RGBA cache
         this.colorCache = new Map();
@@ -452,149 +448,1418 @@ class Renderer3D {
         gl.enableVertexAttribArray(0);
         gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
-        // Instance buffers (worldPos: vec3, size: vec2, color: vec4, texCoords: vec4, rotation: float)
-        this.instanceMaxCount = 8000;
-        this.instanceData = new Float32Array(this.instanceMaxCount * 14); // 3 + 2 + 4 + 4 + 1 = 14 floats
+        // Instanced billboard attributes buffer
+        // Layout:
+        // loc 1: a_worldPos (vec3)
+        // loc 2: a_size (vec2)
+        // loc 3: a_color (vec4)
+        // loc 4: a_texCoords (vec4: u0, v0, u1, v1)
+        // loc 5: a_rotation (float)
+        // Stride: 3 + 2 + 4 + 4 + 1 = 14 floats = 56 bytes
+        this.instanceMaxCount = 16384;
+        this.instanceStrideFloats = 14;
+        this.instanceData = new Float32Array(this.instanceMaxCount * this.instanceStrideFloats);
+
         this.instanceVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceVBO);
         gl.bufferData(gl.ARRAY_BUFFER, this.instanceData.byteLength, gl.DYNAMIC_DRAW);
 
-        const stride = 14 * 4;
-        // location 1: worldPos (vec3)
+        const strideBytes = this.instanceStrideFloats * 4;
+
+        // loc 1: a_worldPos (vec3)
         gl.enableVertexAttribArray(1);
-        gl.vertexAttribPointer(1, 3, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(1, 3, gl.FLOAT, false, strideBytes, 0);
         gl.vertexAttribDivisor(1, 1);
 
-        // location 2: size (vec2)
+        // loc 2: a_size (vec2)
         gl.enableVertexAttribArray(2);
-        gl.vertexAttribPointer(2, 2, gl.FLOAT, false, stride, 3 * 4);
+        gl.vertexAttribPointer(2, 2, gl.FLOAT, false, strideBytes, 3 * 4);
         gl.vertexAttribDivisor(2, 1);
 
-        // location 3: color (vec4)
+        // loc 3: a_color (vec4)
         gl.enableVertexAttribArray(3);
-        gl.vertexAttribPointer(3, 4, gl.FLOAT, false, stride, 5 * 4);
+        gl.vertexAttribPointer(3, 4, gl.FLOAT, false, strideBytes, 5 * 4);
         gl.vertexAttribDivisor(3, 1);
 
-        // location 4: texCoords (vec4)
+        // loc 4: a_texCoords (vec4)
         gl.enableVertexAttribArray(4);
-        gl.vertexAttribPointer(4, 4, gl.FLOAT, false, stride, 9 * 4);
+        gl.vertexAttribPointer(4, 4, gl.FLOAT, false, strideBytes, 9 * 4);
         gl.vertexAttribDivisor(4, 1);
 
-        // location 5: rotation (float)
+        // loc 5: a_rotation (float)
         gl.enableVertexAttribArray(5);
-        gl.vertexAttribPointer(5, 1, gl.FLOAT, false, stride, 13 * 4);
+        gl.vertexAttribPointer(5, 1, gl.FLOAT, false, strideBytes, 13 * 4);
         gl.vertexAttribDivisor(5, 1);
 
         gl.bindVertexArray(null);
     }
 
-    hexToRgba(hex, alpha = 1.0) {
-        if (!hex || hex[0] !== '#') return [1, 1, 1, alpha];
-        const key = hex + alpha;
-        if (this.colorCache.has(key)) return this.colorCache.get(key);
+    initSpriteAtlas() {
+        const ctx = this.spriteCtx;
+        const gl = this.gl;
+        ctx.clearRect(0, 0, 2048, 2048);
 
-        let r = 255, g = 255, b = 255;
-        if (hex.length === 7) {
-            r = parseInt(hex.substring(1, 3), 16);
-            g = parseInt(hex.substring(3, 5), 16);
-            b = parseInt(hex.substring(5, 7), 16);
-        } else if (hex.length === 4) {
-            r = parseInt(hex[1] + hex[1], 16);
-            g = parseInt(hex[2] + hex[2], 16);
-            b = parseInt(hex[3] + hex[3], 16);
+        const getCellUV = (col, row) => {
+            const padding = 1.0;
+            return {
+                u0: (col * 64 + padding) / 2048,
+                v0: (row * 64 + padding) / 2048,
+                u1: ((col + 1) * 64 - padding) / 2048,
+                v1: ((row + 1) * 64 - padding) / 2048
+            };
+        };
+
+        // 1. Draw Utility Sprites into Row 0
+        this.drawUtilitySprites(ctx);
+        this.utilityUVs = {
+            shadow: getCellUV(0, 0),
+            white_quad: getCellUV(1, 0),
+            star: getCellUV(2, 0),
+            reticle: getCellUV(3, 0),
+            blessed: getCellUV(4, 0),
+            cursed: getCellUV(5, 0),
+            frozen: getCellUV(6, 0),
+            thorny: getCellUV(7, 0),
+            starlight: getCellUV(8, 0),
+            alert: getCellUV(9, 0),
+            skull: getCellUV(10, 0),
+            heart: getCellUV(11, 0),
+            defaultSprite: getCellUV(24, 0)
+        };
+
+        // 2. Draw Weapon Sprites into Row 0 (cols 12..23)
+        this.drawWeaponSprites(ctx);
+        const weaponNames = [
+            'sword', 'bow', 'staff', 'laser_cannon', 'hammer', 'axe',
+            'plasma_rifle', 'spear', 'energy_shield', 'poison_dagger', 'void_scythe', 'galaxy_blade'
+        ];
+        this.weaponUVs = {};
+        for (let i = 0; i < weaponNames.length; i++) {
+            this.weaponUVs[weaponNames[i]] = getCellUV(12 + i, 0);
         }
-        const rgba = [r / 255, g / 255, b / 255, alpha];
-        this.colorCache.set(key, rgba);
-        return rgba;
+        // Aliases
+        this.weaponUVs['blaster'] = this.weaponUVs['laser_cannon'];
+        this.weaponUVs['fire_staff'] = this.weaponUVs['staff'];
+
+        // 3. Draw Default Sprite in Row 0 cols 24 & 25
+        this.drawSpeciesSprite(ctx, 'default', 24 * 64 + 32, 32, 0);
+        this.drawSpeciesSprite(ctx, 'default', 25 * 64 + 32, 32, 1);
+
+        // 4. Draw All 63 Species into Rows 1..4 (2 frames each: Frame 0 and Frame 1)
+        const speciesList = ["crabzilla","kaiju","phoenix","kraken","hydra","frost_titan","galaxy_guardian","colossus_mech","seraph_angel","dune_leviathan","vampire_lord","void_titan","evermean","tank","warship","helicopter","starfighter","mech","wizard","human","elf","orc","dwarf","sheep","cow","wolf","bear","dragon","golem","zombie","skeleton","demon","alien","duck","crystal_golem","shadow_assassin","frog","cyber_ninja","laser_shark","frost_wolf","sand_scorpion","necromancer","valkyrie","gargoyle","mecha_rex","golden_dragon","space_worm","goblin","pirate_ship","trex","triceratops","velociraptor","pterodactyl","brachiosaurus","frost_dragon","shadow_dragon","storm_dragon","dark_matter_colossus","phoenix_knight","thunder_bird","cyber_dragon","swamp_behemoth","mammoth"];
+        this.spriteUVs = {};
+
+        for (let i = 0; i < speciesList.length; i++) {
+            const sp = speciesList[i];
+            const slot = i * 2;
+            const col0 = slot % 32;
+            const row = 1 + Math.floor(slot / 32);
+            const col1 = col0 + 1;
+
+            const cx0 = col0 * 64 + 32;
+            const cy0 = row * 64 + 32;
+            const cx1 = col1 * 64 + 32;
+            const cy1 = row * 64 + 32;
+
+            // Frame 0: idle / step left / wings up
+            this.drawSpeciesSprite(ctx, sp, cx0, cy0, 0);
+            // Frame 1: walk / step right / wings down
+            this.drawSpeciesSprite(ctx, sp, cx1, cy1, 1);
+
+            this.spriteUVs[sp] = [getCellUV(col0, row), getCellUV(col1, row)];
+        }
+
+        // Upload to WebGL Texture with gl.NEAREST for crisp retro pixel art
+        gl.bindTexture(gl.TEXTURE_2D, this.spriteTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.spriteCanvas);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-    // --- Camera Control Methods ---
-    orbit(deltaX, deltaY) {
+    // --- Procedural 64x64 Sprite Pixel-Art Generators ---
+    drawUtilitySprites(ctx) {
+        const cellSize = 64;
+
+        // Slot (0, 0): Soft Radial Gradient Drop Shadow
+        {
+            const cx = 32, cy = 32;
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 26);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            grad.addColorStop(0.45, 'rgba(255, 255, 255, 0.75)');
+            grad.addColorStop(0.75, 'rgba(255, 255, 255, 0.3)');
+            grad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 26, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Slot (1, 0): Solid White Quad (Health bars, reticles, UI blocks)
+        {
+            const cx = 64 + 32, cy = 32;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 28, cy - 28, 56, 56);
+        }
+
+        // Slot (2, 0): Level / Boss Golden Crown Star
+        {
+            const cx = 128 + 32, cy = 32;
+            ctx.fillStyle = '#f59e0b'; // Gold border
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+                ctx.fillRect(cx + Math.cos(angle) * 14 - 3, cy + Math.sin(angle) * 14 - 3, 6, 6);
+            }
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const aOuter = i * Math.PI * 2 / 5 - Math.PI / 2;
+                const aInner = aOuter + Math.PI / 5;
+                ctx.lineTo(cx + Math.cos(aOuter) * 20, cy + Math.sin(aOuter) * 20);
+                ctx.lineTo(cx + Math.cos(aInner) * 9, cy + Math.sin(aInner) * 9);
+            }
+            ctx.closePath();
+            ctx.fill();
+            // Star center glint
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 2, cy - 4, 4, 4);
+        }
+
+        // Slot (3, 0): Possession Reticle / Targeting Beacon
+        {
+            const cx = 192 + 32, cy = 32;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+            ctx.stroke();
+            // Reticle crosshair ticks
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(cx - 2, cy - 27, 4, 8);
+            ctx.fillRect(cx - 2, cy + 19, 4, 8);
+            ctx.fillRect(cx - 27, cy - 2, 8, 4);
+            ctx.fillRect(cx + 19, cy - 2, 8, 4);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 2, cy - 2, 4, 4);
+        }
+
+        // Slot (4, 0): Blessed Golden Sun Halo
+        {
+            const cx = 256 + 32, cy = 32;
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = '#fef08a';
+            for (let i = 0; i < 8; i++) {
+                const ang = i * Math.PI / 4;
+                ctx.fillRect(cx + Math.cos(ang) * 22 - 2, cy + Math.sin(ang) * 22 - 2, 4, 4);
+            }
+        }
+
+        // Slot (5, 0): Cursed Void Shadow Rune
+        {
+            const cx = 320 + 32, cy = 32;
+            ctx.strokeStyle = '#9333ea';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(cx - 18, cy - 18, 36, 36);
+            ctx.fillStyle = '#c084fc';
+            ctx.fillRect(cx - 12, cy - 12, 24, 24);
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(cx - 6, cy - 6, 12, 12);
+        }
+
+        // Slot (6, 0): Glacial Ice Crystal Overlay
+        {
+            const cx = 384 + 32, cy = 32;
+            ctx.fillStyle = '#a5f3fc';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 24);
+            ctx.lineTo(cx + 16, cy);
+            ctx.lineTo(cx, cy + 24);
+            ctx.lineTo(cx - 16, cy);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 3, cy - 8, 6, 16);
+        }
+
+        // Slot (7, 0): Thorny Ring
+        {
+            const cx = 448 + 32, cy = 32;
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(cx - 18, cy - 18, 36, 36);
+            ctx.fillStyle = '#4ade80';
+            for (let i = -18; i <= 18; i += 9) {
+                ctx.fillRect(cx + i - 2, cy - 24, 4, 6);
+                ctx.fillRect(cx + i - 2, cy + 18, 4, 6);
+                ctx.fillRect(cx - 24, cy + i - 2, 6, 4);
+                ctx.fillRect(cx + 18, cy + i - 2, 6, 4);
+            }
+        }
+
+        // Slot (8, 0): Starlight Sparkling Diamond
+        {
+            const cx = 512 + 32, cy = 32;
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 24);
+            ctx.lineTo(cx + 6, cy - 6);
+            ctx.lineTo(cx + 24, cy);
+            ctx.lineTo(cx + 6, cy + 6);
+            ctx.lineTo(cx, cy + 24);
+            ctx.lineTo(cx - 6, cy + 6);
+            ctx.lineTo(cx - 24, cy);
+            ctx.lineTo(cx - 6, cy - 6);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 3, cy - 3, 6, 6);
+        }
+
+        // Slot (9, 0): Aggro Warning Exclamation
+        {
+            const cx = 576 + 32, cy = 32;
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 22);
+            ctx.lineTo(cx + 20, cy + 18);
+            ctx.lineTo(cx - 20, cy + 18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 2.5, cy - 10, 5, 14);
+            ctx.fillRect(cx - 2.5, cy + 8, 5, 5);
+        }
+
+        // Slot (10, 0): Skull Icon
+        {
+            const cx = 640 + 32, cy = 32;
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(cx - 14, cy - 16, 28, 20);
+            ctx.fillRect(cx - 8, cy + 4, 16, 10);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(cx - 10, cy - 8, 6, 8);
+            ctx.fillRect(cx + 4, cy - 8, 6, 8);
+            ctx.fillRect(cx - 2, cy + 2, 4, 4);
+            ctx.fillRect(cx - 6, cy + 8, 3, 6);
+            ctx.fillRect(cx + 3, cy + 8, 3, 6);
+        }
+
+        // Slot (11, 0): Heart Icon
+        {
+            const cx = 704 + 32, cy = 32;
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy + 18);
+            ctx.bezierCurveTo(cx - 20, cy + 4, cx - 20, cy - 16, cx - 8, cy - 16);
+            ctx.bezierCurveTo(cx - 2, cy - 16, cx, cy - 8, cx, cy - 6);
+            ctx.bezierCurveTo(cx, cy - 8, cx + 2, cy - 16, cx + 8, cy - 16);
+            ctx.bezierCurveTo(cx + 20, cy - 16, cx + 20, cy + 4, cx, cy + 18);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 12, cy - 12, 4, 6);
+        }
+    }
+
+    drawWeaponSprites(ctx) {
+        // Weapons live in Row 0, cols 12..23
+        // 12: sword
+        {
+            const cx = 12 * 64 + 32, cy = 32;
+            // Blade
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(cx - 2, cy - 22, 5, 26);
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(cx + 1, cy - 22, 2, 26);
+            // Tip
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath(); ctx.moveTo(cx - 2, cy - 22); ctx.lineTo(cx + 0.5, cy - 27); ctx.lineTo(cx + 3, cy - 22); ctx.fill();
+            // Crossguard
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(cx - 10, cy + 4, 21, 5);
+            // Hilt
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(cx - 2, cy + 9, 5, 10);
+            // Pommel
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(cx - 4, cy + 19, 9, 5);
+        }
+
+        // 13: bow
+        {
+            const cx = 13 * 64 + 32, cy = 32;
+            // Bow stave (curved wood)
+            ctx.strokeStyle = '#92400e';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(cx - 4, cy, 22, -Math.PI * 0.42, Math.PI * 0.42);
+            ctx.stroke();
+            // String
+            ctx.strokeStyle = '#f8fafc';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx + 5, cy - 19);
+            ctx.lineTo(cx - 4, cy);
+            ctx.lineTo(cx + 5, cy + 19);
+            ctx.stroke();
+            // Arrow
+            ctx.fillStyle = '#d97706';
+            ctx.fillRect(cx - 12, cy - 1.5, 26, 3);
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath(); ctx.moveTo(cx + 14, cy - 4); ctx.lineTo(cx + 20, cy); ctx.lineTo(cx + 14, cy + 4); ctx.fill();
+        }
+
+        // 14: staff
+        {
+            const cx = 14 * 64 + 32, cy = 32;
+            // Shaft
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(cx - 2, cy - 14, 5, 38);
+            // Crystal head
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(cx + 0.5, cy - 18, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 2, cy - 21, 4, 4);
+            // Prongs
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(cx - 7, cy - 16, 3, 8);
+            ctx.fillRect(cx + 5, cy - 16, 3, 8);
+        }
+
+        // 15: laser_cannon
+        {
+            const cx = 15 * 64 + 32, cy = 32;
+            // Chassis
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(cx - 14, cy - 8, 28, 16);
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(cx - 8, cy - 12, 16, 6);
+            // Dual Barrels
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(cx + 10, cy - 6, 14, 4);
+            ctx.fillRect(cx + 10, cy + 2, 14, 4);
+            // Glowing Energy Cells
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(cx - 6, cy - 4, 12, 8);
+            ctx.fillStyle = '#67e8f9';
+            ctx.fillRect(cx - 4, cy - 2, 8, 4);
+        }
+
+        // 16: hammer
+        {
+            const cx = 16 * 64 + 32, cy = 32;
+            // Shaft
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(cx - 2, cy - 8, 5, 34);
+            // Head
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(cx - 16, cy - 24, 33, 18);
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(cx - 14, cy - 22, 29, 4);
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(cx - 16, cy - 16, 33, 2);
+        }
+
+        // 17: axe
+        {
+            const cx = 17 * 64 + 32, cy = 32;
+            // Shaft
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(cx - 2, cy - 12, 5, 38);
+            // Crescent Double Blade
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            ctx.moveTo(cx - 2, cy - 18);
+            ctx.quadraticCurveTo(cx - 20, cy - 18, cx - 18, cy);
+            ctx.quadraticCurveTo(cx - 20, cy + 6, cx - 2, cy + 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(cx + 3, cy - 18);
+            ctx.quadraticCurveTo(cx + 20, cy - 18, cx + 18, cy);
+            ctx.quadraticCurveTo(cx + 20, cy + 6, cx + 3, cy + 2);
+            ctx.fill();
+            // Edge
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(cx - 19, cy - 14, 3, 14);
+            ctx.fillRect(cx + 17, cy - 14, 3, 14);
+        }
+
+        // 18: plasma_rifle
+        {
+            const cx = 18 * 64 + 32, cy = 32;
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(cx - 18, cy - 5, 36, 10);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(cx - 16, cy + 5, 8, 10); // Stock
+            ctx.fillRect(cx - 4, cy + 5, 5, 8); // Grip
+            // Plasma coil
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(cx - 6, cy - 7, 16, 4);
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(cx - 4, cy - 6, 12, 2);
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(cx + 16, cy - 2, 8, 4); // Muzzle
+        }
+
+        // 19: spear
+        {
+            const cx = 19 * 64 + 32, cy = 32;
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(cx - 1.5, cy - 10, 4, 38);
+            // Leaf spearhead
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.moveTo(cx + 0.5, cy - 26);
+            ctx.lineTo(cx + 7, cy - 14);
+            ctx.lineTo(cx + 0.5, cy - 10);
+            ctx.lineTo(cx - 6, cy - 14);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(cx - 0.5, cy - 24, 2, 14);
+        }
+
+        // 20: energy_shield
+        {
+            const cx = 20 * 64 + 32, cy = 32;
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const ang = i * Math.PI / 3;
+                ctx.lineTo(cx + Math.cos(ang) * 20, cy + Math.sin(ang) * 20);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx - 4, cy - 4, 8, 8);
+        }
+
+        // 21: poison_dagger
+        {
+            const cx = 21 * 64 + 32, cy = 32;
+            // Blade
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 22);
+            ctx.quadraticCurveTo(cx - 8, cy - 10, cx - 2, cy + 4);
+            ctx.lineTo(cx + 3, cy + 4);
+            ctx.quadraticCurveTo(cx + 4, cy - 10, cx, cy - 22);
+            ctx.fill();
+            // Venom drip
+            ctx.fillStyle = '#84cc16';
+            ctx.fillRect(cx - 2, cy - 14, 4, 12);
+            ctx.fillRect(cx - 1, cy - 20, 2, 6);
+            // Hilt
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(cx - 6, cy + 4, 13, 4);
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(cx - 2, cy + 8, 5, 8);
+        }
+
+        // 22: void_scythe
+        {
+            const cx = 22 * 64 + 32, cy = 32;
+            // Pole
+            ctx.fillStyle = '#18181b';
+            ctx.fillRect(cx - 2, cy - 16, 4, 42);
+            // Scythe blade
+            ctx.fillStyle = '#7e22ce';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 16);
+            ctx.bezierCurveTo(cx + 24, cy - 26, cx + 24, cy - 4, cx + 6, cy + 4);
+            ctx.lineTo(cx + 6, cy);
+            ctx.bezierCurveTo(cx + 18, cy - 6, cx + 18, cy - 20, cx, cy - 14);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#d8b4fe';
+            ctx.fillRect(cx + 4, cy - 18, 12, 2);
+        }
+
+        // 23: galaxy_blade
+        {
+            const cx = 23 * 64 + 32, cy = 32;
+            ctx.fillStyle = '#9333ea';
+            ctx.fillRect(cx - 3, cy - 24, 7, 28);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(cx - 1, cy - 24, 3, 28);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cx, cy - 26, 1, 24);
+            // Star crossguard
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(cx - 12, cy + 4, 25, 5);
+            ctx.fillStyle = '#a855f7';
+            ctx.fillRect(cx - 2, cy + 9, 5, 10);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(cx - 3, cy + 19, 7, 5);
+        }
+    }
+    
+    drawSpeciesSprite(ctx, type, cx, cy, frame) {
+        const f = frame; // 0 or 1
+        const legBob = f === 1 ? -1 : 1;
+        const wingFlap = f === 1 ? -6 : 6;
+
+        switch (type) {
+            // --- Humanoid Species ---
+            case 'human': {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 5, cy + 8 + (f === 0 ? 1 : -1), 4, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 4, 8);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(cx - 7, cy - 4, 14, 13);
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(cx - 7, cy + 5, 14, 3);
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(cx - 10, cy - 2 + (f === 0 ? 1 : -1), 3, 9);
+                ctx.fillRect(cx + 7, cy - 2 + (f === 1 ? 1 : -1), 3, 9);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(cx - 6, cy - 16, 12, 12);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 7, cy - 18, 14, 5);
+                ctx.fillRect(cx - 7, cy - 15, 3, 6);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 2, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'elf': {
+                ctx.fillStyle = '#14532d';
+                ctx.fillRect(cx - 4, cy + 8 + (f === 0 ? 1 : -1), 3, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 3, 8);
+                ctx.fillStyle = '#16a34a';
+                ctx.fillRect(cx - 6, cy - 4, 12, 13);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 6, cy + 5, 12, 2);
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(cx - 9, cy - 2 + (f === 0 ? 1 : -1), 3, 9);
+                ctx.fillRect(cx + 6, cy - 2 + (f === 1 ? 1 : -1), 3, 9);
+                ctx.fillStyle = '#ffedd5';
+                ctx.fillRect(cx - 5, cy - 16, 10, 12);
+                ctx.fillRect(cx - 8, cy - 14, 3, 3);
+                ctx.fillRect(cx + 5, cy - 14, 3, 3);
+                ctx.fillStyle = '#fde047';
+                ctx.fillRect(cx - 6, cy - 19, 12, 5);
+                ctx.fillRect(cx - 7, cy - 15, 2, 8);
+                ctx.fillRect(cx + 5, cy - 15, 2, 8);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 2, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'orc': {
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(cx - 7, cy + 8 + (f === 0 ? 2 : -2), 5, 9);
+                ctx.fillRect(cx + 2, cy + 8 + (f === 1 ? 2 : -2), 5, 9);
+                ctx.fillStyle = '#65a30d';
+                ctx.fillRect(cx - 9, cy - 5, 18, 14);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 12, cy - 8, 5, 6);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 11, cy - 11, 2, 3);
+                ctx.fillStyle = '#4d7c0f';
+                ctx.fillRect(cx - 12, cy - 1 + (f === 0 ? 2 : -2), 4, 10);
+                ctx.fillRect(cx + 8, cy - 1 + (f === 1 ? 2 : -2), 4, 10);
+                ctx.fillStyle = '#65a30d';
+                ctx.fillRect(cx - 7, cy - 18, 14, 13);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 7, 2, 4);
+                ctx.fillRect(cx + 3, cy - 7, 2, 4);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 4, cy - 13, 2, 2);
+                ctx.fillRect(cx + 2, cy - 13, 2, 2);
+                break;
+            }
+
+            case 'dwarf': {
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 6, cy + 8 + (f === 0 ? 1 : -1), 5, 6);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 5, 6);
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 8, cy - 3, 16, 12);
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 7, cy - 18, 14, 7);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(cx - 10, cy - 20, 3, 4);
+                ctx.fillRect(cx + 7, cy - 20, 3, 4);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(cx - 5, cy - 12, 10, 6);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 3, cy - 10, 2, 2);
+                ctx.fillRect(cx + 2, cy - 10, 2, 2);
+                ctx.fillStyle = '#ea580c';
+                ctx.fillRect(cx - 7, cy - 6, 14, 12);
+                ctx.fillRect(cx - 5, cy + 6, 10, 4);
+                break;
+            }
+
+            case 'wizard': {
+                ctx.fillStyle = '#4c1d95';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 8);
+                ctx.lineTo(cx - 10, cy + 15 + (f === 0 ? 1 : 0));
+                ctx.lineTo(cx + 10, cy + 15 + (f === 1 ? 1 : 0));
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 9, cy + 13, 18, 2);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(cx - 4, cy - 14, 8, 7);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 4, cy - 7, 8, 10);
+                ctx.fillRect(cx - 2, cy + 3, 4, 3);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                ctx.fillStyle = '#6d28d9';
+                ctx.fillRect(cx - 9, cy - 15, 18, 3);
+                ctx.beginPath();
+                ctx.moveTo(cx - 7, cy - 15);
+                ctx.lineTo(cx + 1, cy - 28);
+                ctx.lineTo(cx + 7, cy - 15);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 5, cy - 17, 10, 2);
+                break;
+            }
+
+            case 'zombie': {
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 5, cy + 8 + (f === 0 ? 2 : -2), 4, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 2 : -2), 4, 8);
+                ctx.fillStyle = '#4d7c0f';
+                ctx.fillRect(cx - 7, cy - 4, 14, 13);
+                ctx.fillStyle = '#581c87';
+                ctx.fillRect(cx - 6, cy - 2, 12, 8);
+                ctx.fillStyle = '#4d7c0f';
+                ctx.fillRect(cx - 11, cy - 6, 4, 12);
+                ctx.fillRect(cx + 7, cy - 6, 4, 12);
+                ctx.fillStyle = '#65a30d';
+                ctx.fillRect(cx - 6, cy - 16, 12, 12);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 4, cy - 11, 3, 3);
+                ctx.fillRect(cx + 1, cy - 11, 3, 3);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 3, cy - 10, 1, 1);
+                ctx.fillRect(cx + 2, cy - 10, 1, 1);
+                break;
+            }
+
+            case 'skeleton': {
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 4, cy + 8 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx - 6, cy - 4, 12, 12);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 4, cy - 2, 8, 2);
+                ctx.fillRect(cx - 4, cy + 2, 8, 2);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 9, cy - 2 + (f === 0 ? 2 : -2), 3, 10);
+                ctx.fillRect(cx + 6, cy - 2 + (f === 1 ? 2 : -2), 3, 10);
+                ctx.fillRect(cx - 6, cy - 18, 12, 12);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 4, cy - 13, 3, 4);
+                ctx.fillRect(cx + 1, cy - 13, 3, 4);
+                ctx.fillRect(cx - 1, cy - 7, 2, 2);
+                break;
+            }
+
+            case 'demon': {
+                ctx.fillStyle = '#7f1d1d';
+                ctx.fillRect(cx - 5, cy + 8 + (f === 0 ? 2 : -2), 4, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 2 : -2), 4, 8);
+                ctx.fillStyle = '#450a0a';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 4);
+                ctx.lineTo(cx - 18, cy - 14 + wingFlap);
+                ctx.lineTo(cx - 12, cy + 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 4);
+                ctx.lineTo(cx + 18, cy - 14 + wingFlap);
+                ctx.lineTo(cx + 12, cy + 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#b91c1c';
+                ctx.fillRect(cx - 7, cy - 5, 14, 14);
+                ctx.fillRect(cx - 6, cy - 16, 12, 11);
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(cx - 9, cy - 22, 4, 8);
+                ctx.fillRect(cx + 5, cy - 22, 4, 8);
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(cx - 4, cy - 12, 2, 2);
+                ctx.fillRect(cx + 2, cy - 12, 2, 2);
+                break;
+            }
+
+            case 'alien': {
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 4, cy + 8 + (f === 0 ? 1 : -1), 3, 7);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 3, 7);
+                ctx.fillRect(cx - 6, cy - 2, 12, 11);
+                ctx.fillStyle = '#86efac';
+                ctx.beginPath();
+                ctx.ellipse(cx, cy - 14, 8, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.ellipse(cx - 4, cy - 13, 2.5, 4, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(cx + 4, cy - 13, 2.5, 4, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+            }
+
+            case 'vampire_lord': {
+                ctx.fillStyle = '#7f1d1d';
+                ctx.fillRect(cx - 12, cy - 12, 24, 24 + (f === 1 ? 2 : 0));
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 22);
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(cx - 5, cy - 16, 10, 10);
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(cx - 6, cy - 19, 12, 5);
+                ctx.fillRect(cx - 6, cy - 16, 2, 7);
+                ctx.fillRect(cx + 4, cy - 16, 2, 7);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 3, cy - 12, 2, 2);
+                ctx.fillRect(cx + 1, cy - 12, 2, 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 2, cy - 8, 1, 2);
+                ctx.fillRect(cx + 1, cy - 8, 1, 2);
+                break;
+            }
+
+            case 'shadow_assassin': {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 4, cy + 7 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 1, cy + 7 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx - 6, cy - 4, 12, 12);
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 6, cy - 16, 12, 12);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 4, cy - 12, 3, 1.5);
+                ctx.fillRect(cx + 1, cy - 12, 3, 1.5);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(cx - 10, cy - 1 + (f === 0 ? 2 : -2), 2, 8);
+                ctx.fillRect(cx + 8, cy - 1 + (f === 1 ? 2 : -2), 2, 8);
+                break;
+            }
+
+            case 'cyber_ninja': {
+                ctx.fillStyle = '#18181b';
+                ctx.fillRect(cx - 5, cy + 7 + (f === 0 ? 2 : -2), 4, 8);
+                ctx.fillRect(cx + 1, cy + 7 + (f === 1 ? 2 : -2), 4, 8);
+                ctx.fillStyle = '#27272a';
+                ctx.fillRect(cx - 7, cy - 4, 14, 12);
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(cx - 6, cy - 14, 12, 4);
+                ctx.fillStyle = '#67e8f9';
+                ctx.fillRect(cx - 4, cy - 13, 8, 2);
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(cx - 6, cy - 18, 12, 5);
+                break;
+            }
+
+            case 'necromancer': {
+                ctx.fillStyle = '#18181b';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 8);
+                ctx.lineTo(cx - 10, cy + 15);
+                ctx.lineTo(cx + 10, cy + 15);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 16, 10, 9);
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(cx - 3, cy - 13, 2, 2);
+                ctx.fillRect(cx + 1, cy - 13, 2, 2);
+                ctx.fillStyle = '#71717a';
+                ctx.fillRect(cx + 9, cy - 4, 4, 8);
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(cx + 10, cy - 2, 2, 4);
+                break;
+            }
+
+            case 'valkyrie': {
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(cx - 4, cy + 8 + (f === 0 ? 1 : -1), 3, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 3, 8);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(cx - 6, cy - 4, 12, 12);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 10, cy - 18, 4, 6);
+                ctx.fillRect(cx + 6, cy - 18, 4, 6);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(cx - 5, cy - 15, 10, 10);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(cx + 8, cy - 20, 2, 34);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx + 7, cy - 24, 4, 5);
+                break;
+            }
+
+            case 'goblin': {
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 5, cy + 8 + (f === 0 ? 2 : -2), 4, 6);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 2 : -2), 4, 6);
+                ctx.fillStyle = '#4d7c0f';
+                ctx.fillRect(cx - 6, cy - 2, 12, 10);
+                ctx.fillRect(cx - 11, cy - 12, 4, 4);
+                ctx.fillRect(cx + 7, cy - 12, 4, 4);
+                ctx.fillRect(cx - 5, cy - 14, 10, 9);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                ctx.fillStyle = '#65a30d';
+                ctx.fillRect(cx - 2, cy - 8, 4, 4);
+                break;
+            }
+
+            case 'phoenix_knight': {
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 5, cy + 8 + (f === 0 ? 1 : -1), 4, 8);
+                ctx.fillRect(cx + 1, cy + 8 + (f === 1 ? 1 : -1), 4, 8);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(cx - 7, cy - 4, 14, 13);
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(cx - 4, cy - 2, 8, 8);
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillRect(cx - 6, cy - 16, 12, 11);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 2, cy - 24, 4, 9);
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(cx + 8, cy - 14, 3, 20);
+                break;
+            }
+
+            // --- Quadrupeds & Beasts ---
+            case 'sheep': {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 8, cy + 7 + (f === 0 ? 1 : -1), 3, 6);
+                ctx.fillRect(cx - 3, cy + 7 + (f === 1 ? 1 : -1), 3, 6);
+                ctx.fillRect(cx + 3, cy + 7 + (f === 0 ? 1 : -1), 3, 6);
+                ctx.fillRect(cx + 7, cy + 7 + (f === 1 ? 1 : -1), 3, 6);
+                ctx.fillStyle = '#f1f5f9';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 13, 0, Math.PI * 2);
+                ctx.arc(cx - 7, cy - 2, 9, 0, Math.PI * 2);
+                ctx.arc(cx + 7, cy - 2, 9, 0, Math.PI * 2);
+                ctx.arc(cx, cy - 6, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 15, cy - 8, 8, 8);
+                ctx.fillRect(cx - 17, cy - 11, 4, 4);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 13, cy - 6, 2, 2);
+                break;
+            }
+
+            case 'cow': {
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 10, cy + 8 + (f === 0 ? 1 : -1), 4, 8);
+                ctx.fillRect(cx - 4, cy + 8 + (f === 1 ? 1 : -1), 4, 8);
+                ctx.fillRect(cx + 4, cy + 8 + (f === 0 ? 1 : -1), 4, 8);
+                ctx.fillRect(cx + 9, cy + 8 + (f === 1 ? 1 : -1), 4, 8);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 13, cy - 6, 26, 16);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 10, cy - 4, 8, 8);
+                ctx.fillRect(cx + 3, cy - 2, 7, 9);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 18, cy - 12, 10, 10);
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(cx - 21, cy - 8, 5, 6);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(cx - 16, cy - 15, 3, 4);
+                ctx.fillRect(cx - 11, cy - 15, 3, 4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 16, cy - 10, 2, 2);
+                break;
+            }
+
+            case 'wolf': {
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 9, cy + 6 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx - 4, cy + 6 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 3, cy + 6 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 8, cy + 6 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 11, cy - 5, 22, 12);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(cx - 12, cy - 7, 7, 10);
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 18, cy - 10, 9, 8);
+                ctx.fillRect(cx - 22, cy - 7, 5, 4);
+                ctx.fillRect(cx - 16, cy - 14, 3, 4);
+                ctx.fillRect(cx - 12, cy - 14, 3, 4);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 16, cy - 8, 2, 2);
+                const tailWag = f === 1 ? 3 : -3;
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx + 10, cy - 8 + tailWag, 6, 6);
+                ctx.fillRect(cx + 14, cy - 5 + tailWag, 5, 5);
+                break;
+            }
+
+            case 'frost_wolf': {
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 9, cy + 6 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx - 4, cy + 6 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 3, cy + 6 + (f === 0 ? 2 : -2), 3, 8);
+                ctx.fillRect(cx + 8, cy + 6 + (f === 1 ? 2 : -2), 3, 8);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 11, cy - 5, 22, 12);
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(cx - 6, cy - 9, 4, 5);
+                ctx.fillRect(cx + 1, cy - 9, 4, 5);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 18, cy - 10, 9, 8);
+                ctx.fillRect(cx - 22, cy - 7, 5, 4);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 16, cy - 8, 2, 2);
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(cx + 10, cy - 8, 9, 6);
+                break;
+            }
+
+            case 'bear': {
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(cx - 11, cy + 7 + (f === 0 ? 2 : -2), 5, 8);
+                ctx.fillRect(cx - 4, cy + 7 + (f === 1 ? 2 : -2), 5, 8);
+                ctx.fillRect(cx + 4, cy + 7 + (f === 0 ? 2 : -2), 5, 8);
+                ctx.fillRect(cx + 10, cy + 7 + (f === 1 ? 2 : -2), 5, 8);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 14, cy - 7, 28, 16);
+                ctx.fillRect(cx - 10, cy - 10, 16, 5);
+                ctx.fillStyle = '#92400e';
+                ctx.fillRect(cx - 20, cy - 11, 10, 10);
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(cx - 24, cy - 7, 6, 5);
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(cx - 24, cy - 7, 2, 2);
+                ctx.fillRect(cx - 17, cy - 9, 2, 2);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 19, cy - 14, 4, 4);
+                ctx.fillRect(cx - 13, cy - 14, 4, 4);
+                break;
+            }
+
+            case 'mammoth': {
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(cx - 12, cy + 8 + (f === 0 ? 2 : -2), 6, 10);
+                ctx.fillRect(cx - 4, cy + 8 + (f === 1 ? 2 : -2), 6, 10);
+                ctx.fillRect(cx + 4, cy + 8 + (f === 0 ? 2 : -2), 6, 10);
+                ctx.fillRect(cx + 10, cy + 8 + (f === 1 ? 2 : -2), 6, 10);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 16, cy - 10, 32, 20);
+                ctx.fillRect(cx - 12, cy - 16, 18, 8);
+                ctx.fillStyle = '#92400e';
+                ctx.fillRect(cx - 22, cy - 8, 8, 18 + (f === 1 ? 2 : -2));
+                ctx.fillStyle = '#f8fafc';
+                ctx.beginPath();
+                ctx.arc(cx - 18, cy + 4, 12, Math.PI * 0.3, Math.PI * 1.1, false);
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#f8fafc';
+                ctx.stroke();
+                break;
+            }
+
+            case 'duck': {
+                ctx.fillStyle = '#facc15';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+                ctx.arc(cx - 8, cy - 8, 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(cx - 17, cy - 8, 6, 4);
+                ctx.fillRect(cx - 4, cy + 9 + (f === 0 ? 1 : -1), 4, 3);
+                ctx.fillRect(cx + 2, cy + 9 + (f === 1 ? 1 : -1), 4, 3);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 10, cy - 10, 2, 2);
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(cx - 2, cy - 4 + (f === 1 ? -4 : 0), 9, 6);
+                break;
+            }
+
+            case 'frog': {
+                ctx.fillStyle = '#16a34a';
+                if (f === 0) {
+                    ctx.fillRect(cx - 12, cy + 4, 8, 8);
+                    ctx.fillRect(cx + 4, cy + 4, 8, 8);
+                } else {
+                    ctx.fillRect(cx - 14, cy + 8, 6, 10);
+                    ctx.fillRect(cx + 8, cy + 8, 6, 10);
+                }
+                ctx.fillStyle = '#22c55e';
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, 11, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 6, cy - 2, 12, 6);
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(cx - 8, cy - 10, 6, 6);
+                ctx.fillRect(cx + 2, cy - 10, 6, 6);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 6, cy - 9, 3, 3);
+                ctx.fillRect(cx + 4, cy - 9, 3, 3);
+                break;
+            }
+
+            case 'laser_shark': {
+                ctx.fillStyle = '#475569';
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, 20, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(cx - 4, cy - 8);
+                ctx.lineTo(cx, cy - 20);
+                ctx.lineTo(cx + 6, cy - 8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(cx + 18, cy);
+                ctx.lineTo(cx + 26, cy - 12 + (f === 1 ? 4 : -4));
+                ctx.lineTo(cx + 26, cy + 12 + (f === 1 ? -4 : 4));
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 16, cy + 2, 32, 5);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 18, cy - 12, 14, 4);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 22, cy - 11, 5, 2);
+                break;
+            }
+
+            case 'sand_scorpion': {
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(cx - 10, cy - 4, 20, 12);
+                ctx.strokeStyle = '#92400e';
+                ctx.lineWidth = 2;
+                for (let l = -6; l <= 6; l += 4) {
+                    const lOff = f === 1 ? 3 : -3;
+                    ctx.beginPath(); ctx.moveTo(cx - 8, cy + l); ctx.lineTo(cx - 18, cy + l + lOff); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(cx + 8, cy + l); ctx.lineTo(cx + 18, cy + l - lOff); ctx.stroke();
+                }
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 18, cy - 12, 6, 8);
+                ctx.fillRect(cx + 12, cy - 12, 6, 8);
+                ctx.strokeStyle = '#b45309';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy + 6);
+                ctx.quadraticCurveTo(cx + 12, cy + 18, cx + 14, cy - 10 + (f === 1 ? 3 : -3));
+                ctx.stroke();
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx + 12, cy - 14, 5, 4);
+                break;
+            }
+
+            // --- Vehicles ---
+            case 'tank': {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 20, cy + 6, 40, 8);
+                ctx.fillStyle = '#0f172a';
+                for (let w = -18; w <= 16; w += 6) {
+                    ctx.fillRect(cx + w, cy + 7, 4, 6);
+                }
+                ctx.fillStyle = '#3f4f38';
+                ctx.fillRect(cx - 16, cy - 4, 32, 11);
+                ctx.fillStyle = '#2d3b27';
+                ctx.fillRect(cx - 9, cy - 12, 18, 9);
+                ctx.fillStyle = '#1a2217';
+                ctx.fillRect(cx + 9, cy - 9, 14, 4);
+                break;
+            }
+
+            case 'warship': {
+                ctx.fillStyle = '#334155';
+                ctx.beginPath();
+                ctx.moveTo(cx + 24, cy);
+                ctx.lineTo(cx - 20, cy - 10);
+                ctx.lineTo(cx - 20, cy + 10);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 10, cy - 6, 16, 12);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx + 6, cy - 3, 8, 6);
+                break;
+            }
+
+            case 'pirate_ship': {
+                ctx.fillStyle = '#78350f';
+                ctx.beginPath();
+                ctx.moveTo(cx + 20, cy + 4);
+                ctx.lineTo(cx - 20, cy + 4);
+                ctx.lineTo(cx - 16, cy + 14);
+                ctx.lineTo(cx + 16, cy + 14);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(cx - 2, cy - 22, 4, 26);
+                ctx.fillStyle = '#18181b';
+                ctx.fillRect(cx - 14, cy - 18 + (f === 1 ? 2 : 0), 28, 12);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 3, cy - 14, 6, 4);
+                ctx.fillRect(cx - 2, cy - 10, 4, 2);
+                break;
+            }
+
+            case 'helicopter': {
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(cx - 14, cy - 6, 26, 13);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx + 5, cy - 4, 8, 8);
+                ctx.fillStyle = '#374151';
+                ctx.fillRect(cx - 12, cy + 9, 22, 2);
+                ctx.fillRect(cx - 8, cy + 6, 2, 4);
+                ctx.fillRect(cx + 4, cy + 6, 2, 4);
+                ctx.fillStyle = '#166534';
+                ctx.fillRect(cx - 24, cy - 2, 11, 4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 26, cy - 8, 3, 14);
+                ctx.fillStyle = '#f8fafc';
+                if (f === 0) {
+                    ctx.fillRect(cx - 24, cy - 12, 48, 2.5);
+                } else {
+                    ctx.fillRect(cx - 18, cy - 14, 36, 2.5);
+                }
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 2, cy - 11, 4, 5);
+                break;
+            }
+
+            case 'starfighter': {
+                ctx.fillStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.moveTo(cx + 22, cy);
+                ctx.lineTo(cx - 16, cy - 18);
+                ctx.lineTo(cx - 8, cy);
+                ctx.lineTo(cx - 16, cy + 18);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.fillStyle = '#e0f2fe';
+                ctx.fillRect(cx, cy - 3, 10, 6);
+                const thrustLen = f === 1 ? 12 : 8;
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillRect(cx - 16 - thrustLen, cy - 3, thrustLen, 6);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 16 - thrustLen * 0.6, cy - 1.5, thrustLen * 0.6, 3);
+                break;
+            }
+
+            case 'mech': {
+                const legSwing = f === 1 ? 3 : -3;
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 10, cy + 6 + legSwing, 5, 12);
+                ctx.fillRect(cx + 5, cy + 6 - legSwing, 5, 12);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 12, cy + 16 + legSwing, 8, 3);
+                ctx.fillRect(cx + 3, cy + 16 - legSwing, 8, 3);
+                ctx.fillStyle = '#78716c';
+                ctx.fillRect(cx - 12, cy - 10, 24, 18);
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 12, cy - 8, 24, 3);
+                ctx.fillRect(cx - 12, cy + 4, 24, 3);
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(cx - 4, cy - 4, 8, 6);
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx + 12, cy - 4, 12, 5);
+                break;
+            }
+
+            case 'colossus_mech': {
+                const legSwing = f === 1 ? 4 : -4;
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 12, cy + 6 + legSwing, 6, 14);
+                ctx.fillRect(cx + 6, cy + 6 - legSwing, 6, 14);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 16, cy - 12, 32, 20);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 8, cy - 6, 16, 4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 20, cy - 16, 7, 10);
+                ctx.fillRect(cx + 13, cy - 16, 7, 10);
+                break;
+            }
+
+            // --- Default Fallback ---
+            default: {
+                const hash = type.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+                const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
+                const col = colors[hash % colors.length];
+
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 6, cy + 7 + (f === 0 ? 2 : -2), 4, 8);
+                ctx.fillRect(cx + 2, cy + 7 + (f === 1 ? 2 : -2), 4, 8);
+                ctx.fillStyle = col;
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 6, cy - 5, 4, 4);
+                ctx.fillRect(cx + 2, cy - 5, 4, 4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 4, cy - 4, 2, 2);
+                ctx.fillRect(cx + 4, cy - 4, 2, 2);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 4, cy - 14, 8, 5);
+                break;
+            }
+        }
+    }
+    
+    hexToRgba(hex, alpha = 1.0) {
+        const key = hex + '_' + alpha;
+        if (this.colorCache.has(key)) return this.colorCache.get(key);
+
+        let r = 0, g = 0, b = 0;
+        if (hex.startsWith('#')) {
+            if (hex.length === 4) {
+                r = parseInt(hex[1] + hex[1], 16) / 255;
+                g = parseInt(hex[2] + hex[2], 16) / 255;
+                b = parseInt(hex[3] + hex[3], 16) / 255;
+            } else if (hex.length >= 7) {
+                r = parseInt(hex.slice(1, 3), 16) / 255;
+                g = parseInt(hex.slice(3, 5), 16) / 255;
+                b = parseInt(hex.slice(5, 7), 16) / 255;
+            }
+        }
+        const res = [r, g, b, alpha];
+        this.colorCache.set(key, res);
+        return res;
+    }
+
+    // --- Camera Controls ---
+    updateCamera() {
         const cam = this.camera;
-        const sensitivity = 0.005;
-        cam.yaw -= deltaX * sensitivity;
-        cam.pitch = Math.max(0.12, Math.min(1.48, cam.pitch - deltaY * sensitivity));
+        const aspect = this.canvas.width / this.canvas.height;
+
+        // Spherical coordinates around target
+        // yaw: azimuth angle around Z axis
+        // pitch: angle from horizontal plane
+        const cosP = Math.cos(cam.pitch);
+        const sinP = Math.sin(cam.pitch);
+        const cosY = Math.cos(cam.yaw);
+        const sinY = Math.sin(cam.yaw);
+
+        cam.eye[0] = cam.target[0] + cam.distance * cosP * sinY;
+        cam.eye[1] = cam.target[1] - cam.distance * cosP * cosY;
+        cam.eye[2] = cam.target[2] + cam.distance * sinP;
+
+        // Forward vector (eye to target)
+        cam.forward[0] = cam.target[0] - cam.eye[0];
+        cam.forward[1] = cam.target[1] - cam.eye[1];
+        cam.forward[2] = cam.target[2] - cam.eye[2];
+        Vec3.normalize(cam.forward, cam.forward);
+
+        // Right vector (forward x world up [0, 0, 1])
+        cam.right[0] = cam.forward[1] * 1.0;
+        cam.right[1] = -cam.forward[0] * 1.0;
+        cam.right[2] = 0.0;
+        Vec3.normalize(cam.right, cam.right);
+
+        // Up vector (right x forward)
+        cam.up[0] = cam.right[1] * cam.forward[2] - cam.right[2] * cam.forward[1];
+        cam.up[1] = cam.right[2] * cam.forward[0] - cam.right[0] * cam.forward[2];
+        cam.up[2] = cam.right[0] * cam.forward[1] - cam.right[1] * cam.forward[0];
+        Vec3.normalize(cam.up, cam.up);
+
+        // Matrices
+        Mat4.perspective(cam.projMat, cam.fov, aspect, 0.5, 1200.0);
+        Mat4.lookAt(cam.viewMat, cam.eye, cam.target, [0, 0, 1]);
+        Mat4.multiply(cam.viewProj, cam.projMat, cam.viewMat);
+        Mat4.invert(cam.invViewProj, cam.viewProj);
+    }
+
+    panCamera(deltaX, deltaY) {
+        const cam = this.camera;
+        const factor = (cam.distance / 600.0) * 0.85;
+
+        // Pan along camera right and ground forward
+        const right = cam.right;
+        const fwdX = -Math.sin(cam.yaw);
+        const fwdY = Math.cos(cam.yaw);
+
+        cam.target[0] += (-right[0] * deltaX - fwdX * deltaY) * factor;
+        cam.target[1] += (-right[1] * deltaX - fwdY * deltaY) * factor;
     }
 
     pan(deltaX, deltaY) {
-        const cam = this.camera;
-        const factor = cam.distance * 0.0018;
-        cam.target[0] -= (cam.right[0] * deltaX - cam.forward[0] * deltaY) * factor;
-        cam.target[1] -= (cam.right[1] * deltaX - cam.forward[1] * deltaY) * factor;
+        this.panCamera(deltaX, deltaY);
     }
 
-    zoom(delta) {
+    rotateCamera(deltaYaw, deltaPitch) {
         const cam = this.camera;
-        const factor = delta > 0 ? 1.14 : 0.88;
-        cam.distance = Math.max(cam.minDistance, Math.min(cam.maxDistance, cam.distance * factor));
+        cam.yaw += deltaYaw * 0.0075;
+        cam.pitch += deltaPitch * 0.0075;
+
+        // Constrain pitch to avoid flipping over pole
+        const minPitch = 0.12; // ~7 deg
+        const maxPitch = 1.48; // ~85 deg
+        cam.pitch = Math.max(minPitch, Math.min(maxPitch, cam.pitch));
     }
 
-    setTarget(x, y, z = null) {
-        this.camera.target[0] = x;
-        this.camera.target[1] = y;
-        if (z !== null) this.camera.target[2] = z;
+    orbit(deltaYaw, deltaPitch) {
+        this.rotateCamera(deltaYaw, deltaPitch);
+    }
+
+    zoomCamera(deltaZoom) {
+        const cam = this.camera;
+        cam.distance += deltaZoom * (cam.distance * 0.0012);
+        cam.distance = Math.max(cam.minDistance, Math.min(cam.maxDistance, cam.distance));
+    }
+
+    zoom(deltaZoom) {
+        this.zoomCamera(deltaZoom);
     }
 
     resize() {
-        if (!this.gl) return;
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        if (!this.canvas || !this.gl) return;
+        if (this.canvas.width !== window.innerWidth || this.canvas.height !== window.innerHeight) {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
 
-    // --- Camera Transform & Matrices ---
-    updateCamera() {
-        const cam = this.camera;
-        const aspect = this.canvas.width / Math.max(1, this.canvas.height);
-
-        // Spherical coordinates: eye relative to target
-        const cosPitch = Math.cos(cam.pitch);
-        const sinPitch = Math.sin(cam.pitch);
-        const cosYaw = Math.cos(cam.yaw);
-        const sinYaw = Math.sin(cam.yaw);
-
-        cam.eye[0] = cam.target[0] + cam.distance * cosPitch * sinYaw;
-        cam.eye[1] = cam.target[1] - cam.distance * cosPitch * cosYaw;
-        cam.eye[2] = cam.target[2] + cam.distance * sinPitch;
-
-        // Perspective Matrix
-        Mat4.perspective(cam.projMat, cam.fov, aspect, 1.0, 800.0);
-
-        // View Matrix
-        Mat4.lookAt(cam.viewMat, cam.eye, cam.target, cam.up);
-
-        // View-Projection Matrix
-        Mat4.multiply(cam.viewProj, cam.projMat, cam.viewMat);
-
-        // Inverse View-Projection Matrix for Raycasting
-        Mat4.invert(cam.invViewProj, cam.viewProj);
-
-        // Camera billboard vectors (right & up in world coordinates)
-        cam.right[0] = cam.viewMat[0];
-        cam.right[1] = cam.viewMat[4];
-        cam.right[2] = cam.viewMat[8];
-
-        cam.up[0] = cam.viewMat[1];
-        cam.up[1] = cam.viewMat[5];
-        cam.up[2] = cam.viewMat[9];
-
-        cam.forward[0] = -cam.viewMat[2];
-        cam.forward[1] = -cam.viewMat[6];
-        cam.forward[2] = -cam.viewMat[10];
-    }
-
-    // --- 3D Mouse Raycasting (Screen to World) ---
     screenToWorld(screenX, screenY, world) {
-        const rect = this.canvas.getBoundingClientRect();
-        const mouseX = screenX - rect.left;
-        const mouseY = screenY - rect.top;
+        return this.screenToWorldRay(screenX, screenY, world);
+    }
 
-        // Normalized Device Coordinates (-1 to 1)
-        const ndcX = (mouseX / this.canvas.width) * 2 - 1;
-        const ndcY = 1 - (mouseY / this.canvas.height) * 2;
+    setTarget(x, y, z = 2.5) {
+        this.camera.target[0] = x;
+        this.camera.target[1] = y;
+        this.camera.target[2] = z;
+    }
+
+    // --- Raycasting for 3D Cursor Placement ---
+    screenToWorldRay(screenX, screenY, world) {
+        if (!this.gl || !this.camera.invViewProj) return null;
+
+        // Normalized Device Coordinates
+        const ndcX = (screenX / this.canvas.width) * 2.0 - 1.0;
+        const ndcY = 1.0 - (screenY / this.canvas.height) * 2.0;
 
         const nearPt = Vec3.create(ndcX, ndcY, -1.0);
-        const farPt = Vec3.create(ndcX, ndcY, 1.0);
+        const farPt  = Vec3.create(ndcX, ndcY,  1.0);
 
         Vec3.transformMat4(nearPt, nearPt, this.camera.invViewProj);
         Vec3.transformMat4(farPt, farPt, this.camera.invViewProj);
@@ -606,7 +1871,7 @@ class Renderer3D {
         ];
         Vec3.normalize(rayDir, rayDir);
 
-        // Fast raymarching against terrain heightfield
+        // Raymarching against terrain heightfield
         let t = 0.0;
         const maxDist = 500.0;
         const stepSize = 1.0;
@@ -614,7 +1879,6 @@ class Renderer3D {
         let bestY = nearPt[1];
         let bestZ = nearPt[2];
 
-        // If ray starts high, advance close to ground plane first
         if (rayDir[2] < -0.001) {
             const approxGroundZ = 3.0;
             const tPlane = (approxGroundZ - nearPt[2]) / rayDir[2];
@@ -629,7 +1893,6 @@ class Renderer3D {
             if (world && world.inBounds(Math.floor(rx), Math.floor(ry))) {
                 const elev = world.getElevation(rx, ry);
                 if (rz <= elev) {
-                    // Refine intersection with binary search
                     let t0 = t - stepSize;
                     let t1 = t;
                     for (let step = 0; step < 5; step++) {
@@ -649,7 +1912,6 @@ class Renderer3D {
             t += stepSize;
         }
 
-        // Fallback: intersect with ground plane z = 0
         if (Math.abs(rayDir[2]) > 0.001) {
             const t0 = -nearPt[2] / rayDir[2];
             if (t0 > 0) {
@@ -679,9 +1941,6 @@ class Renderer3D {
         const w = world.width;
         const h = world.height;
 
-        // Build vertex grid
-        // Format: x(float), y(float), z(float), nx(float), ny(float), nz(float), r(float), g(float), b(float), a(float), tileType(float)
-        // Stride = 11 floats (44 bytes)
         const vertStride = 11;
         const totalVerts = w * h;
         if (!this.vertData || this.vertData.length !== totalVerts * vertStride) {
@@ -701,7 +1960,7 @@ class Renderer3D {
                 vertData[vOffset + 1] = y;
                 vertData[vOffset + 2] = elev;
 
-                // Surface Normal (computed from finite differences)
+                // Surface Normal
                 const elevL = (x > 0) ? (world.elevation ? world.elevation[i - 1] : elev) : elev;
                 const elevR = (x < w - 1) ? (world.elevation ? world.elevation[i + 1] : elev) : elev;
                 const elevD = (y > 0) ? (world.elevation ? world.elevation[i - w] : elev) : elev;
@@ -715,10 +1974,9 @@ class Renderer3D {
                 vertData[vOffset + 4] = ny / nLen;
                 vertData[vOffset + 5] = nz / nLen;
 
-                // Color (r, g, b, a) from TILE_INFO
+                // Color from TILE_INFO
                 const info = TILE_INFO[t] || { color: '#489e38' };
                 const rgba = this.hexToRgba(info.color);
-                // Apply slight subtle height tinting
                 const varOffset = ((world.variation ? world.variation[i] : 0) - 2) * 0.03;
                 vertData[vOffset + 6] = Math.max(0, Math.min(1, rgba[0] + varOffset));
                 vertData[vOffset + 7] = Math.max(0, Math.min(1, rgba[1] + varOffset));
@@ -737,23 +1995,18 @@ class Renderer3D {
         gl.bufferData(gl.ARRAY_BUFFER, vertData, gl.DYNAMIC_DRAW);
 
         const strideBytes = vertStride * 4;
-        // loc 0: position (vec3)
         gl.enableVertexAttribArray(0);
         gl.vertexAttribPointer(0, 3, gl.FLOAT, false, strideBytes, 0);
 
-        // loc 1: normal (vec3)
         gl.enableVertexAttribArray(1);
         gl.vertexAttribPointer(1, 3, gl.FLOAT, false, strideBytes, 3 * 4);
 
-        // loc 2: color (vec4)
         gl.enableVertexAttribArray(2);
         gl.vertexAttribPointer(2, 4, gl.FLOAT, false, strideBytes, 6 * 4);
 
-        // loc 3: tileType (float)
         gl.enableVertexAttribArray(3);
         gl.vertexAttribPointer(3, 1, gl.FLOAT, false, strideBytes, 10 * 4);
 
-        // Upload Indices only if dimension changed
         if (this.lastWorldW !== w || this.lastWorldH !== h) {
             const quadsX = w - 1;
             const quadsY = h - 1;
@@ -764,12 +2017,10 @@ class Renderer3D {
                     const row1 = y * w + x;
                     const row2 = (y + 1) * w + x;
 
-                    // Triangle 1
                     indices[idx++] = row1;
                     indices[idx++] = row2;
                     indices[idx++] = row1 + 1;
 
-                    // Triangle 2
                     indices[idx++] = row1 + 1;
                     indices[idx++] = row2;
                     indices[idx++] = row2 + 1;
@@ -791,17 +2042,14 @@ class Renderer3D {
         const gl = this.gl;
         this.animTime += 0.016;
 
-        // Resize viewport if canvas changed
         if (this.canvas.width !== window.innerWidth || this.canvas.height !== window.innerHeight) {
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
             gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         }
 
-        // Camera Update
         this.updateCamera();
 
-        // Clear Color & Depth Buffers
         gl.clearColor(0.04, 0.04, 0.08, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -820,7 +2068,7 @@ class Renderer3D {
             gl.bindVertexArray(null);
         }
 
-        // 2. Render 3D Billboards (Creatures, Drop Shadows, Buildings, Particles)
+        // 2. Render 3D Billboards (Creatures, Drop Shadows, Weapons, Health Bars, Buildings, Particles)
         this.renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos);
     }
 
@@ -845,61 +2093,158 @@ class Renderer3D {
             instanceCount++;
         };
 
-        // A. Brush Reticle Indicator in 3D
+        const uUtil = this.utilityUVs;
+
+        // A. 3D Brush Reticle Indicator
         if (mouseWorldPos && world && world.inBounds(Math.floor(mouseWorldPos.x), Math.floor(mouseWorldPos.y))) {
             const mx = mouseWorldPos.x;
             const my = mouseWorldPos.y;
             const mz = (world.getElevation ? world.getElevation(mx, my) : 2.0) + 0.15;
-            const size = Math.max(2, brushSize * 2.2);
-            addBillboard(mx, my, mz, size, size, 0.22, 0.74, 0.97, 0.45);
+            const size = Math.max(2.5, brushSize * 2.2);
+            const uv = uUtil.reticle;
+            addBillboard(mx, my, mz, size, size, 0.22, 0.74, 0.97, 0.75, this.animTime * 1.5, uv.u0, uv.v0, uv.u1, uv.v1);
         }
 
-        // B. Render Entities with 3D Elevation & Drop Shadows
+        // B. Render Living Entities with High-Def Pixel Art, Animations, Weapons & Health Bars
         if (entityManager && Array.isArray(entityManager.entities)) {
             const ents = entityManager.entities;
+            const flyingSpecies = new Set([
+                'dragon', 'frost_dragon', 'shadow_dragon', 'storm_dragon', 'golden_dragon', 'cyber_dragon',
+                'pterodactyl', 'seraph_angel', 'thunder_bird', 'phoenix', 'helicopter', 'starfighter',
+                'valkyrie', 'gargoyle'
+            ]);
+
             for (let i = 0; i < ents.length; i++) {
                 const ent = ents[i];
                 if (!ent.active) continue;
 
                 const groundZ = world ? (world.getElevation ? world.getElevation(ent.x, ent.y) : 2.0) : 2.0;
                 let flightZ = 0;
-                if (['dragon', 'pterodactyl', 'seraph_angel', 'thunder_bird', 'cyber_dragon', 'helicopter', 'starfighter'].includes(ent.type)) {
-                    flightZ = 6.0 + Math.sin(this.animTime * 3.0 + ent.id) * 1.2;
+                if (ent.isFlying || flyingSpecies.has(ent.type)) {
+                    flightZ = 6.0 + Math.sin(this.animTime * 3.5 + ent.id) * 1.2;
                 }
 
                 const entZ = groundZ + flightZ;
-                const entScale = Math.max(1.2, (ent.size || 2.0) * (ent.scale || 1.8));
+                const entScale = Math.max(1.5, (ent.size || 2.0) * (ent.scale || 1.6));
 
-                // Drop Shadow projected on ground below
-                const shadowSize = entScale * (1.0 - Math.min(0.5, flightZ * 0.05));
-                const shadowAlpha = Math.max(0.15, 0.5 - flightZ * 0.04);
-                addBillboard(ent.x, ent.y, groundZ + 0.05, shadowSize * 1.2, shadowSize * 0.75, 0.0, 0.0, 0.0, shadowAlpha);
+                // 1. Soft Projected Ground Drop Shadow
+                const shadowSize = entScale * (1.0 - Math.min(0.4, flightZ * 0.04));
+                const shadowAlpha = Math.max(0.12, 0.45 - flightZ * 0.03);
+                const sUv = uUtil.shadow;
+                addBillboard(ent.x, ent.y, groundZ + 0.05, shadowSize * 1.3, shadowSize * 0.85, 0.0, 0.0, 0.0, shadowAlpha, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
 
-                // Entity Visual (Color coded billboard sprite)
-                const col = this.hexToRgba(ent.color || '#3b82f6');
-                const hitFlash = ent.hitFlash > 0 ? 0.6 : 0.0;
+                // 2. Animation Frame & Directional Flip
+                const isMoving = Math.hypot(ent.vx, ent.vy) > 0.05;
+                const frameIdx = (isMoving ? Math.floor(this.animTime * 8 + ent.id) % 2 : 0);
+                const uvPair = this.spriteUVs[ent.type] || [uUtil.defaultSprite, uUtil.defaultSprite];
+                const baseUv = uvPair[frameIdx] || uUtil.defaultSprite;
+
+                const flipX = !!ent.facingLeft;
+                const u0 = flipX ? baseUv.u1 : baseUv.u0;
+                const u1 = flipX ? baseUv.u0 : baseUv.u1;
+                const v0 = baseUv.v0;
+                const v1 = baseUv.v1;
+
+                // 3. Dying Topple Rotation, Hit Flash & Transparency
+                let tiltAngle = 0;
+                let alpha = 1.0;
+                let hitFlash = ent.hitFlash > 0 ? 1.8 : 0.0;
+
+                if (ent.isDying) {
+                    const prog = 1.0 - (ent.deathTimer / Math.max(1, ent.maxDeathTimer || 30));
+                    tiltAngle = (flipX ? -1 : 1) * prog * (Math.PI / 2);
+                    alpha = Math.max(0.1, 1.0 - prog * 0.85);
+                    hitFlash = (Math.floor(ent.deathTimer / 3) % 2 === 0) ? 1.5 : 0;
+                } else if (ent.hasTrait && ent.hasTrait('invisibility')) {
+                    alpha = 0.35;
+                }
+
+                // Creature Body Billboard
                 addBillboard(
                     ent.x,
                     ent.y,
                     entZ + entScale * 0.5,
                     entScale,
-                    entScale * 1.3,
-                    col[0] + hitFlash,
-                    col[1] + hitFlash,
-                    col[2] + hitFlash,
-                    col[3]
+                    entScale * 1.25,
+                    1.0 + hitFlash,
+                    1.0 + hitFlash,
+                    1.0 + hitFlash,
+                    alpha,
+                    tiltAngle,
+                    u0, v0, u1, v1
                 );
 
-                // Possessed Hero Reticle Beacon
+                // 4. Equipped 3D Weapon Overlay
+                if (ent.weapon && this.weaponUVs[ent.weapon]) {
+                    const wUv = this.weaponUVs[ent.weapon];
+                    const handOffX = (flipX ? -1 : 1) * entScale * 0.35;
+                    const handOffZ = entZ + entScale * 0.45;
+                    const wScale = entScale * 0.75;
+                    const wu0 = flipX ? wUv.u1 : wUv.u0;
+                    const wu1 = flipX ? wUv.u0 : wUv.u1;
+                    addBillboard(ent.x + handOffX, ent.y, handOffZ, wScale, wScale, 1.0, 1.0, 1.0, alpha, tiltAngle, wu0, wUv.v0, wu1, wUv.v1);
+                }
+
+                // 5. Status Auras
+                if (ent.blessed) {
+                    const aUv = uUtil.blessed;
+                    const aScale = entScale * 0.9;
+                    addBillboard(ent.x, ent.y, entZ + entScale * 1.15, aScale, aScale, 1.0, 0.9, 0.2, 0.95, this.animTime * 1.5, aUv.u0, aUv.v0, aUv.u1, aUv.v1);
+                }
+                if (ent.cursed) {
+                    const aUv = uUtil.cursed;
+                    const aScale = entScale * 0.85;
+                    addBillboard(ent.x, ent.y, entZ + entScale * 1.1, aScale, aScale, 0.8, 0.2, 0.95, 0.9, -this.animTime * 2.0, aUv.u0, aUv.v0, aUv.u1, aUv.v1);
+                }
+                if (ent.frozen > 0) {
+                    const aUv = uUtil.frozen;
+                    const aScale = entScale * 1.2;
+                    addBillboard(ent.x, ent.y, entZ + entScale * 0.5, aScale, aScale * 1.2, 0.6, 0.9, 1.0, 0.8, 0, aUv.u0, aUv.v0, aUv.u1, aUv.v1);
+                }
+
+                // 6. 3D Floating Overhead Health Bar & Boss Indicator
+                const isDamaged = ent.hp < ent.maxHp;
+                if (!ent.isDying && (isDamaged || ent.isControlled || ent.isBoss)) {
+                    const barZ = entZ + entScale * 1.25;
+                    const barW = Math.max(1.8, entScale * 1.1);
+                    const barH = 0.25;
+                    const qUv = uUtil.white_quad;
+
+                    // Background & Border
+                    addBillboard(ent.x, ent.y, barZ, barW + 0.1, barH + 0.08, 0.08, 0.08, 0.12, 0.85, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+
+                    // Health Fill
+                    const hpRatio = Math.max(0.0, Math.min(1.0, ent.hp / Math.max(1, ent.maxHp)));
+                    const fillW = barW * hpRatio;
+                    const fillOffX = (hpRatio - 1.0) * barW * 0.5;
+
+                    let hpR = 0.2, hpG = 0.85, hpB = 0.3;
+                    if (hpRatio < 0.28) { hpR = 0.95; hpG = 0.2; hpB = 0.2; }
+                    else if (hpRatio < 0.55) { hpR = 0.95; hpG = 0.8; hpB = 0.15; }
+
+                    addBillboard(ent.x + fillOffX, ent.y, barZ, fillW, barH, hpR, hpG, hpB, 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+
+                    // Boss / Controlled Crown Star
+                    if (ent.isControlled || ent.isBoss) {
+                        const starUv = uUtil.star;
+                        const starSize = ent.isBoss ? 1.3 : 1.0;
+                        const starPulse = Math.sin(this.animTime * 6.0) * 0.12 + 1.0;
+                        addBillboard(ent.x, ent.y, barZ + 0.45, starSize * starPulse, starSize * starPulse, 1.0, 0.9, 0.2, 1.0, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
+                    }
+                }
+
+                // 7. Controlled Hero Reticle Ring
                 if (ent.isControlled) {
-                    const beaconPulse = Math.sin(this.animTime * 8.0) * 0.3 + 1.2;
-                    addBillboard(ent.x, ent.y, entZ + entScale * 1.4, 2.5 * beaconPulse, 2.5 * beaconPulse, 0.98, 0.8, 0.08, 0.9);
+                    const retUv = uUtil.reticle;
+                    const retPulse = Math.sin(this.animTime * 8.0) * 0.2 + 1.3;
+                    addBillboard(ent.x, ent.y, groundZ + 0.08, entScale * 1.6 * retPulse, entScale * 1.6 * retPulse, 0.98, 0.85, 0.1, 0.9, this.animTime * 2.0, retUv.u0, retUv.v0, retUv.u1, retUv.v1);
                 }
             }
         }
 
         // C. Render Buildings
         if (entityManager && Array.isArray(entityManager.buildings)) {
+            const qUv = uUtil.white_quad;
             for (let i = 0; i < entityManager.buildings.length; i++) {
                 const b = entityManager.buildings[i];
                 const bz = world ? (world.getElevation ? world.getElevation(b.x, b.y) : 2.0) : 2.0;
@@ -907,15 +2252,18 @@ class Renderer3D {
                 const bScale = Math.max(2.2, (b.width || 3) * 1.1);
 
                 // Building Shadow
-                addBillboard(b.x, b.y, bz + 0.04, bScale * 1.3, bScale * 0.8, 0, 0, 0, 0.4);
+                const sUv = uUtil.shadow;
+                addBillboard(b.x, b.y, bz + 0.04, bScale * 1.4, bScale * 0.9, 0, 0, 0, 0.45, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 // Building Structure
-                addBillboard(b.x, b.y, bz + bScale * 0.5, bScale, bScale * 1.2, bCol[0], bCol[1], bCol[2], 0.95);
+                addBillboard(b.x, b.y, bz + bScale * 0.5, bScale, bScale * 1.2, bCol[0], bCol[1], bCol[2], 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
             }
         }
 
         // D. Render 3D Particles
         if (particleSystem && Array.isArray(particleSystem.particles)) {
             const parts = particleSystem.particles;
+            const pUv = uUtil.shadow; // soft circle
+            const starUv = uUtil.starlight;
             for (let i = 0; i < parts.length; i++) {
                 const p = parts[i];
                 if (!p.active) continue;
@@ -930,13 +2278,16 @@ class Renderer3D {
 
                 const pCol = this.hexToRgba(p.color || '#ffffff', Math.min(1.0, p.life / p.maxLife));
                 const pSize = Math.max(0.6, (p.size || 1.0) * 1.2);
-                addBillboard(p.x, p.y, pZ, pSize, pSize, pCol[0], pCol[1], pCol[2], pCol[3]);
+                const uv = (p.type === 'stardust' || p.type === 'spark') ? starUv : pUv;
+                addBillboard(p.x, p.y, pZ, pSize, pSize, pCol[0], pCol[1], pCol[2], pCol[3], 0, uv.u0, uv.v0, uv.u1, uv.v1);
             }
         }
 
-        // E. Render 3D Projectiles (Arrows, Fireballs, Lasers, Magic Missiles)
+        // E. Render 3D Projectiles
         if (entityManager && Array.isArray(entityManager.projectiles)) {
             const projs = entityManager.projectiles;
+            const qUv = uUtil.white_quad;
+            const starUv = uUtil.starlight;
             for (let i = 0; i < projs.length; i++) {
                 const p = projs[i];
                 const gz = world ? (world.getElevation ? world.getElevation(p.x, p.y) : 2.0) : 2.0;
@@ -944,28 +2295,27 @@ class Renderer3D {
                 if (p.type === 'arrow') {
                     const progress = p.progress !== undefined ? p.progress : 0.5;
                     pz += Math.sin(progress * Math.PI) * 4.0;
-                    addBillboard(p.x, p.y, pz, 0.9, 0.9, 0.9, 0.9, 0.95, 1.0);
+                    addBillboard(p.x, p.y, pz, 1.0, 0.4, 0.9, 0.9, 0.95, 1.0, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
                 } else if (p.type === 'fireball') {
                     const pulse = Math.sin(this.animTime * 12.0 + i) * 0.3 + 1.2;
-                    addBillboard(p.x, p.y, pz + 0.3, 1.6 * pulse, 1.6 * pulse, 0.96, 0.45, 0.05, 0.95);
-                    addBillboard(p.x, p.y, pz + 0.3, 0.8, 0.8, 1.0, 0.9, 0.2, 1.0);
+                    addBillboard(p.x, p.y, pz + 0.3, 1.8 * pulse, 1.8 * pulse, 0.96, 0.45, 0.05, 0.95, 0, uUtil.shadow.u0, uUtil.shadow.v0, uUtil.shadow.u1, uUtil.shadow.v1);
+                    addBillboard(p.x, p.y, pz + 0.3, 0.9, 0.9, 1.0, 0.9, 0.2, 1.0, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
                 } else if (p.type === 'laser' || p.type === 'blaster') {
-                    addBillboard(p.x, p.y, pz, 1.2, 0.6, 0.1, 0.9, 1.0, 1.0);
+                    addBillboard(p.x, p.y, pz, 1.6, 0.5, 0.1, 0.9, 1.0, 1.0, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
                 } else if (p.type === 'frost') {
-                    addBillboard(p.x, p.y, pz, 1.3, 1.3, 0.6, 0.95, 1.0, 0.9);
-                } else if (p.type === 'acid') {
-                    addBillboard(p.x, p.y, pz, 1.2, 1.2, 0.5, 0.95, 0.1, 0.9);
-                } else if (p.type === 'magic_missile') {
-                    addBillboard(p.x, p.y, pz, 1.4, 1.4, 0.8, 0.4, 1.0, 0.95);
+                    addBillboard(p.x, p.y, pz, 1.4, 1.4, 0.6, 0.95, 1.0, 0.9, 0, uUtil.frozen.u0, uUtil.frozen.v0, uUtil.frozen.u1, uUtil.frozen.v1);
                 } else {
-                    addBillboard(p.x, p.y, pz, 1.0, 1.0, 1.0, 1.0, 0.2, 1.0);
+                    addBillboard(p.x, p.y, pz, 1.2, 1.2, 0.8, 0.4, 1.0, 0.95, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
                 }
             }
         }
 
         // F. Render 3D Disasters (Meteors, Nukes, UFOs, Tornadoes, Black Holes, Forcefields)
         if (disasterManager) {
-            // 1. Meteors falling from high altitude
+            const qUv = uUtil.white_quad;
+            const sUv = uUtil.shadow;
+
+            // 1. Meteors
             if (Array.isArray(disasterManager.meteors)) {
                 for (let i = 0; i < disasterManager.meteors.length; i++) {
                     const m = disasterManager.meteors[i];
@@ -973,43 +2323,38 @@ class Renderer3D {
                     const gz = world ? (world.getElevation ? world.getElevation(m.x, m.y) : 2.0) : 2.0;
                     const distToTarget = Math.hypot(m.targetX - m.x, m.targetY - m.y);
                     const altitude = gz + Math.max(0, distToTarget * 0.8);
-                    const mSize = Math.max(3.0, (m.size || 4.0) * 1.5);
-                    addBillboard(m.x, m.y, altitude, mSize, mSize, 0.98, 0.4, 0.05, 0.95);
-                    addBillboard(m.x, m.y, altitude, mSize * 0.6, mSize * 0.6, 1.0, 0.9, 0.2, 1.0);
-                    addBillboard(m.targetX, m.targetY, gz + 0.05, mSize * 1.5, mSize * 1.5, 0.8, 0.1, 0.0, 0.4);
+                    const mSize = Math.max(3.5, (m.size || 4.0) * 1.5);
+                    addBillboard(m.x, m.y, altitude, mSize, mSize, 0.98, 0.4, 0.05, 0.95, this.animTime * 3.0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                    addBillboard(m.x, m.y, altitude, mSize * 0.6, mSize * 0.6, 1.0, 0.9, 0.2, 1.0, 0, uUtil.starlight.u0, uUtil.starlight.v0, uUtil.starlight.u1, uUtil.starlight.v1);
+                    addBillboard(m.targetX, m.targetY, gz + 0.05, mSize * 1.5, mSize * 1.5, 0.8, 0.1, 0.0, 0.4, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 }
             }
 
-            // 2. Nuke Missiles rocketing down
+            // 2. Nuke Missiles
             if (Array.isArray(disasterManager.nukeMissiles)) {
                 for (let i = 0; i < disasterManager.nukeMissiles.length; i++) {
                     const n = disasterManager.nukeMissiles[i];
                     if (!n.active) continue;
                     const gz = world ? (world.getElevation ? world.getElevation(n.x, n.y) : 2.0) : 2.0;
                     const alt = gz + Math.max(0, (n.altitude || (n.targetY - n.y)));
-                    addBillboard(n.x, n.y, alt, 2.5, 5.0, 0.9, 0.9, 0.95, 1.0);
-                    addBillboard(n.x, n.y, alt - 2.5, 2.0, 2.0, 1.0, 0.5, 0.1, 0.9);
+                    addBillboard(n.x, n.y, alt, 2.5, 5.0, 0.9, 0.9, 0.95, 1.0, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    addBillboard(n.x, n.y, alt - 2.5, 2.0, 2.0, 1.0, 0.5, 0.1, 0.9, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 }
             }
 
-            // 3. UFOs hovering high with tractor beam
+            // 3. UFOs
             if (Array.isArray(disasterManager.ufos)) {
                 for (let i = 0; i < disasterManager.ufos.length; i++) {
                     const u = disasterManager.ufos[i];
                     if (!u.active) continue;
                     const gz = world ? (world.getElevation ? world.getElevation(u.x, u.y) : 2.0) : 2.0;
                     const ufoZ = gz + 10.0 + Math.sin(this.animTime * 2.0 + i) * 1.0;
-                    addBillboard(u.x, u.y, ufoZ, 6.0, 3.0, 0.3, 0.8, 0.95, 0.95);
-                    addBillboard(u.x, u.y, ufoZ + 0.5, 3.0, 1.8, 0.2, 1.0, 0.5, 1.0);
-                    for (let step = 0; step < 5; step++) {
-                        const bz = gz + (ufoZ - gz) * (step / 5);
-                        const bWidth = 2.0 + (1.0 - step / 5) * 4.0;
-                        addBillboard(u.x, u.y, bz, bWidth, 1.5, 0.2, 0.9, 0.4, 0.35);
-                    }
+                    addBillboard(u.x, u.y, ufoZ, 6.5, 3.2, 0.3, 0.8, 0.95, 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    addBillboard(u.x, u.y, ufoZ + 0.5, 3.2, 1.8, 0.2, 1.0, 0.5, 1.0, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 }
             }
 
-            // 4. Tornadoes swirling vortex column in 3D
+            // 4. Tornadoes
             if (Array.isArray(disasterManager.tornadoes)) {
                 for (let i = 0; i < disasterManager.tornadoes.length; i++) {
                     const t = disasterManager.tornadoes[i];
@@ -1020,12 +2365,12 @@ class Renderer3D {
                         const ringWidth = (t.radius || 6) * (0.5 + (h / 8) * 1.2);
                         const sway = Math.sin(this.animTime * 6.0 + h) * 0.8;
                         const rot = this.animTime * 8.0 + h * 0.5;
-                        addBillboard(t.x + sway, t.y, ringZ, ringWidth, 2.0, 0.75, 0.8, 0.85, 0.45, rot);
+                        addBillboard(t.x + sway, t.y, ringZ, ringWidth, 2.0, 0.75, 0.8, 0.85, 0.45, rot, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                     }
                 }
             }
 
-            // 5. Black Holes gravitational event horizon
+            // 5. Black Holes
             if (Array.isArray(disasterManager.blackHoles)) {
                 for (let i = 0; i < disasterManager.blackHoles.length; i++) {
                     const bh = disasterManager.blackHoles[i];
@@ -1033,12 +2378,12 @@ class Renderer3D {
                     const gz = world ? (world.getElevation ? world.getElevation(bh.x, bh.y) : 2.0) : 2.0;
                     const bhZ = gz + 4.0;
                     const radius = (bh.radius || 12) * 1.2;
-                    addBillboard(bh.x, bh.y, bhZ, radius * 2.2, radius * 0.9, 0.9, 0.4, 0.95, 0.7, this.animTime * 3.0);
-                    addBillboard(bh.x, bh.y, bhZ, radius, radius, 0.02, 0.02, 0.04, 1.0);
+                    addBillboard(bh.x, bh.y, bhZ, radius * 2.2, radius * 0.9, 0.9, 0.4, 0.95, 0.7, this.animTime * 3.0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                    addBillboard(bh.x, bh.y, bhZ, radius, radius, 0.02, 0.02, 0.04, 1.0, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 }
             }
 
-            // 6. Forcefields energy shield dome in 3D
+            // 6. Forcefields
             if (Array.isArray(disasterManager.forcefields)) {
                 for (let i = 0; i < disasterManager.forcefields.length; i++) {
                     const ff = disasterManager.forcefields[i];
@@ -1046,18 +2391,21 @@ class Renderer3D {
                     const gz = world ? (world.getElevation ? world.getElevation(ff.x, ff.y) : 2.0) : 2.0;
                     const ffRad = ff.radius || 20;
                     const pulse = Math.sin(this.animTime * 4.0) * 0.08 + 0.92;
-                    addBillboard(ff.x, ff.y, gz + ffRad * 0.5, ffRad * 2.0 * pulse, ffRad * 1.8 * pulse, 0.2, 0.7, 1.0, 0.4);
+                    addBillboard(ff.x, ff.y, gz + ffRad * 0.5, ffRad * 2.0 * pulse, ffRad * 1.8 * pulse, 0.2, 0.7, 1.0, 0.4, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
                 }
             }
         }
 
-        // Upload & Draw Billboards
+        // Upload & Draw All Billboards in a Single Instanced Draw Call
         if (instanceCount > 0) {
             gl.bindVertexArray(this.billboardVAO);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceVBO);
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, instanceCount * 14));
 
-            gl.uniform1i(gl.getUniformLocation(this.billboardProgram, 'u_useTexture'), 0);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, this.spriteTexture);
+            gl.uniform1i(gl.getUniformLocation(this.billboardProgram, 'u_spriteTexture'), 0);
+
             gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, instanceCount);
             gl.bindVertexArray(null);
         }
