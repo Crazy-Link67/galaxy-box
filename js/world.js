@@ -863,6 +863,77 @@ class World {
                         particleSystem.spawn(x, y, (Math.random() - 0.5) * 0.2, -0.3, 1.2, '#f97316', 15, 'spark');
                     }
                 }
+
+                // 16. Tar Pit Chemical Reactions (Petroleum Inferno)
+                if (t === TILES.TAR_PIT) {
+                    if (this.fire[i] > 0) {
+                        // Explode in petroleum blaze!
+                        this.tiles[i] = Math.random() < 0.35 ? TILES.OBSIDIAN : TILES.ASH;
+                        this.fire[i] = 0;
+                        if (particleSystem) {
+                            particleSystem.burst(x, y, 6, ['#f97316', '#ef4444', '#1e293b', '#000000'], 1.5, 3.5, 1, 3, 'fire');
+                            particleSystem.burst(x, y, 4, ['#334155', '#1e293b', '#0f172a'], 1.2, 3, 1.5, 3, 'smoke');
+                        }
+                        // Ignite surrounding flammables and tar
+                        const neighbors = [[x+1, y], [x-1, y], [x, y+1], [x, y-1]];
+                        for (let n = 0; n < 4; n++) {
+                            const [nx, ny] = neighbors[n];
+                            if (this.inBounds(nx, ny)) {
+                                const ni = this.idx(nx, ny);
+                                if (this.tiles[ni] === TILES.TAR_PIT) {
+                                    this.fire[ni] = 40;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 17. Aether Crystal Arcane Resonance
+                if (t === TILES.AETHER_CRYSTAL) {
+                    if (particleSystem && Math.random() < 0.02) {
+                        particleSystem.spawn(x, y - 1, (Math.random() - 0.5) * 0.4, -0.6, 1.4, '#c084fc', 20, 'stardust');
+                    }
+                }
+
+                // 18. Glowcap Mushroom Spore Pulse
+                if (t === TILES.GLOWCAP_MUSHROOM) {
+                    if (particleSystem && Math.random() < 0.018) {
+                        particleSystem.spawn(x, y - 0.5, (Math.random() - 0.5) * 0.3, -0.3, 1.2, '#38bdf8', 22, 'stardust');
+                    }
+                    if (this.fire[i] > 0) {
+                        // Burst psychoactive spore cloud
+                        this.tiles[i] = TILES.ASH;
+                        this.fire[i] = 0;
+                        if (particleSystem) {
+                            particleSystem.burst(x, y, 8, ['#38bdf8', '#818cf8', '#a855f7'], 1.2, 3.2, 1.2, 2.5, 'stardust');
+                        }
+                    }
+                }
+
+                // 19. Volcanic Caldera Venting
+                if (t === TILES.VOLCANIC_CALDERA) {
+                    if (particleSystem && Math.random() < 0.035) {
+                        particleSystem.spawn(x, y - 1, (Math.random() - 0.5) * 0.5, -0.8, 1.5, '#f97316', 20, 'fire');
+                        particleSystem.spawn(x, y - 1, (Math.random() - 0.5) * 0.3, -0.6, 1.2, '#475569', 18, 'smoke');
+                    }
+                }
+
+                // 20. Enchanted Grove Purification
+                if (t === TILES.ENCHANTED_GROVE) {
+                    if (particleSystem && Math.random() < 0.025) {
+                        particleSystem.spawn(x, y - 0.5, (Math.random() - 0.5) * 0.3, -0.4, 1.3, '#f472b6', 20, 'stardust');
+                    }
+                    if (Math.random() < 0.02) {
+                        const neighbors = [[x+1, y], [x-1, y], [x, y+1], [x, y-1]];
+                        const [nx, ny] = neighbors[Math.floor(Math.random() * 4)];
+                        if (this.inBounds(nx, ny)) {
+                            const ni = this.idx(nx, ny);
+                            if (this.tiles[ni] === TILES.CORRUPTED || this.tiles[ni] === TILES.FALLOUT || this.tiles[ni] === TILES.ASH) {
+                                this.tiles[ni] = TILES.GRASS;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

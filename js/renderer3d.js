@@ -2383,7 +2383,7 @@ class Renderer3D {
     }
 
     // --- Main 3D Render Loop ---
-    render(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos) {
+    render(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay = 12.0) {
         if (!this.gl) return;
         const gl = this.gl;
         this.animTime += 0.016;
@@ -2396,7 +2396,39 @@ class Renderer3D {
 
         this.updateCamera(world);
 
-        gl.clearColor(0.04, 0.04, 0.08, 1.0);
+        const t = ((timeOfDay % 24) + 24) % 24;
+
+        // Dynamic 3D Day/Night Celestial Sun & Moon Lighting
+        let skyR = 0.04, skyG = 0.04, skyB = 0.08;
+        if (t >= 7.5 && t <= 17.0) {
+            // High Daylight
+            skyR = 0.08; skyG = 0.12; skyB = 0.22;
+            const sunAngle = ((t - 6.0) / 12.0) * Math.PI;
+            this.sunLightDir = [Math.cos(sunAngle) * 0.75, -0.65, Math.max(0.25, Math.sin(sunAngle) * 1.5)];
+        } else if (t > 17.0 && t < 20.5) {
+            // Dusk / Sunset
+            const p = (t - 17.0) / 3.5;
+            skyR = 0.08 + (1 - Math.abs(p - 0.5) * 2) * 0.18;
+            skyG = 0.06 + (1 - Math.abs(p - 0.5) * 2) * 0.06;
+            skyB = 0.15 - p * 0.08;
+            const sunAngle = Math.PI * (0.9 + p * 0.15);
+            this.sunLightDir = [Math.cos(sunAngle) * 0.7, -0.6, Math.max(0.1, Math.sin(sunAngle) * 0.8)];
+        } else if (t >= 20.5 || t < 5.0) {
+            // Midnight / Moonlit Night
+            skyR = 0.015; skyG = 0.018; skyB = 0.04;
+            const moonAngle = (((t + 6.0) % 24) / 12.0) * Math.PI;
+            this.sunLightDir = [Math.cos(moonAngle) * 0.45, 0.4, Math.max(0.15, Math.sin(moonAngle) * 0.85)];
+        } else {
+            // Dawn / Sunrise
+            const p = (t - 5.0) / 2.5;
+            skyR = 0.03 + p * 0.14;
+            skyG = 0.03 + p * 0.08;
+            skyB = 0.06 + p * 0.12;
+            const sunAngle = p * (Math.PI * 0.25);
+            this.sunLightDir = [Math.cos(sunAngle) * 0.7, -0.65, Math.max(0.15, Math.sin(sunAngle) * 1.1)];
+        }
+
+        gl.clearColor(skyR, skyG, skyB, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // 1. Render 3D Terrain
@@ -2415,10 +2447,10 @@ class Renderer3D {
         }
 
         // 2. Render 3D Billboards (Creatures, Drop Shadows, Weapons, Health Bars, Buildings, Particles)
-        this.renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos);
+        this.renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay);
     }
 
-    renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos) {
+    renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay = 12.0) {
         const gl = this.gl;
         gl.useProgram(this.billboardProgram);
         gl.uniformMatrix4fv(gl.getUniformLocation(this.billboardProgram, 'u_viewProjection'), false, this.camera.viewProj);
@@ -2618,20 +2650,63 @@ class Renderer3D {
             addBillboard(vmX, vmY, vmZ, vmSize, vmSize, 1.0, 1.0, 1.0, 1.0, 0.12 + bob * 2.0, vmUv.u0, vmUv.v0, vmUv.u1, vmUv.v1);
         }
 
-        // C. Render Buildings
+        // C. Render 3D Era Buildings Architecture
         if (entityManager && Array.isArray(entityManager.buildings)) {
             const qUv = uUtil.white_quad;
+            const sUv = uUtil.shadow;
+            const starUv = uUtil.starlight;
+
             for (let i = 0; i < entityManager.buildings.length; i++) {
                 const b = entityManager.buildings[i];
                 const bz = world ? (world.getElevation ? world.getElevation(b.x, b.y) : 2.0) : 2.0;
-                const bCol = this.hexToRgba(b.color || '#8d6e63');
-                const bScale = Math.max(2.2, (b.width || 3) * 1.1);
+                const bScale = Math.max(2.4, (b.width || 3) * 1.15);
 
-                // Building Shadow
-                const sUv = uUtil.shadow;
-                addBillboard(b.x, b.y, bz + 0.04, bScale * 1.4, bScale * 0.9, 0, 0, 0, 0.45, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
-                // Building Structure
-                addBillboard(b.x, b.y, bz + bScale * 0.5, bScale, bScale * 1.2, bCol[0], bCol[1], bCol[2], 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                // Ground Drop Shadow
+                addBillboard(b.x, b.y, bz + 0.04, bScale * 1.5, bScale * 0.95, 0, 0, 0, 0.48, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+
+                if (b.type === 'cottage') {
+                    // Bronze/Iron Age Thatched Stone Cottage
+                    addBillboard(b.x, b.y, bz + bScale * 0.45, bScale, bScale * 0.9, 0.44, 0.44, 0.48, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    addBillboard(b.x, b.y, bz + bScale * 0.95, bScale * 1.1, bScale * 0.5, 0.79, 0.54, 0.02, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                } else if (b.type === 'blacksmith') {
+                    // Dark stone forge with glowing fire top
+                    addBillboard(b.x, b.y, bz + bScale * 0.5, bScale, bScale * 1.0, 0.25, 0.25, 0.27, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    const forgeGlow = Math.sin(this.animTime * 10.0 + i) * 0.2 + 0.9;
+                    addBillboard(b.x, b.y, bz + bScale * 0.9, bScale * 0.45, bScale * 0.45, 0.95 * forgeGlow, 0.45 * forgeGlow, 0.05, 0.95, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
+                } else if (b.type === 'fortress') {
+                    // Medieval Keep with twin battlements and banner
+                    addBillboard(b.x, b.y, bz + bScale * 0.7, bScale * 1.3, bScale * 1.4, 0.28, 0.33, 0.41, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    const bCol = this.hexToRgba(b.color || '#ef4444');
+                    addBillboard(b.x, b.y, bz + bScale * 1.5, bScale * 0.35, bScale * 0.7, bCol[0], bCol[1], bCol[2], 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                } else if (b.type === 'watchtower') {
+                    // Tall defensive watchtower
+                    addBillboard(b.x, b.y, bz + bScale * 1.1, bScale * 0.65, bScale * 2.2, 0.39, 0.45, 0.55, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    addBillboard(b.x, b.y, bz + bScale * 2.3, bScale * 0.4, bScale * 0.4, 0.99, 0.88, 0.28, 0.95, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
+                } else if (b.type === 'factory') {
+                    // Industrial Age Brick Factory with Twin Smokestacks
+                    addBillboard(b.x, b.y, bz + bScale * 0.55, bScale * 1.25, bScale * 1.1, 0.6, 0.11, 0.11, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    const pz = bz + bScale * 1.3 + Math.sin(this.animTime * 6.0 + i) * 0.3;
+                    addBillboard(b.x - bScale * 0.3, b.y, pz, bScale * 0.5, bScale * 0.5, 0.3, 0.3, 0.35, 0.7, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                    addBillboard(b.x + bScale * 0.3, b.y, pz + 0.4, bScale * 0.55, bScale * 0.55, 0.35, 0.35, 0.4, 0.6, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                } else if (b.type === 'plasma_pylon') {
+                    // Cosmic Age Neon Obelisk
+                    addBillboard(b.x, b.y, bz + bScale * 1.1, bScale * 0.5, bScale * 2.2, 0.01, 0.52, 0.78, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    const pulse = Math.sin(this.animTime * 8.0 + i) * 0.2 + 1.0;
+                    addBillboard(b.x, b.y, bz + bScale * 2.35, bScale * 0.7 * pulse, bScale * 0.7 * pulse, 0.22, 0.74, 0.97, 0.98, 0, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
+                } else if (b.type === 'shield_generator') {
+                    // Forcefield Dome Generator
+                    addBillboard(b.x, b.y, bz + bScale * 0.45, bScale, bScale * 0.9, 0.28, 0.33, 0.41, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    const domePulse = Math.sin(this.animTime * 5.0 + i) * 0.15 + 1.0;
+                    addBillboard(b.x, b.y, bz + bScale * 0.75, bScale * 2.0 * domePulse, bScale * 1.5 * domePulse, 0.66, 0.33, 0.97, 0.5, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                } else if (b.type === 'townhall') {
+                    // Grand Stone Citadel
+                    const bCol = this.hexToRgba(b.color || '#3b82f6');
+                    addBillboard(b.x, b.y, bz + bScale * 0.7, bScale * 1.4, bScale * 1.4, 0.39, 0.45, 0.55, 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                    addBillboard(b.x, b.y, bz + bScale * 1.6, bScale * 0.45, bScale * 0.9, bCol[0], bCol[1], bCol[2], 0.98, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                } else {
+                    const bCol = this.hexToRgba(b.color || '#8d6e63');
+                    addBillboard(b.x, b.y, bz + bScale * 0.5, bScale, bScale * 1.1, bCol[0], bCol[1], bCol[2], 0.95, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                }
             }
         }
 
@@ -2768,6 +2843,61 @@ class Renderer3D {
                     const ffRad = ff.radius || 20;
                     const pulse = Math.sin(this.animTime * 4.0) * 0.08 + 0.92;
                     addBillboard(ff.x, ff.y, gz + ffRad * 0.5, ffRad * 2.0 * pulse, ffRad * 1.8 * pulse, 0.2, 0.7, 1.0, 0.4, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                }
+            }
+        }
+
+        // G. Volumetric 3D Weather Precipitation (Snow, Rain, Acid, Volcanic Ash)
+        if (disasterManager && disasterManager.weather && disasterManager.weather !== 'clear') {
+            const wType = disasterManager.weather;
+            const cam = this.camera;
+            const weatherCount = 160;
+            const boxRadius = 45;
+            const cx = cam.eye[0];
+            const cy = cam.eye[1];
+            const cz = cam.eye[2];
+
+            const qUv = uUtil.white_quad;
+            const sUv = uUtil.shadow;
+            const starUv = uUtil.starlight;
+
+            for (let i = 0; i < weatherCount; i++) {
+                const seed = i * 197.3;
+                const relX = ((Math.sin(seed * 1.7) * 43758.54 % 1) * 2 - 1) * boxRadius;
+                const relY = ((Math.cos(seed * 2.3) * 43758.54 % 1) * 2 - 1) * boxRadius;
+
+                let fallSpeed = 12.0;
+                let sway = 0;
+                let wx = cx + relX;
+                let wy = cy + relY;
+                let wz = 0;
+
+                if (wType === 'snow') {
+                    fallSpeed = 4.8;
+                    sway = Math.sin(this.animTime * 3.0 + i) * 1.6;
+                    const fallDist = (this.animTime * fallSpeed + i * 0.7) % (boxRadius * 1.5);
+                    wz = cz + (boxRadius * 0.75) - fallDist;
+                    addBillboard(wx + sway, wy, wz, 0.5, 0.5, 0.95, 0.98, 1.0, 0.85, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                } else if (wType === 'rain') {
+                    fallSpeed = 28.0;
+                    const fallDist = (this.animTime * fallSpeed + i * 1.2) % (boxRadius * 1.5);
+                    wz = cz + (boxRadius * 0.75) - fallDist;
+                    addBillboard(wx, wy, wz, 0.18, 1.3, 0.45, 0.75, 0.98, 0.8, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                } else if (wType === 'acid') {
+                    fallSpeed = 24.0;
+                    const fallDist = (this.animTime * fallSpeed + i * 1.1) % (boxRadius * 1.5);
+                    wz = cz + (boxRadius * 0.75) - fallDist;
+                    addBillboard(wx, wy, wz, 0.22, 1.1, 0.35, 0.95, 0.45, 0.85, 0, qUv.u0, qUv.v0, qUv.u1, qUv.v1);
+                } else if (wType === 'ash' || wType === 'sandstorm') {
+                    fallSpeed = 5.2;
+                    const driftX = (this.animTime * 15.0 + i * 3.2) % (boxRadius * 2) - boxRadius;
+                    const fallDist = (this.animTime * fallSpeed + i * 0.8) % (boxRadius * 1.5);
+                    wz = cz + (boxRadius * 0.75) - fallDist;
+                    if (wType === 'ash') {
+                        addBillboard(cx + driftX, wy, wz, 0.55, 0.55, 0.95, 0.4, 0.1, 0.9, this.animTime * 2.5, starUv.u0, starUv.v0, starUv.u1, starUv.v1);
+                    } else {
+                        addBillboard(cx + driftX, wy, wz, 0.65, 0.65, 0.88, 0.72, 0.42, 0.65, 0, sUv.u0, sUv.v0, sUv.u1, sUv.v1);
+                    }
                 }
             }
         }

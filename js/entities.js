@@ -48,6 +48,14 @@ const TRAITS = {
     amphibious: { name: "Amphibious", desc: "Swims freely through water, acid, and lava unharmed", icon: "🦎" }
 };
 
+const CIV_ERAS = [
+    { id: 0, name: 'Stone Age', minPop: 0, minWood: 0, minStone: 0, banner: '🪨' },
+    { id: 1, name: 'Bronze Age', minPop: 10, minWood: 40, minStone: 20, banner: '🗡️' },
+    { id: 2, name: 'Medieval Age', minPop: 25, minWood: 100, minStone: 70, banner: '🏰' },
+    { id: 3, name: 'Industrial Age', minPop: 50, minWood: 250, minStone: 180, banner: '🏭' },
+    { id: 4, name: 'Cosmic Age', minPop: 100, minWood: 600, minStone: 450, banner: '🚀' }
+];
+
 class Kingdom {
     constructor(id, name, color, startX, startY) {
         this.id = id;
@@ -58,7 +66,11 @@ class Kingdom {
         this.wood = 20;
         this.stone = 10;
         this.food = 30;
+        this.gold = 0;
+        this.aether = 0;
         this.population = 0;
+        this.era = 0;
+        this.eraName = 'Stone Age';
         this.buildings = [];
         this.isAtWar = false;
         this.enemies = new Set();
@@ -103,6 +115,48 @@ class Building {
             this.width = 3;
             this.height = 3;
             this.color = '#eab308';
+        } else if (type === 'cottage') {
+            this.hp = 180;
+            this.maxHp = 180;
+            this.width = 3;
+            this.height = 3;
+            this.color = '#a8a29e';
+        } else if (type === 'blacksmith') {
+            this.hp = 320;
+            this.maxHp = 320;
+            this.width = 4;
+            this.height = 3;
+            this.color = '#71717a';
+        } else if (type === 'fortress') {
+            this.hp = 900;
+            this.maxHp = 900;
+            this.width = 6;
+            this.height = 5;
+            this.color = '#475569';
+        } else if (type === 'watchtower') {
+            this.hp = 400;
+            this.maxHp = 400;
+            this.width = 3;
+            this.height = 6;
+            this.color = '#64748b';
+        } else if (type === 'factory') {
+            this.hp = 750;
+            this.maxHp = 750;
+            this.width = 6;
+            this.height = 4;
+            this.color = '#b91c1c';
+        } else if (type === 'plasma_pylon') {
+            this.hp = 1000;
+            this.maxHp = 1000;
+            this.width = 3;
+            this.height = 7;
+            this.color = '#38bdf8';
+        } else if (type === 'shield_generator') {
+            this.hp = 1200;
+            this.maxHp = 1200;
+            this.width = 5;
+            this.height = 5;
+            this.color = '#c084fc';
         } else {
             this.hp = 200;
             this.maxHp = 200;
@@ -3609,8 +3663,8 @@ class EntityManager {
             this.updateEntityAI(ent, world, particleSystem, audio, disasterManager);
         }
 
-        // 4. Kingdom Building Construction
-        this.updateBuildings(world, particleSystem);
+        // 4. Kingdom Building Construction & Era Progression
+        this.updateBuildings(world, particleSystem, audio);
     }
 
     updateEntityAI(ent, world, particleSystem, audio, disasterManager) {
@@ -3798,9 +3852,19 @@ class EntityManager {
             if (ent.state === 'gather' && kd) {
                 const tx = Math.floor(ent.x);
                 const ty = Math.floor(ent.y);
-                if (world.getTile(tx, ty) === TILES.FOREST) {
-                    kd.wood += 2;
-                    if (Math.random() < 0.05) world.setTile(tx, ty, TILES.GRASS);
+                if (world.inBounds(tx, ty)) {
+                    const curTile = world.getTile(tx, ty);
+                    if (curTile === TILES.FOREST) {
+                        kd.wood += 2;
+                        if (Math.random() < 0.05) world.setTile(tx, ty, TILES.GRASS);
+                    } else if (curTile === TILES.STONE || curTile === TILES.HIGH_MOUNTAIN) {
+                        kd.stone += 2;
+                    } else if (curTile === TILES.GOLD_ORE) {
+                        kd.gold = (kd.gold || 0) + 3;
+                        kd.stone += 1;
+                    } else if (curTile === TILES.AETHER_CRYSTAL || curTile === TILES.AETHER_FLUID) {
+                        kd.aether = (kd.aether || 0) + 2;
+                    }
                 }
             }
         }
@@ -3827,18 +3891,62 @@ class EntityManager {
         }
     }
 
-    updateBuildings(world, particleSystem) {
+    updateBuildings(world, particleSystem, audio = null) {
         for (const kd of this.kingdoms.values()) {
-            if (kd.wood >= 15 && Math.random() < 0.02) {
+            // Recalculate population
+            kd.population = this.entities.filter(e => e.active && e.kingdomId === kd.id).length;
+
+            // Check Era Progression (0: Stone, 1: Bronze, 2: Medieval, 3: Industrial, 4: Cosmic)
+            if (kd.era < CIV_ERAS.length - 1) {
+                const nextEra = CIV_ERAS[kd.era + 1];
+                if (kd.population >= nextEra.minPop && kd.wood >= nextEra.minWood && kd.stone >= nextEra.minStone) {
+                    kd.era++;
+                    kd.eraName = nextEra.name;
+                    if (audio && typeof audio.playEraAdvance === 'function') {
+                        audio.playEraAdvance();
+                    }
+                    if (particleSystem) {
+                        particleSystem.burst(kd.x, kd.y, 35, ['#facc15', '#38bdf8', '#ffffff', '#a855f7'], 2, 5, 1.5, 4, 'stardust');
+                    }
+                    this.addFloatingText(kd.x, kd.y - 14, `${nextEra.banner} ${kd.name} entered ${nextEra.name}!`, '#fbbf24');
+
+                    // Arm kingdom warriors with era weapons
+                    const citizens = this.entities.filter(e => e.active && e.kingdomId === kd.id);
+                    citizens.forEach((w, idx) => {
+                        if (idx % 2 === 0) {
+                            if (kd.era === 1) w.equipWeapon('sword');
+                            else if (kd.era === 2) w.equipWeapon(idx % 4 === 0 ? 'bow' : 'sword');
+                            else if (kd.era === 3) w.equipWeapon('blaster');
+                            else if (kd.era === 4) w.equipWeapon('plasma_rifle');
+                        }
+                    });
+                }
+            }
+
+            // Building Construction based on era and resources
+            if (kd.wood >= 15 && Math.random() < 0.035) {
                 kd.wood -= 15;
-                const bx = Math.floor(kd.x + (Math.random() - 0.5) * 25);
-                const by = Math.floor(kd.y + (Math.random() - 0.5) * 25);
-                if (world.inBounds(bx, by) && world.getTile(bx, by) === TILES.GRASS) {
-                    const b = new Building(kd.buildings.length > 5 ? 'house' : 'hut', bx, by, kd.id);
+                const bx = Math.floor(kd.x + (Math.random() - 0.5) * (26 + kd.era * 8));
+                const by = Math.floor(kd.y + (Math.random() - 0.5) * (26 + kd.era * 8));
+                if (world.inBounds(bx, by) && (world.getTile(bx, by) === TILES.GRASS || world.getTile(bx, by) === TILES.SOIL || world.getTile(bx, by) === TILES.SAND)) {
+                    let bType = 'hut';
+                    if (kd.era === 0) {
+                        bType = kd.buildings.length === 0 ? 'campfire' : 'hut';
+                    } else if (kd.era === 1) {
+                        bType = kd.buildings.length % 3 === 0 ? 'farm' : (kd.buildings.length % 4 === 0 ? 'blacksmith' : 'cottage');
+                    } else if (kd.era === 2) {
+                        bType = kd.buildings.length === 0 ? 'townhall' : (kd.buildings.length % 4 === 0 ? 'watchtower' : (kd.buildings.length % 6 === 0 ? 'fortress' : 'house'));
+                    } else if (kd.era === 3) {
+                        bType = kd.buildings.length % 3 === 0 ? 'factory' : 'house';
+                    } else if (kd.era === 4) {
+                        bType = kd.buildings.length % 3 === 0 ? 'plasma_pylon' : (kd.buildings.length % 5 === 0 ? 'shield_generator' : 'house');
+                    }
+
+                    const b = new Building(bType, bx, by, kd.id);
                     this.buildings.push(b);
                     kd.buildings.push(b);
                     if (particleSystem) {
-                        particleSystem.burst(bx, by, 8, ['#d97706', '#78350f'], 1, 2, 1, 3);
+                        particleSystem.burst(bx, by, 8, ['#d97706', '#78350f', '#94a3b8'], 1, 2, 1, 3);
                     }
                 }
             }
@@ -3917,6 +4025,10 @@ class EntityManager {
                 buildings: bCount,
                 wood: kd.wood,
                 stone: kd.stone,
+                gold: kd.gold || 0,
+                aether: kd.aether || 0,
+                era: kd.era || 0,
+                eraName: kd.eraName || 'Stone Age',
                 enemies: enemyNames
             });
         }
@@ -3957,6 +4069,10 @@ class EntityManager {
                 wood: k.wood,
                 stone: k.stone,
                 food: k.food,
+                gold: k.gold || 0,
+                aether: k.aether || 0,
+                era: k.era || 0,
+                eraName: k.eraName || 'Stone Age',
                 population: k.population,
                 isAtWar: !!k.isAtWar,
                 enemies: Array.from(k.enemies || [])
@@ -3996,8 +4112,8 @@ class EntityManager {
             kingdoms: serializedKingdoms,
             buildings: serializedBuildings,
             entities: serializedEntities,
-            forcePeace: !!this.forcePeace,
-            worldWar: !!this.worldWar,
+            forcePeace: this.forcePeace,
+            worldWar: this.worldWar,
             nextKingdomId: this.nextKingdomId
         };
     }
@@ -4017,6 +4133,10 @@ class EntityManager {
                 k.wood = kd.wood || 20;
                 k.stone = kd.stone || 10;
                 k.food = kd.food || 30;
+                k.gold = kd.gold || 0;
+                k.aether = kd.aether || 0;
+                k.era = kd.era || 0;
+                k.eraName = kd.eraName || (CIV_ERAS[k.era] ? CIV_ERAS[k.era].name : 'Stone Age');
                 k.population = kd.population || 0;
                 k.isAtWar = !!kd.isAtWar;
                 k.enemies = new Set(kd.enemies || []);
@@ -4063,6 +4183,7 @@ class EntityManager {
     }
 }
 
+window.CIV_ERAS = CIV_ERAS;
 window.TRAITS = TRAITS;
 window.Kingdom = Kingdom;
 window.Building = Building;

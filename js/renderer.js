@@ -27,6 +27,10 @@ class Renderer {
         this.tileCtx = this.tileBuffer.getContext('2d');
         this.tileImageData = null;
 
+        // Offscreen lighting canvas for Day/Night cycle
+        this.lightingCanvas = document.createElement('canvas');
+        this.lightingCtx = this.lightingCanvas.getContext('2d');
+
         // Animation counters
         this.animTime = 0;
         this.showGrid = false;
@@ -60,7 +64,7 @@ class Renderer {
         return { x: screenX, y: screenY };
     }
 
-    render(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos) {
+    render(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay = 12.0) {
         this.animTime += 0.05;
         const ctx = this.ctx;
         const w = this.canvas.width;
@@ -164,6 +168,9 @@ class Renderer {
         if (showDamage && entityManager.floatingTexts) {
             this.renderFloatingTexts(entityManager.floatingTexts);
         }
+
+        // 8.8. Day/Night Atmospheric Lighting Overlay
+        this.renderDayNightAtmosphere(ctx, world, entityManager, timeOfDay);
 
         // 9. Render Brush Cursor Indicator
         if (mouseWorldPos && activeTool) {
@@ -664,6 +671,99 @@ class Renderer {
                 ctx.fillRect(bx - 1, by - 1.5, 2, 2.5);
                 ctx.fillStyle = '#fef08a';
                 ctx.fillRect(bx - 0.5, by - 1, 1, 1.5);
+            } else if (b.type === 'cottage') {
+                // Bronze/Iron Age Thatched Stone Cottage
+                ctx.fillStyle = '#71717a';
+                ctx.fillRect(bx - hw, by - hh, b.width, b.height);
+                ctx.fillStyle = '#ca8a04';
+                ctx.beginPath();
+                ctx.moveTo(bx - hw - 1, by - hh);
+                ctx.lineTo(bx, by - hh - 4);
+                ctx.lineTo(bx + hw + 1, by - hh);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(bx - 1, by + hh - 2, 2, 2);
+            } else if (b.type === 'blacksmith') {
+                // Blacksmith forge & chimney
+                ctx.fillStyle = '#3f3f46';
+                ctx.fillRect(bx - hw, by - hh, b.width, b.height);
+                // Glowing orange forge hearth
+                ctx.fillStyle = Math.random() < 0.5 ? '#ea580c' : '#f59e0b';
+                ctx.fillRect(bx - 1.5, by - 1, 3, 2.5);
+                // Chimney with smoke puff
+                ctx.fillStyle = '#18181b';
+                ctx.fillRect(bx + hw - 2, by - hh - 4, 2, 4);
+                // Anvil
+                ctx.fillStyle = '#a1a1aa';
+                ctx.fillRect(bx - hw + 1, by + hh - 2, 2, 1.5);
+            } else if (b.type === 'fortress') {
+                // Medieval Twin-Tower Citadel Keep
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(bx - hw, by - hh, b.width, b.height);
+                // Twin Bastion Towers
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(bx - hw - 1, by - hh - 3, 2.5, b.height + 3);
+                ctx.fillRect(bx + hw - 1.5, by - hh - 3, 2.5, b.height + 3);
+                // Rooftop Battlements
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(bx - hw - 1, by - hh - 4, 1, 1);
+                ctx.fillRect(bx + hw, by - hh - 4, 1, 1);
+                // Portcullis gate
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(bx - 1.5, by + hh - 3, 3, 3);
+                // Royal Banner
+                ctx.fillStyle = b.color || '#ef4444';
+                ctx.fillRect(bx - 0.5, by - hh - 5, 1, 3);
+            } else if (b.type === 'watchtower') {
+                // Tall Arrow Tower
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(bx - hw, by - hh - 4, b.width, b.height + 4);
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(bx - hw, by - hh - 6, b.width, 2);
+                ctx.fillStyle = '#fde047';
+                ctx.fillRect(bx - 0.5, by - hh - 1, 1, 2);
+            } else if (b.type === 'factory') {
+                // Industrial Age Brick Factory with Twin Smokestacks
+                ctx.fillStyle = '#991b1b';
+                ctx.fillRect(bx - hw, by - hh, b.width, b.height);
+                // Dual Brick Smokestacks
+                ctx.fillStyle = '#450a0a';
+                ctx.fillRect(bx - hw + 1, by - hh - 6, 2, 6);
+                ctx.fillRect(bx + hw - 3, by - hh - 6, 2, 6);
+                // Factory Gear Windows
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(bx - 2, by - 1, 2, 2);
+                ctx.fillRect(bx + 1, by - 1, 2, 2);
+                // Metal door
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(bx - 1, by + hh - 3, 2, 3);
+            } else if (b.type === 'plasma_pylon') {
+                // Cosmic Age Neon Obelisk
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(bx - hw, by - hh - 4, b.width, b.height + 4);
+                // Glowing cyan core line
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(bx - 0.5, by - hh - 3, 1, b.height + 2);
+                // Pulsing peak energy orb
+                const pulse = Math.sin(this.animTime * 8) * 0.5 + 0.5;
+                ctx.fillStyle = `rgba(250, 204, 21, ${0.7 + pulse * 0.3})`;
+                ctx.beginPath();
+                ctx.arc(bx, by - hh - 6, 2 + pulse, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (b.type === 'shield_generator') {
+                // Cosmic Age Dome Forcefield Generator
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(bx - hw, by - hh + 1, b.width, b.height - 1);
+                // Translucent energy dome
+                const domePulse = Math.sin(this.animTime * 5) * 0.2 + 0.8;
+                ctx.fillStyle = `rgba(168, 85, 247, ${0.4 * domePulse})`;
+                ctx.beginPath();
+                ctx.arc(bx, by - hh + 1, hw + 1, Math.PI, 0);
+                ctx.fill();
+                ctx.strokeStyle = '#c084fc';
+                ctx.lineWidth = 1;
+                ctx.stroke();
             } else {
                 ctx.fillStyle = b.color;
                 ctx.fillRect(bx - hw, by - hh, b.width, b.height);
@@ -3868,6 +3968,140 @@ class Renderer {
             }
             ctx.restore();
         }
+    }
+
+    renderDayNightAtmosphere(ctx, world, entityManager, timeOfDay) {
+        if (timeOfDay === undefined || timeOfDay === null) return;
+        const t = ((timeOfDay % 24) + 24) % 24;
+
+        let darkness = 0;
+        let rTint = 0, gTint = 0, bTint = 0;
+
+        if (t >= 7.5 && t <= 17.0) {
+            darkness = 0;
+        } else if (t > 17.0 && t < 20.5) {
+            const p = (t - 17.0) / 3.5;
+            darkness = p * 0.76;
+            rTint = Math.floor((1 - Math.abs(p - 0.5) * 2) * 85);
+            gTint = Math.floor((1 - Math.abs(p - 0.5) * 2) * 35);
+            bTint = Math.floor(p * 50);
+        } else if (t >= 20.5 || t < 5.0) {
+            darkness = 0.78;
+            rTint = 6;
+            gTint = 8;
+            bTint = 28;
+        } else {
+            const p = (t - 5.0) / 2.5;
+            darkness = (1.0 - p) * 0.76;
+            rTint = Math.floor((1 - p) * 80);
+            gTint = Math.floor((1 - p) * 45);
+            bTint = Math.floor((1 - p) * 15);
+        }
+
+        if (darkness <= 0.02 && rTint === 0 && gTint === 0 && bTint === 0) return;
+
+        if (!this.lightingCanvas) {
+            this.lightingCanvas = document.createElement('canvas');
+            this.lightingCtx = this.lightingCanvas.getContext('2d');
+        }
+        if (this.lightingCanvas.width !== world.width || this.lightingCanvas.height !== world.height) {
+            this.lightingCanvas.width = world.width;
+            this.lightingCanvas.height = world.height;
+        }
+
+        const lCtx = this.lightingCtx;
+        lCtx.clearRect(0, 0, world.width, world.height);
+
+        lCtx.globalCompositeOperation = 'source-over';
+        lCtx.fillStyle = `rgba(${rTint || 8}, ${gTint || 10}, ${bTint || 32}, ${darkness})`;
+        lCtx.fillRect(0, 0, world.width, world.height);
+
+        lCtx.globalCompositeOperation = 'destination-out';
+
+        const drawLightHole = (lx, ly, radius, intensity = 1.0) => {
+            if (lx < -radius || lx > world.width + radius || ly < -radius || ly > world.height + radius) return;
+            const grad = lCtx.createRadialGradient(lx, ly, 0, lx, ly, radius);
+            grad.addColorStop(0, `rgba(0, 0, 0, ${intensity})`);
+            grad.addColorStop(0.5, `rgba(0, 0, 0, ${intensity * 0.6})`);
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            lCtx.fillStyle = grad;
+            lCtx.beginPath();
+            lCtx.arc(lx, ly, radius, 0, Math.PI * 2);
+            lCtx.fill();
+        };
+
+        if (entityManager && entityManager.buildings) {
+            for (let i = 0; i < entityManager.buildings.length; i++) {
+                const b = entityManager.buildings[i];
+                if (b.type === 'campfire') {
+                    drawLightHole(b.x, b.y, 35, 0.95);
+                } else if (b.type === 'plasma_pylon') {
+                    drawLightHole(b.x, b.y, 45, 0.98);
+                } else if (b.type === 'townhall' || b.type === 'fortress') {
+                    drawLightHole(b.x, b.y, 32, 0.85);
+                } else if (b.type === 'house' || b.type === 'cottage' || b.type === 'watchtower' || b.type === 'blacksmith') {
+                    drawLightHole(b.x, b.y, 22, 0.75);
+                }
+            }
+        }
+
+        if (entityManager && entityManager.entities) {
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const ent = entityManager.entities[i];
+                if (!ent.active) continue;
+                if (ent.isControlled) {
+                    drawLightHole(ent.x, ent.y, 42, 0.92);
+                } else if (ent.type === 'seraph_angel' || ent.type === 'golden_dragon' || ent.type === 'phoenix') {
+                    drawLightHole(ent.x, ent.y, 38, 0.85);
+                } else if (ent.type === 'wizard' || ent.type === 'colossus_mech' || ent.type === 'cyber_dragon') {
+                    drawLightHole(ent.x, ent.y, 28, 0.75);
+                } else if (ent.fire > 0) {
+                    drawLightHole(ent.x, ent.y, 24, 0.8);
+                }
+            }
+        }
+
+        if (window.game && window.game.disasterManager) {
+            const dm = window.game.disasterManager;
+            if (dm.meteors) {
+                for (let i = 0; i < dm.meteors.length; i++) {
+                    const m = dm.meteors[i];
+                    if (m.active) drawLightHole(m.x, m.y, 45, 0.95);
+                }
+            }
+            if (dm.rifts) {
+                for (let i = 0; i < dm.rifts.length; i++) {
+                    const r = dm.rifts[i];
+                    drawLightHole(r.x, r.y, 50, 0.95);
+                }
+            }
+        }
+
+        ctx.drawImage(this.lightingCanvas, 0, 0);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        if (entityManager && entityManager.buildings) {
+            for (let i = 0; i < entityManager.buildings.length; i++) {
+                const b = entityManager.buildings[i];
+                if (b.type === 'campfire' || b.type === 'blacksmith') {
+                    const rad = 28;
+                    const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, rad);
+                    grad.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
+                    grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, rad, 0, Math.PI * 2); ctx.fill();
+                } else if (b.type === 'plasma_pylon') {
+                    const rad = 35;
+                    const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, rad);
+                    grad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+                    grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, rad, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+        }
+        ctx.restore();
     }
 
     renderMinimap(world, entityManager) {

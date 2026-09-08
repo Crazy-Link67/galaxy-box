@@ -302,6 +302,7 @@ class UIManager {
         this.setupVirtualMobileControls();
         this.setupPWA();
         this.updateGalaxyPresetUI();
+        this.initGalaxyPedia();
     }
 
     renderCategoryTabs() {
@@ -517,6 +518,16 @@ class UIManager {
             };
         }
 
+        // Top HUD GalaxyPedia button
+        const btnOpenWiki = document.getElementById('btn-open-wiki');
+        if (btnOpenWiki) {
+            btnOpenWiki.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                this.showModal('modal-codex');
+                this.initGalaxyPedia();
+            };
+        }
+
         // Top HUD Quick Save button
         const btnQuickSave = document.getElementById('btn-quick-save');
         if (btnQuickSave) {
@@ -720,6 +731,8 @@ class UIManager {
     showModal(modalId) {
         if (modalId === 'modal-generator') {
             this.updateGalaxyPresetUI();
+        } else if (modalId === 'modal-codex') {
+            this.initGalaxyPedia();
         }
         const m = document.getElementById(modalId);
         if (m) m.classList.add('active');
@@ -2348,6 +2361,363 @@ class UIManager {
                 this.showNotification(`🌟 Created & Possessed ${name}!`);
             };
         }
+    }
+
+    // ==========================================
+    // GALAXYPEDIA WIKIPEDIA SYSTEM
+    // ==========================================
+    initGalaxyPedia() {
+        if (this.pediaInitialized) return;
+        this.pediaInitialized = true;
+        this.pediaHistory = [];
+        this.pediaHistoryIndex = -1;
+        this.pediaCurrentCat = 'all';
+        this.pediaSearchQuery = '';
+
+        const searchInput = document.getElementById('pedia-search-input');
+        const clearBtn = document.getElementById('pedia-search-clear');
+        const backBtn = document.getElementById('pedia-nav-back');
+        const fwdBtn = document.getElementById('pedia-nav-fwd');
+        const randomBtn = document.getElementById('pedia-btn-random');
+        const catBar = document.getElementById('pedia-category-bar');
+
+        if (searchInput) {
+            searchInput.oninput = () => {
+                this.pediaSearchQuery = searchInput.value.trim().toLowerCase();
+                if (clearBtn) clearBtn.style.display = this.pediaSearchQuery ? 'block' : 'none';
+                this.renderPediaArticleList(this.pediaCurrentCat, this.pediaSearchQuery);
+            };
+        }
+
+        if (clearBtn) {
+            clearBtn.onclick = () => {
+                if (searchInput) {
+                    searchInput.value = '';
+                    this.pediaSearchQuery = '';
+                    clearBtn.style.display = 'none';
+                    this.renderPediaArticleList(this.pediaCurrentCat, '');
+                }
+            };
+        }
+
+        if (catBar) {
+            catBar.querySelectorAll('.pedia-cat-pill').forEach(pill => {
+                pill.onclick = () => {
+                    catBar.querySelectorAll('.pedia-cat-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    this.pediaCurrentCat = pill.dataset.cat;
+                    if (this.game.audio) this.game.audio.playClick();
+                    this.renderPediaArticleList(this.pediaCurrentCat, this.pediaSearchQuery);
+                };
+            });
+        }
+
+        if (backBtn) {
+            backBtn.onclick = () => {
+                if (this.pediaHistoryIndex > 0) {
+                    this.pediaHistoryIndex--;
+                    const artId = this.pediaHistory[this.pediaHistoryIndex];
+                    this.openCodexArticle(artId, false);
+                }
+            };
+        }
+
+        if (fwdBtn) {
+            fwdBtn.onclick = () => {
+                if (this.pediaHistoryIndex < this.pediaHistory.length - 1) {
+                    this.pediaHistoryIndex++;
+                    const artId = this.pediaHistory[this.pediaHistoryIndex];
+                    this.openCodexArticle(artId, false);
+                }
+            };
+        }
+
+        if (randomBtn) {
+            randomBtn.onclick = () => {
+                const db = window.GALAXY_PEDIA || {};
+                const keys = Object.keys(db);
+                if (keys.length > 0) {
+                    const randKey = keys[Math.floor(Math.random() * keys.length)];
+                    this.openCodexArticle(randKey, true);
+                }
+            };
+        }
+
+        this.renderPediaArticleList('all', '');
+        this.openCodexArticle('era_stone', true);
+    }
+
+    renderPediaArticleList(catFilter = 'all', query = '') {
+        const listEl = document.getElementById('pedia-article-list');
+        const countEl = document.getElementById('pedia-results-count');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        const db = window.GALAXY_PEDIA || {};
+        const entries = Object.values(db).filter(art => {
+            if (catFilter !== 'all' && art.category !== catFilter) return false;
+            if (!query) return true;
+            const q = query.toLowerCase();
+            const inTitle = art.title && art.title.toLowerCase().includes(q);
+            const inTags = art.tags && art.tags.some(t => t.toLowerCase().includes(q));
+            const inLore = art.lore && art.lore.toLowerCase().includes(q);
+            const inSub = art.subtitle && art.subtitle.toLowerCase().includes(q);
+            return inTitle || inTags || inLore || inSub;
+        });
+
+        if (countEl) {
+            countEl.textContent = `Showing ${entries.length} ${catFilter === 'all' ? 'Articles' : catFilter}`;
+        }
+
+        if (entries.length === 0) {
+            listEl.innerHTML = `<li style="padding: 12px; color: #94a3b8; font-size:0.75rem; text-align:center;">No articles matching "${query}"</li>`;
+            return;
+        }
+
+        entries.forEach(art => {
+            const li = document.createElement('li');
+            li.className = `pedia-list-item ${this.pediaActiveArticleId === art.id ? 'active' : ''}`;
+            li.dataset.articleId = art.id;
+            li.innerHTML = `
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:6px;">${art.title}</span>
+                <span class="pedia-list-badge">${art.category}</span>
+            `;
+            li.onclick = () => {
+                this.openCodexArticle(art.id, true);
+            };
+            listEl.appendChild(li);
+        });
+    }
+
+    openCodexArticle(articleId, pushHistory = true) {
+        const db = window.GALAXY_PEDIA || {};
+        const art = db[articleId];
+        if (!art) return;
+
+        this.pediaActiveArticleId = articleId;
+        if (pushHistory) {
+            if (this.pediaHistoryIndex < this.pediaHistory.length - 1) {
+                this.pediaHistory = this.pediaHistory.slice(0, this.pediaHistoryIndex + 1);
+            }
+            this.pediaHistory.push(articleId);
+            this.pediaHistoryIndex = this.pediaHistory.length - 1;
+        }
+
+        const listEl = document.getElementById('pedia-article-list');
+        if (listEl) {
+            listEl.querySelectorAll('.pedia-list-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.articleId === articleId);
+            });
+        }
+
+        const viewport = document.getElementById('pedia-article-viewport');
+        if (!viewport) return;
+
+        if (this.game.audio && typeof this.game.audio.playPageFlip === 'function') {
+            this.game.audio.playPageFlip();
+        }
+
+        let statsRows = '';
+        if (art.stats && typeof art.stats === 'object') {
+            for (const [k, v] of Object.entries(art.stats)) {
+                statsRows += `<tr><th>${k}</th><td>${v}</td></tr>`;
+            }
+        }
+
+        let abilitiesHtml = '';
+        if (art.abilities && art.abilities.length > 0) {
+            abilitiesHtml = `
+                <h2 class="pedia-h2" id="sec-abilities">⚡ Abilities & Simulation Mechanics</h2>
+                <ul class="pedia-abilities-list">
+                    ${art.abilities.map(ab => {
+                        const parts = ab.split(':');
+                        if (parts.length > 1) {
+                            return `<li><strong>${parts[0]}:</strong>${parts.slice(1).join(':')}</li>`;
+                        }
+                        return `<li>${ab}</li>`;
+                    }).join('')}
+                </ul>
+            `;
+        }
+
+        const tagsHtml = (art.tags || []).map(t => `<span class="pedia-tag-chip">#${t}</span>`).join('');
+
+        let actionBtnHtml = '';
+        if (art.toolId) {
+            actionBtnHtml = `<button class="btn btn-primary" id="pedia-article-action-btn" style="white-space:nowrap; padding:8px 14px; font-weight:700; box-shadow: 0 0 12px rgba(59,130,246,0.5);">⚡ ${art.actionLabel || 'Spawn / Use'}</button>`;
+        }
+
+        let parsedLore = art.lore || '';
+        for (const targetId of Object.keys(db)) {
+            if (targetId === articleId || targetId.length < 4) continue;
+            const targetArt = db[targetId];
+            if (!targetArt || !targetArt.title) continue;
+            const title = targetArt.title;
+            const regex = new RegExp(`\\b(${title})\\b`, 'gi');
+            if (parsedLore.match(regex)) {
+                parsedLore = parsedLore.replace(regex, `<a class="pedia-wikilink" data-target="${targetId}">$1</a>`);
+            }
+        }
+
+        let relatedHtml = '';
+        if (art.related && art.related.length > 0) {
+            relatedHtml = `
+                <h2 class="pedia-h2" id="sec-related">🔗 See Also / Related Articles</h2>
+                <p class="pedia-p">
+                    ${art.related.map(relId => {
+                        const rel = db[relId];
+                        const title = rel ? rel.title : relId;
+                        return `<a class="pedia-wikilink" data-target="${relId}" style="margin-right:12px;">↗ ${title}</a>`;
+                    }).join('')}
+                </p>
+            `;
+        }
+
+        viewport.innerHTML = `
+            <div class="pedia-article-header">
+                <div class="pedia-article-title-wrap">
+                    <h1>${art.title}</h1>
+                    <div class="pedia-article-sub">${art.subtitle || art.category}</div>
+                    <div class="pedia-tags-row">${tagsHtml}</div>
+                </div>
+                ${actionBtnHtml}
+            </div>
+
+            <div class="pedia-article-body">
+                <div class="pedia-article-main">
+                    <div class="pedia-toc-box">
+                        <div class="pedia-toc-title">Contents</div>
+                        <ul class="pedia-toc-list">
+                            <li><a href="#sec-overview">1. Overview</a></li>
+                            ${abilitiesHtml ? `<li><a href="#sec-abilities">2. Abilities & Mechanics</a></li>` : ''}
+                            ${art.tactics ? `<li><a href="#sec-tactics">3. Tactical Strategies</a></li>` : ''}
+                            ${art.counters ? `<li><a href="#sec-counters">4. Counters & Weaknesses</a></li>` : ''}
+                            ${relatedHtml ? `<li><a href="#sec-related">5. See Also</a></li>` : ''}
+                        </ul>
+                    </div>
+
+                    <h2 class="pedia-h2" id="sec-overview">📜 Overview & History</h2>
+                    <p class="pedia-p">${parsedLore}</p>
+
+                    ${abilitiesHtml}
+
+                    ${art.tactics ? `
+                        <h2 class="pedia-h2" id="sec-tactics">🎯 Tactical Usage & Strategy</h2>
+                        <p class="pedia-p">${art.tactics}</p>
+                    ` : ''}
+
+                    ${art.counters ? `
+                        <h2 class="pedia-h2" id="sec-counters">🛡️ Counters & Vulnerabilities</h2>
+                        <p class="pedia-p">${art.counters}</p>
+                    ` : ''}
+
+                    ${relatedHtml}
+                </div>
+
+                <div class="pedia-infobox">
+                    <div class="pedia-infobox-header">${art.title}</div>
+                    <div class="pedia-infobox-preview">
+                        <canvas id="pedia-preview-canvas" width="64" height="64"></canvas>
+                        <span style="font-size:0.68rem; color:#38bdf8; font-family:monospace; margin-top:4px;">${art.category.toUpperCase()}</span>
+                    </div>
+                    <table class="pedia-infobox-table">
+                        <tbody>
+                            <tr><th>Category</th><td>${art.category}</td></tr>
+                            ${statsRows}
+                        </tbody>
+                    </table>
+                    <div class="pedia-quote-box">
+                        "${art.subtitle || 'A prominent entry in universal history.'}"
+                    </div>
+                </div>
+            </div>
+        `;
+
+        this.renderPediaPreview(art);
+
+        viewport.querySelectorAll('.pedia-wikilink').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const target = link.dataset.target;
+                if (target) this.openCodexArticle(target, true);
+            };
+        });
+
+        const actionBtn = document.getElementById('pedia-article-action-btn');
+        if (actionBtn && art.toolId) {
+            actionBtn.onclick = () => {
+                this.selectToolById(art.toolId);
+                const modal = document.getElementById('modal-codex');
+                if (modal) modal.classList.remove('active');
+                if (this.game.audio) this.game.audio.playPowerup();
+            };
+        }
+
+        viewport.scrollTop = 0;
+    }
+
+    renderPediaPreview(art) {
+        const cvs = document.getElementById('pedia-preview-canvas');
+        if (!cvs) return;
+        const ctx = cvs.getContext('2d');
+        ctx.clearRect(0, 0, 64, 64);
+
+        const atlas = this.game.renderer && this.game.renderer.creatureAtlasCanvas;
+        if (art.category === 'Creatures' && atlas) {
+            const SPECIES_ORDER = [
+                'human', 'elf', 'orc', 'dwarf', 'sheep', 'cow', 'wolf', 'bear', 'golem', 'zombie',
+                'skeleton', 'demon', 'alien', 'duck', 'crystal_golem', 'shadow_assassin', 'frog',
+                'cyber_ninja', 'laser_shark', 'frost_wolf', 'sand_scorpion', 'necromancer', 'valkyrie',
+                'gargoyle', 'mecha_rex', 'golden_dragon', 'space_worm', 'goblin', 'pirate_ship', 'trex',
+                'triceratops', 'velociraptor', 'pterodactyl', 'brachiosaurus', 'frost_dragon', 'shadow_dragon',
+                'storm_dragon', 'dark_matter_colossus', 'phoenix_knight', 'thunder_bird', 'cyber_dragon',
+                'swamp_behemoth', 'mammoth', 'astral_phoenix', 'frost_giant', 'dread_reaper',
+                'dune_scorpion_king', 'titan_golem', 'pegasus', 'crabzilla', 'kaiju', 'phoenix',
+                'kraken', 'hydra', 'frost_titan', 'galaxy_guardian', 'colossus_mech', 'seraph_angel',
+                'dune_leviathan', 'vampire_lord', 'void_titan', 'evermean', 'tank', 'warship',
+                'helicopter', 'starfighter', 'mech', 'wizard'
+            ];
+            const idx = SPECIES_ORDER.indexOf(art.id);
+            if (idx !== -1) {
+                const row = 1 + Math.floor((idx * 2) / 32);
+                const col = (idx * 2) % 32;
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(atlas, col * 64, row * 64, 64, 64, 0, 0, 64, 64);
+                return;
+            }
+        }
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, 64, 64);
+
+        const grad = ctx.createRadialGradient(32, 32, 4, 32, 32, 28);
+        grad.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        let icon = '🌌';
+        if (art.category === 'Biomes & Tiles') icon = '🗺️';
+        else if (art.category === 'Disasters') icon = '💥';
+        else if (art.category === 'Weapons') icon = '⚔️';
+        else if (art.category === 'Civilizations') icon = '🏛️';
+        else if (art.category === 'God Powers') icon = '✨';
+        ctx.fillText(icon, 32, 32);
+    }
+
+    selectToolById(toolId) {
+        for (const [catId, tools] of Object.entries(CATEGORY_TOOLS)) {
+            const found = tools.find(t => t.id === toolId);
+            if (found) {
+                this.switchCategory(catId);
+                this.selectTool(found);
+                return;
+            }
+        }
+        this.activeTool = toolId;
     }
 }
 

@@ -36,6 +36,7 @@
             <div class="stat-tag" id="stat-fps">60 FPS</div>
             <div class="stat-tag" id="stat-pop">0 Creatures</div>
             <div class="stat-tag" id="stat-kingdoms">0 Kingdoms</div>
+            <div class="stat-tag" id="stat-time" title="Click or press 'T' to advance time" style="cursor: pointer; user-select: none;">☀️ 12:00 PM</div>
         </div>
 
         <!-- Simulation Time Controls -->
@@ -49,6 +50,7 @@
             <button class="time-btn" id="btn-quick-save" title="World Save & Load Menu (Ctrl+S)">💾 Save</button>
             <button class="time-btn" id="btn-toggle-3d" title="Toggle 2D / 3D Perspective Mode (V)">🌐 3D</button>
             <button class="time-btn" id="btn-toggle-fpv" title="Toggle First-Person Mode (F)">👁️ FPV</button>
+            <button class="time-btn" id="btn-open-wiki" title="Open GalaxyPedia Encyclopedia (K or F1)">📖 Wiki</button>
             <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">🎬</button>
             <button class="time-btn" id="btn-install-pwa" title="Install GalaxyBox as App" style="display:none; background: linear-gradient(135deg, #4f46e5, #9333ea); color:#fff; border-color:#818cf8; font-weight:bold;">📲 Install</button>
         </div>
@@ -353,38 +355,58 @@
         </div>
     </div>
 
-    <!-- 4. God's Codex (Encyclopedia) Modal -->
+    <!-- 4. GalaxyPedia (Universal Wikipedia Encyclopedia) Modal -->
     <div class="modal-overlay" id="modal-codex">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2>📖 God's Codex & Guide</h2>
-                <button class="close-btn modal-close">&times;</button>
+        <div class="modal-card pedia-card">
+            <div class="pedia-topbar">
+                <div class="pedia-brand">
+                    <span class="pedia-globe">🌐</span>
+                    <div>
+                        <div class="pedia-title">GALAXYPEDIA</div>
+                        <div class="pedia-subtitle">The Universal God Sandbox Encyclopedia</div>
+                    </div>
+                </div>
+                <div class="pedia-search-box">
+                    <span class="pedia-search-icon">🔍</span>
+                    <input type="text" id="pedia-search-input" placeholder="Search 250+ articles (species, biomes, disasters, eras, secrets)..." autocomplete="off">
+                    <button id="pedia-search-clear" title="Clear search">&times;</button>
+                </div>
+                <div class="pedia-nav-group">
+                    <button class="btn btn-sm" id="pedia-nav-back" title="Previous Article">◀ Back</button>
+                    <button class="btn btn-sm" id="pedia-nav-fwd" title="Next Article">Fwd ▶</button>
+                    <button class="btn btn-sm pedia-btn-rand" id="pedia-btn-random" title="Random Article">🎲 Random</button>
+                    <button class="close-btn modal-close" title="Close Encyclopedia">&times;</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="codex-section">
-                    <h3>💥 1. Destruction & Chaos</h3>
-                    <p>Unleash supreme god powers to pulverize lands: <strong>Atomic Nukes</strong>, <strong>Antimatter Implosions</strong>, <strong>Black Holes</strong> that crush matter, <strong>Orbital Lasers</strong>, <strong>Meteors</strong>, and <strong>Tsar Disintegration</strong>.</p>
-                </div>
-                <div class="codex-section">
-                    <h3>🌪️ 2. Nature & Natural Disasters</h3>
-                    <p>Harness the primal forces of the planet: Active <strong>Volcanoes</strong> that pour hot magma, wandering <strong>Tornadoes</strong>, seismic <strong>Earthquakes</strong>, <strong>Lightning</strong> bolts, <strong>Tsunamis</strong>, and <strong>Acid Storms</strong>.</p>
-                </div>
-                <div class="codex-section">
-                    <h3>🗺️ 3. Landscaping</h3>
-                    <p>Sculpt oceans, sands, fertile soil, grasslands, mountain peaks, lava, and acid. Use the <strong>Elevation Shovels</strong> to raise or lower land, the <strong>Sponge</strong> to drain floods, and <strong>Life Sprout</strong> to instantly bloom forests.</p>
-                </div>
-                <div class="codex-section">
-                    <h3>✨ 4. Various Powers & Miracles</h3>
-                    <p>Pick up creatures with <strong>God's Hand</strong> and throw them across the sea. Bestow <strong>Divine Blessings</strong>, cast dark <strong>Curses</strong>, trigger a contagious <strong>Zombie Plague</strong>, flip the <strong>Coin of Fate</strong> (Thanos snap 50%), or inspect any lifeform with <strong>Miracle Eye</strong>.</p>
-                </div>
-                <div class="codex-section">
-                    <h3>👥 5. Creatures & Civilizations</h3>
-                    <p>Spawn Humans, Elves, Dwarves, and Orcs. Watch them build campfires, wooden cottages, and townhalls, form named kingdoms with banners, harvest wood and stone, and wage war with neighboring nations! Also populate the world with sheep, wolves, dragons, golems, and aliens.</p>
-                </div>
-                <div class="codex-section">
-                    <h3>⚙️ 6. The Menu</h3>
-                    <p>Generate endless procedural worlds (Continents, Archipelagos, Ring Worlds), save your creations to 5 local save slots, export/import JSON files to share with friends, and tweak sound and simulation speeds.</p>
-                </div>
+
+            <!-- Category Pills Bar -->
+            <div class="pedia-category-bar" id="pedia-category-bar">
+                <button class="pedia-cat-pill active" data-cat="all">All Articles</button>
+                <button class="pedia-cat-pill" data-cat="Creatures">Creatures (69)</button>
+                <button class="pedia-cat-pill" data-cat="Biomes & Tiles">Biomes & Tiles (42)</button>
+                <button class="pedia-cat-pill" data-cat="Civilizations">Civilizations & Eras</button>
+                <button class="pedia-cat-pill" data-cat="Disasters">Disasters (34)</button>
+                <button class="pedia-cat-pill" data-cat="Weapons">Weapons (20)</button>
+                <button class="pedia-cat-pill" data-cat="God Powers">God Powers</button>
+                <button class="pedia-cat-pill" data-cat="Secrets & Lore">Secrets & Lore</button>
+                <button class="pedia-cat-pill" data-cat="Guides & Manuals">Guides & Controls</button>
+            </div>
+
+            <div class="pedia-main-layout">
+                <!-- Left Sidebar: Article Index / Search Matches -->
+                <aside class="pedia-sidebar">
+                    <div class="pedia-sidebar-header">
+                        <span id="pedia-results-count">Showing 250 Articles</span>
+                    </div>
+                    <ul class="pedia-article-list" id="pedia-article-list">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+                </aside>
+
+                <!-- Right Viewport: Wikipedia Article Pane -->
+                <article class="pedia-article-viewport" id="pedia-article-viewport">
+                    <!-- Populated by JavaScript -->
+                </article>
             </div>
         </div>
     </div>
@@ -791,6 +813,7 @@
     <script src="js/world.js"></script>
     <script src="js/entities.js"></script>
     <script src="js/disasters.js"></script>
+    <script src="js/codex_data.js"></script>
     <script src="js/renderer3d.js"></script>
     <script src="js/renderer.js"></script>
     <script src="js/ui.js"></script>

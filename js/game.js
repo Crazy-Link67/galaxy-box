@@ -74,6 +74,11 @@ class Game {
         this.chronoFreezeTimer = 0;
         this.settings = null;
 
+        // Day / Night Cycle System
+        this.timeOfDay = 12.0; // 12:00 PM (Noon)
+        this.daySpeed = 0.015; // ~80 seconds per full 24h day-night cycle at 1x speed
+        this.isDayNightEnabled = true;
+
         // Generate initial world
         this.generateWorld('continents');
 
@@ -330,6 +335,19 @@ class Game {
         };
         window.addEventListener('blur', clearKeys);
         window.addEventListener('pointercancel', clearKeys);
+
+        // Time HUD click to advance time
+        const timeEl = document.getElementById('stat-time');
+        if (timeEl) {
+            timeEl.addEventListener('click', () => {
+                this.timeOfDay = (this.timeOfDay + 4) % 24;
+                this.updateStatsHUD();
+                if (this.ui && typeof this.ui.showNotification === 'function') {
+                    const isDay = this.timeOfDay >= 6 && this.timeOfDay < 18;
+                    this.ui.showNotification(isDay ? "☀️ Advanced time to Day" : "🌙 Advanced time to Night", "info");
+                }
+            });
+        }
     }
 
     handleMouseDown(e) {
@@ -569,6 +587,24 @@ class Game {
         // F key: Toggle First-Person Control Mode
         if (e.key === 'f' || e.key === 'F') {
             this.toggleFirstPerson();
+            return;
+        }
+
+        // T key: Advance Time of Day
+        if (e.key === 't' || e.key === 'T') {
+            this.timeOfDay = (this.timeOfDay + 3) % 24;
+            this.updateStatsHUD();
+            if (this.ui && typeof this.ui.showNotification === 'function') {
+                const isDay = this.timeOfDay >= 6 && this.timeOfDay < 18;
+                this.ui.showNotification(isDay ? "☀️ Advanced time to Day" : "🌙 Advanced time to Night", "info");
+            }
+            return;
+        }
+
+        // K or F1 key: Toggle GalaxyPedia
+        if (e.key === 'k' || e.key === 'K' || e.key === 'F1') {
+            e.preventDefault();
+            this.ui.toggleModal('modal-codex');
             return;
         }
 
@@ -1190,6 +1226,7 @@ class Game {
             name: `World ${slot}`,
             date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
             timestamp: Date.now(),
+            timeOfDay: this.timeOfDay,
             world: this.world.serialize(),
             entities: this.entityManager.serialize(),
             weather: {
@@ -1244,6 +1281,8 @@ class Game {
 
         this.particleSystem.clear();
         this.unpossess();
+        this.timeOfDay = (typeof data.timeOfDay === 'number') ? data.timeOfDay : 12.0;
+        this.updateStatsHUD();
         this.renderer.camera.x = this.world.width / 2;
         this.renderer.camera.y = this.world.height / 2;
         return { success: true, date: data.date || "Unknown" };
@@ -1415,6 +1454,11 @@ class Game {
         this.renderer.shakeX = shakeOffsetX;
         this.renderer.shakeY = shakeOffsetY;
 
+        // Advance Day/Night Cycle
+        if (this.isDayNightEnabled && this.timeScale > 0 && this.chronoFreezeTimer <= 0) {
+            this.timeOfDay = (this.timeOfDay + this.daySpeed * this.timeScale * (dt * 60)) % 24;
+        }
+
         // Render Frame
         const mouseWorld = { x: this.mouse.worldX, y: this.mouse.worldY };
         if (this.is3DMode && this.renderer3D) {
@@ -1425,7 +1469,8 @@ class Game {
                 this.particleSystem,
                 this.ui.activeTool,
                 this.ui.brushSize,
-                mouseWorld
+                mouseWorld,
+                this.timeOfDay
             );
             this.renderer.renderMinimap(this.world, this.entityManager);
         } else {
@@ -1436,7 +1481,8 @@ class Game {
                 this.particleSystem,
                 this.ui.activeTool,
                 this.ui.brushSize,
-                mouseWorld
+                mouseWorld,
+                this.timeOfDay
             );
         }
     }
@@ -1445,9 +1491,19 @@ class Game {
         const fpsEl = document.getElementById('stat-fps');
         const popEl = document.getElementById('stat-pop');
         const kdEl = document.getElementById('stat-kingdoms');
+        const timeEl = document.getElementById('stat-time');
         if (fpsEl) fpsEl.textContent = `${this.fps} FPS`;
         if (popEl) popEl.textContent = `${this.entityManager.entities.length} Creatures`;
         if (kdEl) kdEl.textContent = `${this.entityManager.kingdoms.size} Kingdoms`;
+        if (timeEl) {
+            const hours = Math.floor(this.timeOfDay);
+            const minutes = Math.floor((this.timeOfDay - hours) * 60);
+            const mPad = minutes < 10 ? '0' + minutes : minutes;
+            const isPM = hours >= 12;
+            const h12 = (hours % 12) || 12;
+            const icon = (hours >= 6 && hours < 18) ? '☀️' : '🌙';
+            timeEl.textContent = `${icon} ${h12}:${mPad} ${isPM ? 'PM' : 'AM'}`;
+        }
     }
 }
 
