@@ -1168,6 +1168,267 @@ class Entity {
                 this.traits.add('super_speed');
                 this.traits.add('peaceful');
                 break;
+            case 'storm_griffin':
+                this.name = 'Storm Griffin';
+                this.hp = 3200;
+                this.maxHp = 3200;
+                this.speed = 1.25;
+                this.attack = 100;
+                this.size = 8;
+                this.color = '#60a5fa';
+                this.isFlying = true;
+                this.isMythic = true;
+                this.traits.add('flying');
+                this.traits.add('electrocharged');
+                this.traits.add('titan');
+                break;
+            case 'abyssal_angler':
+                this.name = 'Abyssal Angler';
+                this.hp = 2800;
+                this.maxHp = 2800;
+                this.speed = 0.85;
+                this.attack = 110;
+                this.size = 7;
+                this.color = '#06b6d4';
+                this.isAquatic = true;
+                this.traits.add('water_walker');
+                this.traits.add('amphibious');
+                this.traits.add('laser_eyes');
+                break;
+            case 'sun_falcon':
+                this.name = 'Sun Falcon';
+                this.hp = 1600;
+                this.maxHp = 1600;
+                this.speed = 1.4;
+                this.attack = 80;
+                this.size = 5;
+                this.color = '#fbbf24';
+                this.isFlying = true;
+                this.isMythic = true;
+                this.traits.add('flying');
+                this.traits.add('super_speed');
+                this.traits.add('fireproof');
+                break;
+            case 'magma_salamander':
+                this.name = 'Magma Salamander';
+                this.hp = 2600;
+                this.maxHp = 2600;
+                this.speed = 0.75;
+                this.attack = 85;
+                this.size = 6.5;
+                this.color = '#ea580c';
+                this.traits.add('fireproof');
+                this.traits.add('amphibious');
+                this.traits.add('pyromaniac');
+                break;
+            case 'crystal_spider':
+                this.name = 'Crystal Arachnid';
+                this.hp = 2400;
+                this.maxHp = 2400;
+                this.speed = 0.95;
+                this.attack = 90;
+                this.size = 6;
+                this.color = '#c084fc';
+                this.traits.add('venomous');
+                this.traits.add('starlight_aura');
+                break;
+            case 'void_stalker':
+                this.name = 'Void Stalker';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 1.15;
+                this.attack = 120;
+                this.size = 5.5;
+                this.color = '#4338ca';
+                this.traits.add('invisibility');
+                this.traits.add('teleporter');
+                this.traits.add('bloodthirsty');
+                break;
+            case 'thunder_ram':
+                this.name = 'Thunder Ram';
+                this.hp = 2500;
+                this.maxHp = 2500;
+                this.speed = 0.9;
+                this.attack = 95;
+                this.size = 6.5;
+                this.color = '#0284c7';
+                this.traits.add('headslammer');
+                this.traits.add('electrocharged');
+                break;
+            case 'sand_wurm':
+                this.name = 'Primeval Sand Wurm';
+                this.hp = 4200;
+                this.maxHp = 4200;
+                this.speed = 0.7;
+                this.attack = 130;
+                this.size = 11;
+                this.color = '#d97706';
+                this.traits.add('titan');
+                this.traits.add('earthshaker');
+                this.traits.add('regenerating');
+                break;
+            case 'elder_wyrm':
+                this.name = 'Ancient Elder Wyrm';
+                this.hp = 6000;
+                this.maxHp = 6000;
+                this.speed = 0.95;
+                this.attack = 160;
+                this.size = 14;
+                this.color = '#7c3aed';
+                this.isFlying = true;
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('flying');
+                this.traits.add('laser_eyes');
+                this.traits.add('immortal');
+                this.traits.add('starlight_aura');
+                break;
+            case 'chimera':
+                this.name = 'Mythic Chimera';
+                this.hp = 4200;
+                this.maxHp = 4200;
+                this.speed = 0.85;
+                this.attack = 125;
+                this.size = 9;
+                this.color = '#b45309';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                this.traits.add('venomous');
+                this.traits.add('headslammer');
+                break;
+            case 'basilisk':
+                this.name = 'Petrifying Basilisk';
+                this.hp = 3400;
+                this.maxHp = 3400;
+                this.speed = 0.65;
+                this.attack = 105;
+                this.size = 8;
+                this.color = '#15803d';
+                this.traits.add('titan');
+                this.traits.add('venomous');
+                this.traits.add('cryomancer');
+                break;
+            case 'lich_king':
+                this.name = 'Nether Lich King';
+                this.hp = 3800;
+                this.maxHp = 3800;
+                this.speed = 0.8;
+                this.attack = 135;
+                this.size = 7;
+                this.color = '#312e81';
+                this.isBoss = true;
+                this.traits.add('necromancer');
+                this.traits.add('cryomancer');
+                this.traits.add('immortal');
+                this.traits.add('teleporter');
+                break;
+            case 'cyber_mech_titan':
+                this.name = 'Cyber Mech Titan';
+                this.hp = 5800;
+                this.maxHp = 5800;
+                this.speed = 0.6;
+                this.attack = 170;
+                this.size = 13;
+                this.color = '#475569';
+                this.isBoss = true;
+                this.isVehicle = true;
+                this.traits.add('titan');
+                this.traits.add('laser_eyes');
+                this.traits.add('fireproof');
+                this.traits.add('electrocharged');
+                break;
+            case 'cerberus':
+                this.name = 'Three-Headed Cerberus';
+                this.hp = 4600;
+                this.maxHp = 4600;
+                this.speed = 0.95;
+                this.attack = 140;
+                this.size = 10;
+                this.color = '#991b1b';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                this.traits.add('bloodthirsty');
+                this.traits.add('pyromaniac');
+                break;
+            case 'sea_serpent':
+                this.name = 'Azure Sea Serpent';
+                this.hp = 4800;
+                this.maxHp = 4800;
+                this.speed = 1.0;
+                this.size = 12;
+                this.color = '#0284c7';
+                this.isAquatic = true;
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('water_walker');
+                this.traits.add('amphibious');
+                this.traits.add('regenerating');
+                break;
+            case 'yeti':
+                this.name = 'Abominable Yeti';
+                this.hp = 3500;
+                this.maxHp = 3500;
+                this.speed = 0.7;
+                this.attack = 110;
+                this.size = 8.5;
+                this.color = '#e2e8f0';
+                this.traits.add('titan');
+                this.traits.add('cryomancer');
+                this.traits.add('headslammer');
+                break;
+            case 'djinn':
+                this.name = 'Mystic Djinn';
+                this.hp = 3000;
+                this.maxHp = 3000;
+                this.speed = 1.1;
+                this.attack = 115;
+                this.size = 7;
+                this.color = '#f59e0b';
+                this.isFlying = true;
+                this.traits.add('flying');
+                this.traits.add('teleporter');
+                this.traits.add('electrocharged');
+                this.traits.add('starlight_aura');
+                break;
+            case 'centaur':
+                this.name = 'Sylvan Centaur';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 1.15;
+                this.attack = 85;
+                this.size = 6;
+                this.color = '#854d0e';
+                this.traits.add('super_speed');
+                this.traits.add('regenerating');
+                break;
+            case 'mummy_pharaoh':
+                this.name = 'Cursed Mummy Pharaoh';
+                this.hp = 3200;
+                this.maxHp = 3200;
+                this.speed = 0.6;
+                this.attack = 100;
+                this.size = 6.5;
+                this.color = '#ca8a04';
+                this.traits.add('necromancer');
+                this.traits.add('immortal');
+                break;
+            case 'alien_overlord':
+                this.name = 'Alien Overlord';
+                this.hp = 5200;
+                this.maxHp = 5200;
+                this.speed = 0.85;
+                this.attack = 155;
+                this.size = 9;
+                this.color = '#a21caf';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('laser_eyes');
+                this.traits.add('teleporter');
+                this.traits.add('immortal');
+                this.traits.add('starlight_aura');
+                break;
             default:
                 this.hp = 100;
                 this.maxHp = 100;
@@ -1298,6 +1559,26 @@ class Entity {
         } else if (type === 'frost_bow') {
             this.attack = Math.max(this.attack, 45) + 30;
             this.traits.add('freezing');
+        } else if (type === 'void_halberd') {
+            this.attack = Math.max(this.attack, 50) + 45;
+            this.traits.add('thorny');
+        } else if (type === 'frost_scythe') {
+            this.attack = Math.max(this.attack, 45) + 35;
+            this.traits.add('freezing');
+            this.traits.add('cryomancer');
+        } else if (type === 'plasma_cannon') {
+            this.attack = Math.max(this.attack, 55) + 50;
+            this.traits.add('laser_eyes');
+        } else if (type === 'arcane_crossbow') {
+            this.attack = Math.max(this.attack, 40) + 30;
+            this.traits.add('super_speed');
+        } else if (type === 'chaos_flail') {
+            this.attack = Math.max(this.attack, 48) + 40;
+            this.traits.add('pyromaniac');
+        } else if (type === 'sun_spear') {
+            this.attack = Math.max(this.attack, 48) + 40;
+            this.traits.add('fireproof');
+            this.traits.add('starlight_aura');
         }
     }
 
@@ -1663,6 +1944,57 @@ class Entity {
                 entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 7.5, sy * 7.5, 'frost', this.id, this.attack * 0.6));
             }
             if (particleSystem) particleSystem.burst(this.x, this.y, 10, ['#38bdf8', '#bae6fd', '#ffffff'], 1.5, 3, 1, 2, 'snow');
+            return;
+        } else if (this.weapon === 'void_halberd') {
+            if (audio) audio.playMagic();
+            const target = entityManager.findNearestEntity(this, (o) => o.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 24)) {
+                target.takeDamage(this.attack * 1.7, this);
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 12, this.y + dirY * 12, 18, ['#4338ca', '#312e81', '#a855f7'], 2, 5, 1.5, 3, 'stardust');
+            return;
+        } else if (this.weapon === 'frost_scythe') {
+            if (audio) audio.playClick();
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < (this.size * this.scale + 22)) {
+                    other.takeDamage(this.attack * 1.4, this);
+                    other.frozen = 150;
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x + dirX * 8, this.y + dirY * 8, 16, ['#a5f3fc', '#38bdf8', '#ffffff'], 2, 4, 1.5, 3, 'spark');
+            return;
+        } else if (this.weapon === 'plasma_cannon') {
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.2);
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(8, 14);
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'laser', this.id, this.attack * 1.2));
+            if (particleSystem) particleSystem.burst(this.x + dirX * 6, this.y + dirY * 6, 14, ['#00e5ff', '#38bdf8', '#ffffff'], 2, 4, 1.5, 3, 'spark');
+            return;
+        } else if (this.weapon === 'arcane_crossbow') {
+            if (audio) audio.playClick();
+            for (let a = -0.2; a <= 0.2; a += 0.1) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8.5, sy * 8.5, 'arrow', this.id, this.attack * 0.5));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 8, ['#a855f7', '#c084fc', '#ffffff'], 1.2, 3, 1, 2, 'stardust');
+            return;
+        } else if (this.weapon === 'chaos_flail') {
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.1);
+            if (particleSystem) particleSystem.burst(this.x + dirX * 10, this.y + dirY * 10, 20, ['#ef4444', '#f97316', '#facc15'], 2, 5, 2, 4, 'fire');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - (this.x + dirX * 10), other.y - (this.y + dirY * 10)) < 22) {
+                    other.takeDamage(this.attack * 1.5, this);
+                }
+            }
+            return;
+        } else if (this.weapon === 'sun_spear') {
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 8, dirY * 8, 'fireball', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#fbbf24', '#f59e0b', '#ffffff'], 2, 4, 1.5, 3, 'fire');
             return;
         }
 
@@ -2224,6 +2556,171 @@ class Entity {
                 entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8, sy * 8, 'stardust', this.id, this.attack * 0.65));
             }
             if (particleSystem) particleSystem.burst(this.x, this.y, 14, ['#e0f2fe', '#bae6fd', '#ffffff'], 1.5, 4, 1.5, 2, 'stardust');
+            return;
+        } else if (this.type === 'storm_griffin') {
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            for (let a = -0.2; a <= 0.2; a += 0.2) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8, sy * 8, 'laser', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#38bdf8', '#0284c7', '#ffffff'], 2, 5, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'abyssal_angler') {
+            if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+            this.x += dirX * 8;
+            this.y += dirY * 8;
+            const target = entityManager.findNearestEntity(this, (o) => o.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 16)) {
+                target.takeDamage(this.attack * 1.6, this);
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#0284c7', '#0369a1', '#22d3ee'], 1.5, 4, 1.5, 2);
+            return;
+        } else if (this.type === 'sun_falcon') {
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            this.x += dirX * 10;
+            this.y += dirY * 10;
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 9, dirY * 9, 'fireball', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 14, ['#f59e0b', '#fbbf24', '#ffffff'], 2, 4, 1.5, 3, 'fire');
+            return;
+        } else if (this.type === 'magma_salamander') {
+            if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6.5, dirY * 6.5, 'fireball', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#ef4444', '#f97316', '#7f1d1d'], 1.5, 4, 1.5, 2, 'fire');
+            return;
+        } else if (this.type === 'crystal_spider') {
+            if (audio) audio.playClick();
+            for (let a = -0.18; a <= 0.18; a += 0.18) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 7.5, sy * 7.5, 'laser', this.id, this.attack * 0.65));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#c084fc', '#e879f9', '#ffffff'], 1.5, 4, 1.2, 2.5, 'stardust');
+            return;
+        } else if (this.type === 'void_stalker') {
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            this.x += dirX * 14;
+            this.y += dirY * 14;
+            const target = entityManager.findNearestEntity(this, (o) => o.id !== this.id);
+            if (target && Math.hypot(target.x - this.x, target.y - this.y) < (this.size * this.scale + 18)) {
+                target.takeDamage(this.attack * 1.7, this);
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#4338ca', '#312e81', '#000000'], 1.5, 4, 1.2, 2.5, 'smoke');
+            return;
+        } else if (this.type === 'thunder_ram') {
+            if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(10, 15);
+            this.x += dirX * 9;
+            this.y += dirY * 9;
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 26) {
+                    other.takeDamage(this.attack * 1.4, this);
+                    other.x += dirX * 10;
+                    other.y += dirY * 10;
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 18, ['#0284c7', '#38bdf8', '#ffffff'], 2, 5, 2, 3, 'spark');
+            return;
+        } else if (this.type === 'sand_wurm') {
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.1);
+            this.x += dirX * 9;
+            this.y += dirY * 9;
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'acid', this.id, this.attack * 0.8));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#d97706', '#b45309', '#fef3c7'], 2, 5, 2, 3);
+            return;
+        } else if (this.type === 'elder_wyrm') {
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.16;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 8, Math.sin(ang) * 8, 'laser', this.id, this.attack * 0.75));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 20, ['#7c3aed', '#c084fc', '#38bdf8', '#ffffff'], 2, 6, 2, 4, 'stardust');
+            return;
+        } else if (this.type === 'chimera') {
+            if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.0);
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7, dirY * 7, 'fireball', this.id, this.attack * 0.8));
+            const ang = Math.atan2(dirY, dirX) + 0.2;
+            entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 6.5, Math.sin(ang) * 6.5, 'acid', this.id, this.attack * 0.7));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 14, ['#b45309', '#ef4444', '#22c55e'], 1.5, 4, 1.5, 3, 'fire');
+            return;
+        } else if (this.type === 'basilisk') {
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7, dirY * 7, 'frost', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 12, ['#15803d', '#4ade80', '#a5f3fc'], 1.5, 4, 1.2, 2.5, 'spark');
+            return;
+        } else if (this.type === 'lich_king') {
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            for (let a = -0.15; a <= 0.15; a += 0.15) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 7, sy * 7, 'laser', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#312e81', '#4338ca', '#a855f7'], 2, 5, 1.5, 3, 'stardust');
+            return;
+        } else if (this.type === 'cyber_mech_titan') {
+            if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(8, 14);
+            entityManager.projectiles.push(new Projectile(this.x - 4, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.6));
+            entityManager.projectiles.push(new Projectile(this.x + 4, this.y, dirX * 9, dirY * 9, 'laser', this.id, this.attack * 0.6));
+            if (particleSystem) particleSystem.burst(this.x + dirX * 5, this.y + dirY * 5, 12, ['#38bdf8', '#0284c7', '#ffffff'], 2, 4, 1.5, 3, 'spark');
+            return;
+        } else if (this.type === 'cerberus') {
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            for (let a = -0.22; a <= 0.22; a += 0.22) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 7.5, sy * 7.5, 'fireball', this.id, this.attack * 0.65));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#991b1b', '#ef4444', '#f59e0b'], 2, 5, 1.5, 3, 'fire');
+            return;
+        } else if (this.type === 'sea_serpent') {
+            if (audio && typeof audio.playSplash === 'function') audio.playSplash();
+            for (let a = -0.2; a <= 0.2; a += 0.2) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 7.5, sy * 7.5, 'frost', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#0284c7', '#38bdf8', '#ffffff'], 2, 5, 1.5, 3);
+            return;
+        } else if (this.type === 'yeti') {
+            if (audio && typeof audio.playRoar === 'function') audio.playRoar();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'frost', this.id, this.attack * 1.1));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#e2e8f0', '#94a3b8', '#ffffff'], 2, 5, 1.5, 3, 'snow');
+            return;
+        } else if (this.type === 'djinn') {
+            if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+            for (let a = -0.25; a <= 0.25; a += 0.25) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8, sy * 8, 'stardust', this.id, this.attack * 0.65));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 15, ['#f59e0b', '#fbbf24', '#ffffff'], 2, 5, 1.5, 3, 'stardust');
+            return;
+        } else if (this.type === 'centaur') {
+            if (audio) audio.playClick();
+            for (let a = -0.15; a <= 0.15; a += 0.15) {
+                const sx = dirX * Math.cos(a) - dirY * Math.sin(a);
+                const sy = dirX * Math.sin(a) + dirY * Math.cos(a);
+                entityManager.projectiles.push(new Projectile(this.x, this.y, sx * 8, sy * 8, 'arrow', this.id, this.attack * 0.6));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 8, ['#854d0e', '#a16207', '#ffffff'], 1.2, 3, 1, 2);
+            return;
+        } else if (this.type === 'mummy_pharaoh') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 6, dirY * 6, 'acid', this.id, this.attack));
+            if (particleSystem) particleSystem.burst(this.x, this.y, 14, ['#ca8a04', '#a16207', '#fef08a'], 1.5, 4, 1.5, 2.5);
+            return;
+        } else if (this.type === 'alien_overlord') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(10, 16);
+            for (let b = -1; b <= 1; b++) {
+                const ang = Math.atan2(dirY, dirX) + b * 0.15;
+                entityManager.projectiles.push(new Projectile(this.x, this.y, Math.cos(ang) * 8, Math.sin(ang) * 8, 'laser', this.id, this.attack * 0.7));
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 18, ['#a21caf', '#c084fc', '#38bdf8'], 2, 5, 1.5, 3, 'stardust');
             return;
         } else if (this.hasTrait('venomous') || this.type === 'hydra') {
             // Acid / Venom Spit

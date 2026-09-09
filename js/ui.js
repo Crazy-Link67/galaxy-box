@@ -47,7 +47,27 @@ const CATEGORY_TOOLS = {
         { id: 'orbital_death_ray', name: 'Solaris Death Ray', icon: '🛰️', desc: 'Devastating high-intensity continuous orbital death ray disintegrating all matter and leaving molten slag.' },
         { id: 'plague_comet', name: 'Plague Comet', icon: '☄️', desc: 'Infectious interstellar comet seeding toxic biovirus and zombie plague in a colossal necrotic crater.' },
         { id: 'tectonic_rupture', name: 'Tectonic Rupture', icon: '🌋', desc: 'Seismic faultline fracture tearing open deep bedrock fissures and venting molten magma.' },
-        { id: 'nanite_swarm', name: 'Nanite Swarm', icon: '🤖', desc: 'Self-replicating microscopic gray goo nanobots devouring all minerals, buildings, and organics.' }
+        { id: 'nanite_swarm', name: 'Nanite Swarm', icon: '🤖', desc: 'Self-replicating microscopic gray goo nanobots devouring all minerals, buildings, and organics.' },
+        { id: 'tachyon_lance', name: 'Tachyon Lance', icon: '⚡', desc: 'High-energy tachyon particle beam boring straight through the crust.' },
+        { id: 'subspace_torpedo', name: 'Subspace Torpedo', icon: '🚀', desc: 'Spatial torpedo warping underground before exploding in magma.' },
+        { id: 'solar_beam', name: 'Solar Death Beam', icon: '☀️', desc: 'Focused sunlight beam incinerating everything in a concentrated beam.' },
+        { id: 'dark_matter_detonator', name: 'Dark Matter Detonator', icon: '🌌', desc: 'Spreads dark matter implosion pockets dissolving matter.' },
+        { id: 'void_drill', name: 'Void Drill', icon: '🕳️', desc: 'Rotary seismic bore drilling vertical shafts down to bedrock.' },
+        { id: 'magma_mortar', name: 'Magma Mortar', icon: '🌋', desc: 'Artillery salvo raining volcanic magma bombs across the area.' },
+        { id: 'hellfire_vortex', name: 'Hellfire Vortex', icon: '🔥', desc: 'Twisting column of roaring hellfire incinerating the region.' },
+        { id: 'gravity_well', name: 'Gravity Well', icon: '🧲', desc: 'Crushes all surrounding structures and units inward.' },
+        { id: 'antimatter_singularity', name: 'Antimatter Singularity', icon: '💫', desc: 'Micro-singularity vaporizing matter into absolute void.' },
+        { id: 'orbital_kinetic_harpoon', name: 'Kinetic Harpoon', icon: '🗡️', desc: 'Dense orbital harpoon striking ground with kinetic fury.' },
+        { id: 'gamma_ray_pulsar', name: 'Gamma Ray Pulsar', icon: '☢️', desc: 'Irradiates terrain leaving radioactive wasteland slag.' },
+        { id: 'chronos_decay_bomb', name: 'Chronos Decay Bomb', icon: '⌛', desc: 'Ages forests and structures into dust and skeletons.' },
+        { id: 'plasma_torrent', name: 'Plasma Torrent', icon: '⚡', desc: 'Continuous torrent of ionized plasma scouring the battlefield.' },
+        { id: 'seismic_splitter', name: 'Seismic Splitter', icon: '⚡', desc: 'Tears a straight continental faultline spilling molten rock.' },
+        { id: 'acid_hail', name: 'Corrosive Acid Hail', icon: '🧪', desc: 'Acidic hail barrage dissolving organic matter and stone.' },
+        { id: 'bioweapon_siphon', name: 'Bioweapon Siphon', icon: '☣️', desc: 'Seeds necrotic green slime mutating and poisoning life.' },
+        { id: 'cryo_implosion', name: 'Cryo Implosion', icon: '❄️', desc: 'Sub-zero shockwave glaciating lava into obsidian and water into permafrost.' },
+        { id: 'chaos_meteor', name: 'Chaos Meteor', icon: '☄️', desc: 'Prismatic meteor striking with radiant crystals and shockwaves.' },
+        { id: 'emp_cascade', name: 'EMP Cascade', icon: '⚡', desc: 'Electromagnetic cascade disabling mechs, tanks, and vehicles.' },
+        { id: 'apocalypse_bell', name: 'Apocalypse Bell', icon: '🔔', desc: 'Resonant sonic shockwave hurling entities away with thunder.' }
     ],
     nature: [
         { id: 'volcano', name: 'Volcano', icon: '🌋', desc: 'Spews endless ash, smoke, and molten lava.' },
@@ -79,7 +99,27 @@ const CATEGORY_TOOLS = {
         { id: 'gravity_inversion', name: 'Gravity Inversion', icon: '🌌', desc: 'Gravitational anomaly launching caught creatures and debris skyward before crushing them back down.' },
         { id: 'monsoon', name: 'Tropical Monsoon', icon: '🌧️', desc: 'Cataclysmic deluge flooding land, extinguishing wildfires, and replenishing global plant growth.' },
         { id: 'solar_eclipse', name: 'Solar Eclipse', icon: '🌑', desc: 'Cosmic shadow plunging the world into darkness, chilling temperatures, and empowering shadows.' },
-        { id: 'ash_storm', name: 'Volcanic Ash Storm', icon: '🌋', desc: 'Dense suffocating cloud of volcanic fallout blanketing vegetation and terrain in dark ash.' }
+        { id: 'ash_storm', name: 'Volcanic Ash Storm', icon: '🌋', desc: 'Dense suffocating cloud of volcanic fallout blanketing vegetation and terrain in dark ash.' },
+        { id: 'blood_moon', name: 'Blood Moon', icon: '🌕', desc: 'Crimson lunar eclipse enraging demons, wolves, and undead.' },
+        { id: 'ball_lightning', name: 'Ball Lightning', icon: '⚡', desc: 'Floating spherical plasma orbs drifting and discharging sparks.' },
+        { id: 'solar_wind', name: 'Solar Wind', icon: '☀️', desc: 'Cosmic solar storm showering auroral flares and stardust.' },
+        { id: 'supercell_cyclone', name: 'Supercell Cyclone', icon: '🌪️', desc: 'Massive rotating thunderstorm with gale winds and tornados.' },
+        { id: 'cryo_deluge', name: 'Cryo Deluge', icon: '❄️', desc: 'Arctic deluge rapidly freezing rivers and coastal waters.' },
+        { id: 'magma_geyser', name: 'Magma Geyser', icon: '🌋', desc: 'Thermal volcanic geyser erupting molten lava into the skies.' },
+        { id: 'spore_fog', name: 'Spore Fog', icon: '🍄', desc: 'Drifting fungal spores sprouting giant mushrooms and mycelium.' },
+        { id: 'static_squall', name: 'Static Squall', icon: '⚡', desc: 'High-frequency electrical storm crackling through skies.' },
+        { id: 'pyroclastic_cloud', name: 'Pyroclastic Cloud', icon: '🌋', desc: 'Avalanche of superheated ash and suffocating volcanic gases.' },
+        { id: 'dust_devil', name: 'Dust Devil', icon: '🌪️', desc: 'Swirling desert dust twister transforming earth into golden sand.' },
+        { id: 'magnetic_aurora', name: 'Magnetic Aurora', icon: '🌌', desc: 'Enchanting magnetic light show restoring life and enforcing peace.' },
+        { id: 'hailstorm', name: 'Severe Hailstorm', icon: '🌨️', desc: 'Torrential ice pelt storm chilling terrain.' },
+        { id: 'acid_geyser', name: 'Acid Geyser', icon: '🧪', desc: 'Pressurized subterranean acid eruption burning surrounding soil.' },
+        { id: 'glacial_crevasse', name: 'Glacial Crevasse', icon: '🧊', desc: 'Splits open a jagged icy chasm with permafrost edges.' },
+        { id: 'ozone_tear', name: 'Ozone Tear', icon: '☀️', desc: 'Atmospheric rupture allowing scorching ultraviolet rays through.' },
+        { id: 'cosmic_radiation', name: 'Cosmic Radiation', icon: '✨', desc: 'Infusion of celestial rays mutating and empowering organisms.' },
+        { id: 'maelstrom_vortex', name: 'Maelstrom Vortex', icon: '🌀', desc: 'Violent oceanic whirlpool pulling waterborne entities down.' },
+        { id: 'swamp_gas_eruption', name: 'Swamp Gas Eruption', icon: '☣️', desc: 'Volatile subterranean marsh gas bubbling into poison swamp.' },
+        { id: 'radiant_sunshower', name: 'Radiant Sunshower', icon: '🌦️', desc: 'Warm sunshower sprouting vibrant lush wildflower meadows.' },
+        { id: 'great_deluge', name: 'Great Deluge', icon: '🌊', desc: 'Biblical ocean rainstorm turning desert sands into lakes.' }
     ],
     landscaping: [
         { id: 'deep_water', name: 'Deep Ocean', icon: '🌊', desc: 'Dark, deep oceanic waters.' },
@@ -128,7 +168,27 @@ const CATEGORY_TOOLS = {
         { id: 'volcanic_caldera', name: 'Volcanic Caldera', icon: '🌋', desc: 'Superheated volcanic magma crater with hardened volcanic rock crust.' },
         { id: 'enchanted_grove', name: 'Enchanted Grove', icon: '🌸', desc: 'Mystical sacred flora blessing nearby life and purging corrupted tiles.' },
         { id: 'sculpt_peak', name: 'Sculpt Mountain Peak', icon: '⛰️', desc: 'Raise a grand high mountain summit surrounded by rugged crags and foothills.' },
-        { id: 'carve_canyon', name: 'Carve Ocean Trench', icon: '🌊', desc: 'Excavate a deep sea chasm or river canyon into surrounding terrain.' }
+        { id: 'carve_canyon', name: 'Carve Ocean Trench', icon: '🌊', desc: 'Excavate a deep sea chasm or river canyon into surrounding terrain.' },
+        { id: 'ash_wasteland', name: 'Ash Wasteland', icon: '🌫️', desc: 'Desolate gray volcanic ash flats from cataclysms.' },
+        { id: 'cursed_marsh', name: 'Cursed Marsh', icon: '🥀', desc: 'Dark necrotic swampland draining life from passersby.' },
+        { id: 'bioluminescent_coral', name: 'Bioluminescent Coral', icon: '🪸', desc: 'Vibrant glowing oceanic reefs radiating aqua and pink light.' },
+        { id: 'petrified_wood', name: 'Petrified Wood', icon: '🪵', desc: 'Ancient fossilized timber hard as stone and mineral.' },
+        { id: 'golden_sand', name: 'Golden Sand', icon: '🏖️', desc: 'Shimmering desert sand dunes infused with mineral dust.' },
+        { id: 'obsidian_spire', name: 'Obsidian Spire', icon: '🖤', desc: 'Jagged volcanic glass monoliths projecting upward.' },
+        { id: 'glacial_permafrost', name: 'Glacial Permafrost', icon: '🧊', desc: 'Hard-packed prehistoric ice and frozen loam.' },
+        { id: 'radioactive_waste', name: 'Radioactive Slag', icon: '☢️', desc: 'Irradiated glowing green nuclear fallout sediment.' },
+        { id: 'aether_soil', name: 'Aether Soil', icon: '🔮', desc: 'Celestial enchanted earth nourishing glowing flora.' },
+        { id: 'deep_trench', name: 'Deep Abyssal Trench', icon: '🌊', desc: 'Bottomless ocean chasm plunging into utter darkness.' },
+        { id: 'basalt_mesa', name: 'Basalt Mesa', icon: '🧱', desc: 'Steep-sided volcanic basalt rock plateaus.' },
+        { id: 'sacred_soil', name: 'Sacred Soil', icon: '✨', desc: 'Blessed holy earth preventing corruption and blight.' },
+        { id: 'crystal_geode', name: 'Crystal Geode', icon: '💎', desc: 'Prismatic gemstone bedrock sparkling with multi-colored facets.' },
+        { id: 'sunbaked_clay', name: 'Sunbaked Clay', icon: '🏺', desc: 'Terracotta clay plains hardened under intense sunlight.' },
+        { id: 'toxic_slime', name: 'Toxic Slime', icon: '🧪', desc: 'Bubbling caustic green ooze melting non-native biology.' },
+        { id: 'living_vines', name: 'Living Vines', icon: '🌿', desc: 'Sentient tangled jungle creepers spreading across surfaces.' },
+        { id: 'star_metal_ore', name: 'Star Metal Ore', icon: '🪙', desc: 'Fallen meteoric ore veins containing indestructible celestial alloys.' },
+        { id: 'floating_rock', name: 'Aether Floating Rock', icon: '🪨', desc: 'Anti-gravity floating islands levitating in the air.' },
+        { id: 'magma_fissure', name: 'Magma Fissure', icon: '🌋', desc: 'Deep tectonic faultline venting molten magma.' },
+        { id: 'lush_meadow', name: 'Lush Meadow', icon: '🌸', desc: 'Flowering wildflower meadows teeming with butterflies.' }
     ],
     powers: [
         { id: 'hand', name: "God's Hand", icon: '✋', desc: 'Grab any creature and fling with momentum!' },
@@ -186,7 +246,27 @@ const CATEGORY_TOOLS = {
         { id: 'growth', name: 'Titan Ray', icon: '📈', desc: 'Enlarges creature into a towering giant.' },
         { id: 'shrink', name: 'Shrink Ray', icon: '📉', desc: 'Minimizes creature to tiny scale.' },
         { id: 'ufo', name: 'Alien Saucer', icon: '🛸', desc: 'Spawns UFO abducting cows and humans.' },
-        { id: 'inspect', name: 'Miracle Eye', icon: '🔍', desc: 'Inspect creature and tile detailed stats.' }
+        { id: 'inspect', name: 'Miracle Eye', icon: '🔍', desc: 'Inspect creature and tile detailed stats.' },
+        { id: 'equip_void_halberd', name: 'Equip: Void Halberd', icon: '🔱', desc: 'Arm creature with an abyssal polearm cleaving dark energy (+45 Atk).' },
+        { id: 'equip_frost_scythe', name: 'Equip: Frost Scythe', icon: '❄️', desc: 'Arm creature with a glacial crescent scythe that freezes foes (+35 Atk).' },
+        { id: 'equip_plasma_cannon', name: 'Equip: Heavy Plasma Cannon', icon: '🔫', desc: 'Arm creature with shoulder-mounted heavy plasma artillery (+50 Atk).' },
+        { id: 'equip_arcane_crossbow', name: 'Equip: Arcane Crossbow', icon: '🏹', desc: 'Arm creature with repeating crossbow firing magic bolts (+30 Atk).' },
+        { id: 'equip_chaos_flail', name: 'Equip: Chaos Flail', icon: '💥', desc: 'Arm creature with spiked flail triggering explosive impacts (+40 Atk).' },
+        { id: 'equip_sun_spear', name: 'Equip: Radiant Sun Spear', icon: '🗡️', desc: 'Arm creature with solar javelin burning with radiant fury (+40 Atk).' },
+        { id: 'midas_touch', name: 'Midas Touch', icon: '🪙', desc: 'Transmutes touched stone and soil into lustrous gold ore veins.' },
+        { id: 'plague_cure', name: 'Divine Panacea', icon: '💊', desc: 'Global healing light cleansing all diseases, infections, and curses.' },
+        { id: 'chronos_rewind', name: 'Chronos Rewind', icon: '⌛', desc: 'Restores lost HP to all living entities and cools down burning terrain.' },
+        { id: 'mass_polymorph', name: 'Mass Polymorph', icon: '🐑', desc: 'Transforms all nearby hostiles and monsters into harmless sheep!' },
+        { id: 'titan_ascension', name: 'Titan Ascension', icon: '🆙', desc: 'Ascends target creature to godlike scale with massive HP and seismic steps.' },
+        { id: 'celestial_dome', name: 'Aegis Sanctuary Dome', icon: '🛡️', desc: 'Deploys a giant luminous protective barrier across the region.' },
+        { id: 'aether_fountain', name: 'Aether Geyser', icon: '⛲', desc: 'Spouts celestial glowing mana mist healing and invigorating life.' },
+        { id: 'seraph_summon', name: 'Summon Seraph Cohort', icon: '👼', desc: 'Summons a phalanx of celestial guardian angels.' },
+        { id: 'gravity_crush', name: 'Gravitational Singularity', icon: '🕳️', desc: 'Violently slams all airborne and ground creatures into bedrock.' },
+        { id: 'starlight_beam', name: 'Starlight Beam', icon: '✨', desc: 'Concentrated celestial beam blessing and rejuvenating allies.' },
+        { id: 'dragon_tame', name: 'Dragon Whisper', icon: '🐉', desc: 'Soothes all dragons and mythical beasts into peaceful kingdom allies.' },
+        { id: 'peace_dove', name: 'Empyrean Dove', icon: '🕊️', desc: 'Releases sacred doves establishing an enduring world peace pact.' },
+        { id: 'abyssal_gate', name: 'Abyssal Gate', icon: '🚪', desc: 'Opens an infernal portal summoning allied nether fiends.' },
+        { id: 'supercharge', name: 'Divine Overcharge', icon: '⚡', desc: 'Instantly supercharges all creatures with maximum energy, speed and shields.' }
     ],
     creatures: [
         { id: 'control', name: 'Possess / Control', icon: '🎮', desc: 'Directly pilot and control any creature with WASD & attacks!' },
@@ -260,6 +340,26 @@ const CATEGORY_TOOLS = {
         { id: 'skeleton', name: 'Skeleton', icon: '💀', desc: 'Risen undead warrior with sword.' },
         { id: 'demon', name: 'Nether Demon', icon: '😈', desc: 'Fire-proof fiend of magma.' },
         { id: 'alien', name: 'Alien Scout', icon: '👽', desc: 'Futuristic invader shooting rayguns.' },
+        { id: 'storm_griffin', name: 'Storm Griffin', icon: '🦅', desc: 'Majestic winged griffin firing lightning arcs and diving.' },
+        { id: 'abyssal_angler', name: 'Abyssal Angler', icon: '🐡', desc: 'Deep sea terror with glowing lure and razor maw.' },
+        { id: 'sun_falcon', name: 'Solar Sun Falcon', icon: '🦅', desc: 'Blazing aerial raptor leaving radiant fire trails.' },
+        { id: 'magma_salamander', name: 'Magma Salamander', icon: '🦎', desc: 'Volcanic lizard swimming through molten lava.' },
+        { id: 'crystal_spider', name: 'Crystal Arachnid', icon: '🕷️', desc: 'Luminescent prismatic spider weaving crystal webs.' },
+        { id: 'void_stalker', name: 'Void Stalker', icon: '👤', desc: 'Shadow predator phasing through reality with stealth.' },
+        { id: 'thunder_ram', name: 'Thunder Ram', icon: '🐏', desc: 'Horned storm ram charging with electric concussions.' },
+        { id: 'sand_wurm', name: 'Primeval Sand Wurm', icon: '🪱', desc: 'Segmented desert titan devouring dunes.' },
+        { id: 'elder_wyrm', name: 'Ancient Elder Wyrm', icon: '🐲', desc: 'Legendary winged arch-dragon with cosmic beam breath.' },
+        { id: 'chimera', name: 'Mythic Chimera', icon: '🦁', desc: 'Lion, goat and snake hybrid breathing venom and fire.' },
+        { id: 'basilisk', name: 'Petrifying Basilisk', icon: '🦎', desc: 'Reptilian beast freezing victims into solid stone.' },
+        { id: 'lich_king', name: 'Nether Lich King', icon: '👑', desc: 'Undead sovereign commanding legions of skeletons.' },
+        { id: 'cyber_mech_titan', name: 'Cyber Mech Titan', icon: '🤖', desc: 'Armored quadruped war mech with twin rotary lasers.' },
+        { id: 'cerberus', name: 'Three-Headed Cerberus', icon: '🐕', desc: 'Nether hellhound guarding the underworld with hellfire.' },
+        { id: 'sea_serpent', name: 'Azure Sea Serpent', icon: '🐉', desc: 'Aquatic leviathan coiled in the deepest oceanic trenches.' },
+        { id: 'yeti', name: 'Abominable Yeti', icon: '❄️', desc: 'Mountain frost colossus hurling giant snow boulders.' },
+        { id: 'djinn', name: 'Mystic Djinn', icon: '🧞', desc: 'Levitating genie of the lamp conjuring mystic whirlwinds.' },
+        { id: 'centaur', name: 'Sylvan Centaur', icon: '🏹', desc: 'Half-human half-horse archer galloping through woods.' },
+        { id: 'mummy_pharaoh', name: 'Cursed Mummy Pharaoh', icon: '🏺', desc: 'Ancient royal corpse summoning sandstorms and curses.' },
+        { id: 'alien_overlord', name: 'Alien Overlord', icon: '👽', desc: 'Extraterrestrial mastermind with psychic telekinesis.' },
         { id: 'toggle_peace', name: 'Law: Force Peace', icon: '🕊️', desc: 'Toggles peaceful coexistence.' },
         { id: 'toggle_war', name: 'Law: Provoke War', icon: '⚔️', desc: 'Toggles global kingdom war.' }
     ],
@@ -273,7 +373,27 @@ const CATEGORY_TOOLS = {
         { id: 'btn_save', name: 'Save / Load', icon: '💾', desc: 'Local slots and JSON world export.' },
         { id: 'btn_settings', name: 'Settings', icon: '⚙️', desc: 'Audio volume, display toggles, FPS.' },
         { id: 'btn_codex', name: "God's Codex", icon: '📖', desc: 'Complete encyclopedia and guides.' },
-        { id: 'btn_clear', name: 'Reset World', icon: '🗑️', desc: 'Clear world to blank ocean.' }
+        { id: 'btn_clear', name: 'Reset World', icon: '🗑️', desc: 'Clear world to blank ocean.' },
+        { id: 'btn_fpv_quick', name: '👁️ Launch 1st-Person', icon: '👁️', desc: 'Jump straight into 3D First-Person View mode.' },
+        { id: 'btn_codex_quick', name: '📖 Open Galaxy Codex', icon: '📖', desc: 'Browse the complete encyclopedia and guides.' },
+        { id: 'btn_3d_quick', name: '🌐 Toggle 3D Mode', icon: '🌐', desc: 'Switch between 2D pixel view and 3D heightfield voxel view.' },
+        { id: 'btn_time_day', name: '☀️ Set Time: Dawn', icon: '🌅', desc: 'Set time of day to sunrise (6:00 AM).' },
+        { id: 'btn_time_noon', name: '☀️ Set Time: Noon', icon: '☀️', desc: 'Set time of day to high noon (12:00 PM).' },
+        { id: 'btn_time_dusk', name: '🌇 Set Time: Dusk', icon: '🌇', desc: 'Set time of day to sunset (6:00 PM).' },
+        { id: 'btn_time_night', name: '🌙 Set Time: Midnight', icon: '🌙', desc: 'Set time of day to starry midnight (12:00 AM).' },
+        { id: 'btn_kill_all_monsters', name: '⚔️ Slay All Monsters', icon: '💀', desc: 'Cleanse the realm of all hostile beasts and undead.' },
+        { id: 'btn_bless_all', name: '✨ Bless All Creatures', icon: '✨', desc: 'Grant divine blessing, 2x HP, and immortality to all.' },
+        { id: 'btn_heal_all_world', name: '💚 Heal Entire World', icon: '💚', desc: 'Instantly restore all creatures to 100% health.' },
+        { id: 'btn_unfreeze_world', name: '🔥 Thaw All Ice', icon: '🔥', desc: 'Melt all ice sheets and glaciated permafrost into water.' },
+        { id: 'btn_extinguish_all', name: '💧 Extinguish Wildfires', icon: '💧', desc: 'Extinguish all raging fires and cooling hot spots.' },
+        { id: 'btn_repopulate', name: '👥 Repopulate Settlements', icon: '👥', desc: 'Spawn 5 humans, elves, dwarves, and orcs into villages.' },
+        { id: 'btn_advance_eras', name: '🏛️ Advance All Eras', icon: '🏛️', desc: 'Accelerate civilization technological era for all kingdoms.' },
+        { id: 'btn_clean_corpses', name: '🧹 Clear All Corpses', icon: '🧹', desc: 'Vaporize all fallen bodies, skeletons, and battlefield debris.' },
+        { id: 'btn_quicken_crops', name: '🌾 Maximize Agriculture', icon: '🌾', desc: 'Instantly mature all crops, forests, and flora.' },
+        { id: 'btn_random_event', name: '🎲 Trigger Chaos Event', icon: '🎲', desc: 'Roll a random cosmic or environmental event!' },
+        { id: 'btn_turbo_speed', name: '⚡ Turbo Speed (10x)', icon: '⚡', desc: 'Run simulation at ultra-fast 10x clock rate.' },
+        { id: 'btn_camera_center', name: '🎯 Recenter Camera', icon: '🎯', desc: 'Reset zoom and pan directly to the world center.' },
+        { id: 'btn_photo_mode', name: '📸 Cinematic Clean View', icon: '📸', desc: 'Toggle full immersion mode hiding all HUD elements.' }
     ]
 };
 
@@ -406,6 +526,154 @@ class UIManager {
             this.game.entityManager.forcePeace = false;
             alert(this.game.entityManager.worldWar ? "World Law: Total Kingdom War declared!" : "World Law: War frenzy calmed.");
             return;
+        } else if (tool.id === 'btn_fpv_quick') {
+            this.game.toggleFirstPerson();
+            return;
+        } else if (tool.id === 'btn_codex_quick') {
+            this.showModal('modal-codex');
+            return;
+        } else if (tool.id === 'btn_3d_quick') {
+            this.game.toggle3D();
+            return;
+        } else if (tool.id === 'btn_time_day') {
+            this.game.timeOfDay = 6.0;
+            if (this.game.audio) this.game.audio.playMagic();
+            return;
+        } else if (tool.id === 'btn_time_noon') {
+            this.game.timeOfDay = 12.0;
+            if (this.game.audio) this.game.audio.playMagic();
+            return;
+        } else if (tool.id === 'btn_time_dusk') {
+            this.game.timeOfDay = 18.0;
+            if (this.game.audio) this.game.audio.playMagic();
+            return;
+        } else if (tool.id === 'btn_time_night') {
+            this.game.timeOfDay = 0.0;
+            if (this.game.audio) this.game.audio.playMagic();
+            return;
+        } else if (tool.id === 'btn_kill_all_monsters') {
+            let count = 0;
+            for (let i = this.game.entityManager.entities.length - 1; i >= 0; i--) {
+                const e = this.game.entityManager.entities[i];
+                if (e.active && (e.isMonster || e.isBoss || e.type === 'zombie' || e.type === 'skeleton' || e.type === 'demon' || e.type === 'alien' || e.type === 'wolf' || e.type === 'bear')) {
+                    e.takeDamage(99999);
+                    count++;
+                }
+            }
+            if (this.game.particleSystem) this.game.particleSystem.burst(this.game.world.width / 2, this.game.world.height / 2, 40, ['#ef4444', '#facc15', '#ffffff'], 3, 8, 2, 5);
+            if (this.game.audio) this.game.audio.playThunder();
+            alert(`Slayed ${count} monsters and nether threats across the world!`);
+            return;
+        } else if (tool.id === 'btn_bless_all') {
+            this.game.entityManager.entities.forEach(e => { if (e.active) e.applyBlessing(); });
+            if (this.game.audio) this.game.audio.playMagic();
+            if (this.game.particleSystem) this.game.particleSystem.burst(this.game.world.width / 2, this.game.world.height / 2, 50, ['#facc15', '#ffffff', '#38bdf8'], 3, 9, 2, 5);
+            alert("Divine Blessing bestowed upon all living creatures!");
+            return;
+        } else if (tool.id === 'btn_heal_all_world') {
+            this.game.entityManager.entities.forEach(e => { if (e.active) { e.hp = e.maxHp; e.infected = false; } });
+            if (this.game.audio) this.game.audio.playMagic();
+            alert("All entities restored to full health!");
+            return;
+        } else if (tool.id === 'btn_unfreeze_world') {
+            let thawed = 0;
+            for (let i = 0; i < this.game.world.size; i++) {
+                if (this.game.world.tiles[i] === TILES.ICE || this.game.world.tiles[i] === TILES.GLACIAL_PERMAFROST || this.game.world.tiles[i] === TILES.SNOW) {
+                    this.game.world.tiles[i] = TILES.WATER;
+                    thawed++;
+                }
+            }
+            if (this.game.audio) this.game.audio.playSplash();
+            alert(`Thawed ${thawed} frozen tiles back into water!`);
+            return;
+        } else if (tool.id === 'btn_extinguish_all') {
+            for (let i = 0; i < this.game.world.size; i++) {
+                this.game.world.fire[i] = 0;
+            }
+            if (this.game.audio) this.game.audio.playRain();
+            alert("All global wildfires and flames extinguished!");
+            return;
+        } else if (tool.id === 'btn_repopulate') {
+            const races = ['human', 'elf', 'dwarf', 'orc'];
+            races.forEach(r => {
+                for (let k = 0; k < 5; k++) {
+                    const rx = Math.floor(this.game.world.width * 0.2 + Math.random() * this.game.world.width * 0.6);
+                    const ry = Math.floor(this.game.world.height * 0.2 + Math.random() * this.game.world.height * 0.6);
+                    this.game.entityManager.spawn(r, rx, ry);
+                }
+            });
+            if (this.game.audio) this.game.audio.playMagic();
+            alert("Settlers spawned across the lands!");
+            return;
+        } else if (tool.id === 'btn_advance_eras') {
+            this.game.entityManager.kingdoms.forEach(kd => {
+                kd.era = Math.min(4, (kd.era || 0) + 1);
+                const eraNames = ['Stone Age', 'Bronze Age', 'Iron Age', 'Industrial Age', 'Aether Age'];
+                kd.eraName = eraNames[kd.era];
+                kd.wood += 500;
+                kd.stone += 500;
+                kd.gold = (kd.gold || 0) + 300;
+                kd.aether = (kd.aether || 0) + 100;
+            });
+            if (this.game.audio) this.game.audio.playMagic();
+            alert("Technological era advanced for all empires!");
+            return;
+        } else if (tool.id === 'btn_clean_corpses') {
+            this.game.entityManager.corpses = [];
+            if (this.game.audio) this.game.audio.playClick();
+            alert("All corpses and remains cleared from the world.");
+            return;
+        } else if (tool.id === 'btn_quicken_crops') {
+            for (let i = 0; i < this.game.world.size; i++) {
+                if (this.game.world.tiles[i] === TILES.GRASS && Math.random() < 0.3) {
+                    this.game.world.tiles[i] = TILES.FOREST;
+                } else if (this.game.world.tiles[i] === TILES.SOIL) {
+                    this.game.world.tiles[i] = TILES.GRASS;
+                }
+            }
+            if (this.game.audio) this.game.audio.playRain();
+            alert("Flora and forest growth stimulated!");
+            return;
+        } else if (tool.id === 'btn_random_event') {
+            const events = [
+                () => this.game.disasterManager.triggerMeteorShower(this.game.world.width / 2, this.game.world.height / 2, this.game.audio),
+                () => this.game.disasterManager.triggerAuroraBorealis(this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio),
+                () => this.game.disasterManager.triggerSolarFlare(this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio),
+                () => this.game.disasterManager.triggerCloneRain(600),
+                () => this.game.disasterManager.triggerBloodMoon(this.game.world, this.game.entityManager, this.game.disasterManager, this.game.particleSystem, this.game.audio)
+            ];
+            const ev = events[Math.floor(Math.random() * events.length)];
+            ev();
+            return;
+        } else if (tool.id === 'btn_turbo_speed') {
+            this.game.timeScale = 10.0;
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            const turboBtn = document.getElementById('speed-10x');
+            if (turboBtn) turboBtn.classList.add('active');
+            if (this.game.audio) this.game.audio.playClick();
+            alert("Simulation accelerated to 10x Turbo Speed!");
+            return;
+        } else if (tool.id === 'btn_camera_center') {
+            this.game.renderer.camera.x = this.game.world.width / 2;
+            this.game.renderer.camera.y = this.game.world.height / 2;
+            this.game.renderer.camera.zoom = 1.0;
+            if (this.game.renderer3d) {
+                this.game.renderer3d.camTargetX = this.game.world.width / 2;
+                this.game.renderer3d.camTargetY = this.game.world.height / 2;
+                this.game.renderer3d.camDist = 120;
+            }
+            if (this.game.audio) this.game.audio.playClick();
+            return;
+        } else if (tool.id === 'btn_photo_mode') {
+            document.body.classList.toggle('cinematic-clean-view');
+            const isClean = document.body.classList.contains('cinematic-clean-view');
+            const hudEls = ['#top-hud', '#bottom-hud', '#inspector-panel', '#quick-access-bar'];
+            hudEls.forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) el.style.display = isClean ? 'none' : '';
+            });
+            if (isClean) alert("Photo Mode Enabled! Press Escape or click anywhere to exit.");
+            return;
         }
 
         // Check if tool is a secret locked power
@@ -429,6 +697,13 @@ class UIManager {
     setBrushSize(size) {
         this.brushSize = Math.max(1, Math.min(35, size));
         if (this.brushSizeEl) this.brushSizeEl.textContent = this.brushSize;
+    }
+
+    update3DButtonState(is3D) {
+        const btn3d = document.getElementById('btn-toggle-3d');
+        if (btn3d) btn3d.classList.toggle('active-3d', is3D);
+        const qa3d = document.getElementById('qa-3d-btn');
+        if (qa3d) qa3d.classList.toggle('active', is3D);
     }
 
     setupEventListeners() {
@@ -508,25 +783,38 @@ class UIManager {
                 this.game.toggle3D();
             };
         }
+        const qa3d = document.getElementById('qa-3d-btn');
+        if (qa3d) {
+            qa3d.onclick = () => {
+                if (this.game.audio) this.game.audio.playClick();
+                this.game.toggle3D();
+            };
+        }
 
-        // First-Person Mode toggle button
+        // First-Person Mode toggle buttons
+        const triggerFpv = () => {
+            if (this.game.audio) this.game.audio.playClick();
+            this.game.toggleFirstPerson();
+        };
         const btnToggleFPV = document.getElementById('btn-toggle-fpv');
-        if (btnToggleFPV) {
-            btnToggleFPV.onclick = () => {
-                if (this.game.audio) this.game.audio.playClick();
-                this.game.toggleFirstPerson();
-            };
-        }
+        if (btnToggleFPV) btnToggleFPV.onclick = triggerFpv;
+        const qaFpv = document.getElementById('qa-fpv-btn');
+        if (qaFpv) qaFpv.onclick = triggerFpv;
+        const dockFpv = document.getElementById('dock-btn-fpv');
+        if (dockFpv) dockFpv.onclick = triggerFpv;
 
-        // Top HUD GalaxyPedia button
+        // GalaxyPedia Codex buttons
+        const triggerCodex = () => {
+            if (this.game.audio) this.game.audio.playClick();
+            this.showModal('modal-codex');
+            this.initGalaxyPedia();
+        };
         const btnOpenWiki = document.getElementById('btn-open-wiki');
-        if (btnOpenWiki) {
-            btnOpenWiki.onclick = () => {
-                if (this.game.audio) this.game.audio.playClick();
-                this.showModal('modal-codex');
-                this.initGalaxyPedia();
-            };
-        }
+        if (btnOpenWiki) btnOpenWiki.onclick = triggerCodex;
+        const qaCodex = document.getElementById('qa-codex-btn');
+        if (qaCodex) qaCodex.onclick = triggerCodex;
+        const dockCodex = document.getElementById('dock-btn-codex');
+        if (dockCodex) dockCodex.onclick = triggerCodex;
 
         // Top HUD Quick Save button
         const btnQuickSave = document.getElementById('btn-quick-save');

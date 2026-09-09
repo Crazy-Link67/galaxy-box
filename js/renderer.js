@@ -429,6 +429,75 @@ class Renderer {
                                 r = 255; g = 220; b = 245; // Drifting petal glint
                             }
                             break;
+                        case TILES.ASH_WASTELAND:
+                            r = 71 - varOffset; g = 85 - varOffset; b = 105 - varOffset;
+                            break;
+                        case TILES.CURSED_MARSH:
+                            r = 88 - varOffset; g = 28 - varOffset; b = 135 - varOffset;
+                            if ((x * 7 + y * 13 + Math.floor(this.animTime * 2)) % 19 === 0) { r = 168; g = 85; b = 247; }
+                            break;
+                        case TILES.BIOLUMINESCENT_CORAL:
+                            r = 6; g = 182 - varOffset; b = 212 + Math.sin(this.animTime * 3 + x) * 25;
+                            break;
+                        case TILES.PETRIFIED_WOOD:
+                            r = 120 - varOffset; g = 113 - varOffset; b = 108 - varOffset;
+                            break;
+                        case TILES.GOLDEN_SAND:
+                            r = 251 - varOffset; g = 191 - varOffset; b = 36 - varOffset;
+                            if ((x * 13 + y * 9) % 7 === 0) { r = 255; g = 245; b = 150; }
+                            break;
+                        case TILES.OBSIDIAN_SPIRE:
+                            r = 15 - varOffset * 0.5; g = 23 - varOffset * 0.5; b = 42 - varOffset * 0.5;
+                            break;
+                        case TILES.GLACIAL_PERMAFROST:
+                            r = 207 - varOffset; g = 250 - varOffset; b = 254;
+                            break;
+                        case TILES.RADIOACTIVE_WASTE:
+                            r = 132; g = 204 + Math.sin(this.animTime * 3.5 + x * 0.2) * 30; b = 22;
+                            break;
+                        case TILES.AETHER_SOIL:
+                            r = 129 - varOffset; g = 140 - varOffset; b = 248 - varOffset;
+                            if ((x * 5 + y * 11) % 8 === 0) { r = 192; g = 132; b = 252; }
+                            break;
+                        case TILES.DEEP_TRENCH:
+                            r = 3; g = 7 + waterWave * 0.2; b = 18 + waterWave * 0.3;
+                            break;
+                        case TILES.BASALT_MESA:
+                            r = 51 - varOffset; g = 65 - varOffset; b = 85 - varOffset;
+                            break;
+                        case TILES.SACRED_SOIL:
+                            r = 254; g = 240 - varOffset; b = 138;
+                            if ((x * 9 + y * 7 + Math.floor(this.animTime * 4)) % 13 === 0) { r = 255; g = 255; b = 255; }
+                            break;
+                        case TILES.CRYSTAL_GEODE:
+                            r = 192 - varOffset; g = 132 - varOffset; b = 252 - varOffset;
+                            if ((x * 11 + y * 5) % 6 === 0) { r = 245; g = 208; b = 254; }
+                            break;
+                        case TILES.SUNBAKED_CLAY:
+                            r = 234 - varOffset; g = 88 - varOffset; b = 12 - varOffset;
+                            break;
+                        case TILES.TOXIC_SLIME:
+                            r = 34; g = 197 + Math.sin(this.animTime * 3.2 + y * 0.2) * 35; b = 94;
+                            break;
+                        case TILES.LIVING_VINES:
+                            r = 22 - varOffset; g = 101 - varOffset; b = 52 - varOffset;
+                            if ((x * 7 + y * 3) % 5 === 0) { r = 74; g = 222; b = 128; }
+                            break;
+                        case TILES.STAR_METAL_ORE:
+                            r = 99 - varOffset * 0.5; g = 102 - varOffset * 0.5; b = 241;
+                            if ((x * 13 + y * 11) % 9 === 0) { r = 224; g = 231; b = 255; }
+                            break;
+                        case TILES.FLOATING_ROCK:
+                            r = 100 - varOffset; g = 116 - varOffset; b = 139 - varOffset;
+                            break;
+                        case TILES.MAGMA_FISSURE:
+                            r = 220; g = 38 + Math.sin(this.animTime * 4 + x * 0.3) * 30; b = 38;
+                            break;
+                        case TILES.LUSH_MEADOW:
+                            r = 163 - varOffset; g = 230 - varOffset; b = 53 - varOffset;
+                            if ((x * 7 + y * 11) % 9 === 0) { r = 244; g = 114; b = 182; } // Wildflower pink
+                            else if ((x * 13 + y * 5) % 11 === 0) { r = 250; g = 204; b = 21; } // Wildflower yellow
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
@@ -2018,6 +2087,75 @@ class Renderer {
                 ctx.fillStyle = '#f97316';
                 ctx.fillRect(ent.vx < 0 ? -3 : 2, -1, 2, 2);
                 ctx.restore();
+            } else if (ent.weapon === 'void_halberd') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slash = ent.attackCooldown > 10 ? Math.sin(this.animTime * 20) * 0.8 : 0.3;
+                ctx.rotate(slash * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(-0.8, -size * 1.8, 1.6, size * 2.2);
+                ctx.fillStyle = '#6366f1';
+                ctx.fillRect(-size * 0.8, -size * 1.8, size * 1.2, 2);
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(-size * 1.0, -size * 1.6, size * 0.5, 3);
+                ctx.restore();
+            } else if (ent.weapon === 'frost_scythe') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const slash = ent.attackCooldown > 10 ? Math.sin(this.animTime * 20) * 0.8 : 0.3;
+                ctx.rotate(slash * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-0.7, -size * 1.6, 1.4, size * 2.0);
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(-size * 1.2, -size * 1.6, size * 1.4, 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-size * 1.4, -size * 1.4, size * 0.4, 2);
+                ctx.restore();
+            } else if (ent.weapon === 'plasma_cannon') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.8 : size * 0.8), py);
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(ent.vx < 0 ? -8 : 0, -3, 8, 5);
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillRect(ent.vx < 0 ? -9 : 7, -2, 2.5, 3);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(ent.vx < 0 ? -5 : 2, -1, 3, 2);
+                ctx.restore();
+            } else if (ent.weapon === 'arcane_crossbow') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.6 : size * 0.6), py);
+                ctx.fillStyle = '#581c87';
+                ctx.fillRect(ent.vx < 0 ? -5 : 0, -1, 5, 2);
+                ctx.fillStyle = '#c084fc';
+                ctx.fillRect(ent.vx < 0 ? -3 : 2, -3, 1.5, 6);
+                ctx.restore();
+            } else if (ent.weapon === 'chaos_flail') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const swing = Math.sin(this.animTime * 15) * 0.8;
+                ctx.rotate(swing * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-0.6, 0, 1.2, size * 0.8);
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(-1, -size * 0.5, 2, size * 0.5);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(-2.5, -size * 0.9, 5, 5);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-1, -size * 0.9 + 1.5, 2, 2);
+                ctx.restore();
+            } else if (ent.weapon === 'sun_spear') {
+                ctx.save();
+                ctx.translate(px + (ent.vx < 0 ? -size * 0.7 : size * 0.7), py);
+                const thrust = ent.attackCooldown > 10 ? Math.sin(this.animTime * 20) * 0.6 : 0.2;
+                ctx.rotate(thrust * (ent.vx < 0 ? -1 : 1));
+                ctx.fillStyle = '#ca8a04';
+                ctx.fillRect(-0.7, -size * 1.8, 1.4, size * 2.2);
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillRect(-1.8, -size * 1.9, 3.6, 3.5);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-0.6, -size * 2.0, 1.2, 1.8);
+                ctx.restore();
             }
 
             // Overclock Electric Energy Aura
@@ -2071,7 +2209,7 @@ class Renderer {
                     swamp_behemoth: 'BEHEMOTH', mammoth: 'MAMMOTH'
                 };
                 const tagPrefix = tagNames[ent.type] || 'HERO';
-                const tagText = `${tagPrefix} [WASD / SPACE / Q]`;
+                const tagText = `${tagPrefix} [WASD / SPACE / Q / F: 1st-Person]`;
                 ctx.font = 'bold 3px monospace';
                 const textWidth = ctx.measureText(tagText).width;
                 ctx.fillRect(px - textWidth / 2 - 1, py - size - 12, textWidth + 2, 4.2);

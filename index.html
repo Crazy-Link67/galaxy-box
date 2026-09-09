@@ -48,12 +48,40 @@
             <button class="time-btn" data-speed="5" title="Hyper Speed">5x</button>
             <button class="time-btn" data-speed="10" title="Ultra Fast Speed">10x</button>
             <button class="time-btn" id="btn-quick-save" title="World Save & Load Menu (Ctrl+S)">💾 Save</button>
-            <button class="time-btn" id="btn-toggle-3d" title="Toggle 2D / 3D Perspective Mode (V)">🌐 3D</button>
-            <button class="time-btn" id="btn-toggle-fpv" title="Toggle First-Person Mode (F)">👁️ FPV</button>
-            <button class="time-btn" id="btn-open-wiki" title="Open GalaxyPedia Encyclopedia (K or F1)">📖 Wiki</button>
+            <button class="time-btn time-btn-accent" id="btn-toggle-3d" title="Toggle 2D / 3D Perspective Mode (V)">🌐 3D (V)</button>
+            <button class="time-btn time-btn-fpv" id="btn-toggle-fpv" title="Toggle First-Person Mode (F)">👁️ 1st Person (F)</button>
+            <button class="time-btn time-btn-wiki" id="btn-open-wiki" title="Open GalaxyPedia Encyclopedia (K or F1)">📖 Codex (K)</button>
             <button class="time-btn" id="btn-cinematic" title="Toggle Cinematic Mode (H)">🎬</button>
             <button class="time-btn" id="btn-install-pwa" title="Install GalaxyBox as App" style="display:none; background: linear-gradient(135deg, #4f46e5, #9333ea); color:#fff; border-color:#818cf8; font-weight:bold;">📲 Install</button>
         </div>
+    </div>
+
+    <!-- Prominent Quick Access Action Bar -->
+    <div id="quick-access-bar" class="quick-access-bar">
+        <button id="qa-fpv-btn" class="qa-btn qa-btn-fpv" title="Enter 3D First-Person View (Press 'F'). Auto-controls creature or hero!">
+            <span class="qa-icon">👁️</span>
+            <div class="qa-label-group">
+                <span class="qa-title">FIRST PERSON</span>
+                <span class="qa-sub">Possess View</span>
+            </div>
+            <span class="qa-hotkey">F</span>
+        </button>
+        <button id="qa-codex-btn" class="qa-btn qa-btn-codex" title="Open GalaxyPedia Codex Encyclopedia (Press 'K' or 'F1')">
+            <span class="qa-icon">📖</span>
+            <div class="qa-label-group">
+                <span class="qa-title">GALAXY CODEX</span>
+                <span class="qa-sub">Encyclopedia Wiki</span>
+            </div>
+            <span class="qa-hotkey">K</span>
+        </button>
+        <button id="qa-3d-btn" class="qa-btn qa-btn-3d" title="Toggle 3D World Perspective (Press 'V')">
+            <span class="qa-icon">🌐</span>
+            <div class="qa-label-group">
+                <span class="qa-title">3D VIEW</span>
+                <span class="qa-sub">Orbit Camera</span>
+            </div>
+            <span class="qa-hotkey">V</span>
+        </button>
     </div>
 
     <!-- Tool Info & Brush Size HUD -->
@@ -82,16 +110,25 @@
         </div>
     </div>
 
-    <!-- Bottom Floating Dock: Dynamic Tool Palette + 6 Category Tabs -->
+    <!-- Bottom Floating Dock: Dynamic Tool Palette + 6 Category Tabs + Quick Launchers -->
     <div id="bottom-hud">
         <!-- Active Sub-tool Palette -->
         <div id="tool-palette">
             <!-- Dynamically populated by active category -->
         </div>
 
-        <!-- 6 Main Category Tabs -->
-        <div id="category-tabs">
-            <!-- Dynamically populated -->
+        <!-- Dock Bottom Row: Categories + Dedicated Quick Launchers -->
+        <div class="dock-bottom-row">
+            <!-- 6 Main Category Tabs -->
+            <div id="category-tabs">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Dock Quick Launcher Shortcuts -->
+            <div class="dock-quick-launchers">
+                <button class="dock-qa-btn dock-qa-fpv" id="dock-btn-fpv" title="Enter First-Person Mode (F)">👁️ 1st Person (F)</button>
+                <button class="dock-qa-btn dock-qa-codex" id="dock-btn-codex" title="Open GalaxyPedia Codex Encyclopedia (K)">📖 Codex (K)</button>
+            </div>
         </div>
     </div>
 

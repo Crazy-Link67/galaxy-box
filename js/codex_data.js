@@ -6984,5 +6984,3306 @@ if (typeof window !== "undefined") {
     window.GALAXY_PEDIA = GALAXY_PEDIA;
 }
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { GALAXY_PEDIA };
+    module.exports = { GALAXY_PEDIA ,
+    "tachyon_lance": {
+            "id": "tachyon_lance",
+            "category": "Destruction & Chaos",
+            "title": "Tachyon Lance",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "tachyon_lance",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "tachyon_lance",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Tachyon Lance: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "High-energy tachyon particle beam boring straight through the crust.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "tachyon_lance",
+            "actionLabel": "Use Tachyon Lance"
+    },
+    "subspace_torpedo": {
+            "id": "subspace_torpedo",
+            "category": "Destruction & Chaos",
+            "title": "Subspace Torpedo",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "subspace_torpedo",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "subspace_torpedo",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Subspace Torpedo: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Spatial torpedo warping underground before exploding in magma.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "subspace_torpedo",
+            "actionLabel": "Use Subspace Torpedo"
+    },
+    "solar_beam": {
+            "id": "solar_beam",
+            "category": "Destruction & Chaos",
+            "title": "Solar Death Beam",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "solar_beam",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "solar_beam",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Solar Death Beam: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Focused sunlight beam incinerating everything in a concentrated beam.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "solar_beam",
+            "actionLabel": "Use Solar Death Beam"
+    },
+    "dark_matter_detonator": {
+            "id": "dark_matter_detonator",
+            "category": "Destruction & Chaos",
+            "title": "Dark Matter Detonator",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "dark_matter_detonator",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "dark_matter_detonator",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Dark Matter Detonator: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Spreads dark matter implosion pockets dissolving matter.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "dark_matter_detonator",
+            "actionLabel": "Use Dark Matter Detonator"
+    },
+    "void_drill": {
+            "id": "void_drill",
+            "category": "Destruction & Chaos",
+            "title": "Void Drill",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "void_drill",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "void_drill",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Void Drill: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Rotary seismic bore drilling vertical shafts down to bedrock.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "void_drill",
+            "actionLabel": "Use Void Drill"
+    },
+    "magma_mortar": {
+            "id": "magma_mortar",
+            "category": "Destruction & Chaos",
+            "title": "Magma Mortar",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "magma_mortar",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "magma_mortar",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Magma Mortar: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Artillery salvo raining volcanic magma bombs across the area.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "magma_mortar",
+            "actionLabel": "Use Magma Mortar"
+    },
+    "hellfire_vortex": {
+            "id": "hellfire_vortex",
+            "category": "Destruction & Chaos",
+            "title": "Hellfire Vortex",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "hellfire_vortex",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "hellfire_vortex",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Hellfire Vortex: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Twisting column of roaring hellfire incinerating the region.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "hellfire_vortex",
+            "actionLabel": "Use Hellfire Vortex"
+    },
+    "gravity_well": {
+            "id": "gravity_well",
+            "category": "Destruction & Chaos",
+            "title": "Gravity Well",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "gravity_well",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "gravity_well",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Gravity Well: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Crushes all surrounding structures and units inward.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "gravity_well",
+            "actionLabel": "Use Gravity Well"
+    },
+    "antimatter_singularity": {
+            "id": "antimatter_singularity",
+            "category": "Destruction & Chaos",
+            "title": "Antimatter Singularity",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "antimatter_singularity",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "antimatter_singularity",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Antimatter Singularity: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Micro-singularity vaporizing matter into absolute void.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "antimatter_singularity",
+            "actionLabel": "Use Antimatter Singularity"
+    },
+    "orbital_kinetic_harpoon": {
+            "id": "orbital_kinetic_harpoon",
+            "category": "Destruction & Chaos",
+            "title": "Kinetic Harpoon",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "orbital_kinetic_harpoon",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "orbital_kinetic_harpoon",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Kinetic Harpoon: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Dense orbital harpoon striking ground with kinetic fury.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "orbital_kinetic_harpoon",
+            "actionLabel": "Use Kinetic Harpoon"
+    },
+    "gamma_ray_pulsar": {
+            "id": "gamma_ray_pulsar",
+            "category": "Destruction & Chaos",
+            "title": "Gamma Ray Pulsar",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "gamma_ray_pulsar",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "gamma_ray_pulsar",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Gamma Ray Pulsar: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Irradiates terrain leaving radioactive wasteland slag.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "gamma_ray_pulsar",
+            "actionLabel": "Use Gamma Ray Pulsar"
+    },
+    "chronos_decay_bomb": {
+            "id": "chronos_decay_bomb",
+            "category": "Destruction & Chaos",
+            "title": "Chronos Decay Bomb",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "chronos_decay_bomb",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "chronos_decay_bomb",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Chronos Decay Bomb: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Ages forests and structures into dust and skeletons.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "chronos_decay_bomb",
+            "actionLabel": "Use Chronos Decay Bomb"
+    },
+    "plasma_torrent": {
+            "id": "plasma_torrent",
+            "category": "Destruction & Chaos",
+            "title": "Plasma Torrent",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "plasma_torrent",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "plasma_torrent",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Plasma Torrent: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Continuous torrent of ionized plasma scouring the battlefield.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "plasma_torrent",
+            "actionLabel": "Use Plasma Torrent"
+    },
+    "seismic_splitter": {
+            "id": "seismic_splitter",
+            "category": "Destruction & Chaos",
+            "title": "Seismic Splitter",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "seismic_splitter",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "seismic_splitter",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Seismic Splitter: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Tears a straight continental faultline spilling molten rock.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "seismic_splitter",
+            "actionLabel": "Use Seismic Splitter"
+    },
+    "acid_hail": {
+            "id": "acid_hail",
+            "category": "Destruction & Chaos",
+            "title": "Corrosive Acid Hail",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "acid_hail",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "acid_hail",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Corrosive Acid Hail: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Acidic hail barrage dissolving organic matter and stone.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "acid_hail",
+            "actionLabel": "Use Corrosive Acid Hail"
+    },
+    "bioweapon_siphon": {
+            "id": "bioweapon_siphon",
+            "category": "Destruction & Chaos",
+            "title": "Bioweapon Siphon",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "bioweapon_siphon",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "bioweapon_siphon",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Bioweapon Siphon: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Seeds necrotic green slime mutating and poisoning life.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "bioweapon_siphon",
+            "actionLabel": "Use Bioweapon Siphon"
+    },
+    "cryo_implosion": {
+            "id": "cryo_implosion",
+            "category": "Destruction & Chaos",
+            "title": "Cryo Implosion",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "cryo_implosion",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "cryo_implosion",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Cryo Implosion: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Sub-zero shockwave glaciating lava into obsidian and water into permafrost.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "cryo_implosion",
+            "actionLabel": "Use Cryo Implosion"
+    },
+    "chaos_meteor": {
+            "id": "chaos_meteor",
+            "category": "Destruction & Chaos",
+            "title": "Chaos Meteor",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "chaos_meteor",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "chaos_meteor",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Chaos Meteor: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Prismatic meteor striking with radiant crystals and shockwaves.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "chaos_meteor",
+            "actionLabel": "Use Chaos Meteor"
+    },
+    "emp_cascade": {
+            "id": "emp_cascade",
+            "category": "Destruction & Chaos",
+            "title": "EMP Cascade",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "emp_cascade",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "emp_cascade",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "EMP Cascade: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Electromagnetic cascade disabling mechs, tanks, and vehicles.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "emp_cascade",
+            "actionLabel": "Use EMP Cascade"
+    },
+    "apocalypse_bell": {
+            "id": "apocalypse_bell",
+            "category": "Destruction & Chaos",
+            "title": "Apocalypse Bell",
+            "subtitle": "Destruction & Chaos Entry",
+            "tags": [
+                    "apocalypse_bell",
+                    "destruction",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Destruction & Chaos",
+                    "Tool ID": "apocalypse_bell",
+                    "Damage Tier": "Catastrophic (Apocalypse)",
+                    "Blast Radius": "Massive Multi-Tile",
+                    "Area Effect": "High Kinetic / Thermal Flux"
+            },
+            "abilities": [
+                    "Apocalypse Bell: Devastates structures and disintegrates living entities.",
+                    "Chain Reaction: Creates fiery or explosive cascades across neighboring terrain."
+            ],
+            "lore": "Resonant sonic shockwave hurling entities away with thunder.",
+            "tactics": "Target enemy warbands, fortress walls, or overgrown monster nests to swiftly neutralize threats.",
+            "counters": "Forcefields, Divine Shield, Cryo Freezing, or Aegis Sanctuary Domes can mitigate direct blast damage.",
+            "related": [],
+            "toolId": "apocalypse_bell",
+            "actionLabel": "Use Apocalypse Bell"
+    },
+    "blood_moon": {
+            "id": "blood_moon",
+            "category": "Nature & Disasters",
+            "title": "Blood Moon",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "blood_moon",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "blood_moon",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Blood Moon: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Crimson lunar eclipse enraging demons, wolves, and undead.",
+            "tactics": "Use Blood Moon to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "blood_moon",
+            "actionLabel": "Use Blood Moon"
+    },
+    "ball_lightning": {
+            "id": "ball_lightning",
+            "category": "Nature & Disasters",
+            "title": "Ball Lightning",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "ball_lightning",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "ball_lightning",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Ball Lightning: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Floating spherical plasma orbs drifting and discharging sparks.",
+            "tactics": "Use Ball Lightning to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "ball_lightning",
+            "actionLabel": "Use Ball Lightning"
+    },
+    "solar_wind": {
+            "id": "solar_wind",
+            "category": "Nature & Disasters",
+            "title": "Solar Wind",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "solar_wind",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "solar_wind",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Solar Wind: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Cosmic solar storm showering auroral flares and stardust.",
+            "tactics": "Use Solar Wind to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "solar_wind",
+            "actionLabel": "Use Solar Wind"
+    },
+    "supercell_cyclone": {
+            "id": "supercell_cyclone",
+            "category": "Nature & Disasters",
+            "title": "Supercell Cyclone",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "supercell_cyclone",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "supercell_cyclone",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Supercell Cyclone: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Massive rotating thunderstorm with gale winds and tornados.",
+            "tactics": "Use Supercell Cyclone to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "supercell_cyclone",
+            "actionLabel": "Use Supercell Cyclone"
+    },
+    "cryo_deluge": {
+            "id": "cryo_deluge",
+            "category": "Nature & Disasters",
+            "title": "Cryo Deluge",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "cryo_deluge",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "cryo_deluge",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Cryo Deluge: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Arctic deluge rapidly freezing rivers and coastal waters.",
+            "tactics": "Use Cryo Deluge to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "cryo_deluge",
+            "actionLabel": "Use Cryo Deluge"
+    },
+    "magma_geyser": {
+            "id": "magma_geyser",
+            "category": "Nature & Disasters",
+            "title": "Magma Geyser",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "magma_geyser",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "magma_geyser",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Magma Geyser: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Thermal volcanic geyser erupting molten lava into the skies.",
+            "tactics": "Use Magma Geyser to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "magma_geyser",
+            "actionLabel": "Use Magma Geyser"
+    },
+    "spore_fog": {
+            "id": "spore_fog",
+            "category": "Nature & Disasters",
+            "title": "Spore Fog",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "spore_fog",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "spore_fog",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Spore Fog: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Drifting fungal spores sprouting giant mushrooms and mycelium.",
+            "tactics": "Use Spore Fog to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "spore_fog",
+            "actionLabel": "Use Spore Fog"
+    },
+    "static_squall": {
+            "id": "static_squall",
+            "category": "Nature & Disasters",
+            "title": "Static Squall",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "static_squall",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "static_squall",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Static Squall: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "High-frequency electrical storm crackling through skies.",
+            "tactics": "Use Static Squall to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "static_squall",
+            "actionLabel": "Use Static Squall"
+    },
+    "pyroclastic_cloud": {
+            "id": "pyroclastic_cloud",
+            "category": "Nature & Disasters",
+            "title": "Pyroclastic Cloud",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "pyroclastic_cloud",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "pyroclastic_cloud",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Pyroclastic Cloud: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Avalanche of superheated ash and suffocating volcanic gases.",
+            "tactics": "Use Pyroclastic Cloud to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "pyroclastic_cloud",
+            "actionLabel": "Use Pyroclastic Cloud"
+    },
+    "dust_devil": {
+            "id": "dust_devil",
+            "category": "Nature & Disasters",
+            "title": "Dust Devil",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "dust_devil",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "dust_devil",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Dust Devil: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Swirling desert dust twister transforming earth into golden sand.",
+            "tactics": "Use Dust Devil to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "dust_devil",
+            "actionLabel": "Use Dust Devil"
+    },
+    "magnetic_aurora": {
+            "id": "magnetic_aurora",
+            "category": "Nature & Disasters",
+            "title": "Magnetic Aurora",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "magnetic_aurora",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "magnetic_aurora",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Magnetic Aurora: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Enchanting magnetic light show restoring life and enforcing peace.",
+            "tactics": "Use Magnetic Aurora to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "magnetic_aurora",
+            "actionLabel": "Use Magnetic Aurora"
+    },
+    "hailstorm": {
+            "id": "hailstorm",
+            "category": "Nature & Disasters",
+            "title": "Severe Hailstorm",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "hailstorm",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "hailstorm",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Severe Hailstorm: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Torrential ice pelt storm chilling terrain.",
+            "tactics": "Use Severe Hailstorm to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "hailstorm",
+            "actionLabel": "Use Severe Hailstorm"
+    },
+    "acid_geyser": {
+            "id": "acid_geyser",
+            "category": "Nature & Disasters",
+            "title": "Acid Geyser",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "acid_geyser",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "acid_geyser",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Acid Geyser: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Pressurized subterranean acid eruption burning surrounding soil.",
+            "tactics": "Use Acid Geyser to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "acid_geyser",
+            "actionLabel": "Use Acid Geyser"
+    },
+    "glacial_crevasse": {
+            "id": "glacial_crevasse",
+            "category": "Nature & Disasters",
+            "title": "Glacial Crevasse",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "glacial_crevasse",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "glacial_crevasse",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Glacial Crevasse: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Splits open a jagged icy chasm with permafrost edges.",
+            "tactics": "Use Glacial Crevasse to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "glacial_crevasse",
+            "actionLabel": "Use Glacial Crevasse"
+    },
+    "ozone_tear": {
+            "id": "ozone_tear",
+            "category": "Nature & Disasters",
+            "title": "Ozone Tear",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "ozone_tear",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "ozone_tear",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Ozone Tear: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Atmospheric rupture allowing scorching ultraviolet rays through.",
+            "tactics": "Use Ozone Tear to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "ozone_tear",
+            "actionLabel": "Use Ozone Tear"
+    },
+    "cosmic_radiation": {
+            "id": "cosmic_radiation",
+            "category": "Nature & Disasters",
+            "title": "Cosmic Radiation",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "cosmic_radiation",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "cosmic_radiation",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Cosmic Radiation: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Infusion of celestial rays mutating and empowering organisms.",
+            "tactics": "Use Cosmic Radiation to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "cosmic_radiation",
+            "actionLabel": "Use Cosmic Radiation"
+    },
+    "maelstrom_vortex": {
+            "id": "maelstrom_vortex",
+            "category": "Nature & Disasters",
+            "title": "Maelstrom Vortex",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "maelstrom_vortex",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "maelstrom_vortex",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Maelstrom Vortex: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Violent oceanic whirlpool pulling waterborne entities down.",
+            "tactics": "Use Maelstrom Vortex to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "maelstrom_vortex",
+            "actionLabel": "Use Maelstrom Vortex"
+    },
+    "swamp_gas_eruption": {
+            "id": "swamp_gas_eruption",
+            "category": "Nature & Disasters",
+            "title": "Swamp Gas Eruption",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "swamp_gas_eruption",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "swamp_gas_eruption",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Swamp Gas Eruption: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Volatile subterranean marsh gas bubbling into poison swamp.",
+            "tactics": "Use Swamp Gas Eruption to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "swamp_gas_eruption",
+            "actionLabel": "Use Swamp Gas Eruption"
+    },
+    "radiant_sunshower": {
+            "id": "radiant_sunshower",
+            "category": "Nature & Disasters",
+            "title": "Radiant Sunshower",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "radiant_sunshower",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "radiant_sunshower",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Radiant Sunshower: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Warm sunshower sprouting vibrant lush wildflower meadows.",
+            "tactics": "Use Radiant Sunshower to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "radiant_sunshower",
+            "actionLabel": "Use Radiant Sunshower"
+    },
+    "great_deluge": {
+            "id": "great_deluge",
+            "category": "Nature & Disasters",
+            "title": "Great Deluge",
+            "subtitle": "Nature & Disasters Entry",
+            "tags": [
+                    "great_deluge",
+                    "nature",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Nature & Disasters",
+                    "Tool ID": "great_deluge",
+                    "Force Type": "Planetary Weather & Geology",
+                    "Atmospheric Impact": "Extreme",
+                    "Duration": "Sustained Phenomenon"
+            },
+            "abilities": [
+                    "Great Deluge: Alters global or localized atmospheric and tectonic conditions.",
+                    "Environmental Metamorphosis: Transforms surface biomes and temperature dynamically."
+            ],
+            "lore": "Biblical ocean rainstorm turning desert sands into lakes.",
+            "tactics": "Use Great Deluge to reshape biomes, spark organic evolution, or clear drought and stagnation across continents.",
+            "counters": "Counter with opposite weather powers, Divine Panacea, or Climate Stabilizer tools.",
+            "related": [],
+            "toolId": "great_deluge",
+            "actionLabel": "Use Great Deluge"
+    },
+    "ash_wasteland": {
+            "id": "ash_wasteland",
+            "category": "Landscaping & Biomes",
+            "title": "Ash Wasteland",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "ash_wasteland",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "ash_wasteland",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Desolate gray volcanic ash flats from cataclysms.",
+            "tactics": "Paint Ash Wasteland to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "ash_wasteland",
+            "actionLabel": "Paint Ash Wasteland"
+    },
+    "cursed_marsh": {
+            "id": "cursed_marsh",
+            "category": "Landscaping & Biomes",
+            "title": "Cursed Marsh",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "cursed_marsh",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "cursed_marsh",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Dark necrotic swampland draining life from passersby.",
+            "tactics": "Paint Cursed Marsh to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "cursed_marsh",
+            "actionLabel": "Paint Cursed Marsh"
+    },
+    "bioluminescent_coral": {
+            "id": "bioluminescent_coral",
+            "category": "Landscaping & Biomes",
+            "title": "Bioluminescent Coral",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "bioluminescent_coral",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "bioluminescent_coral",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Vibrant glowing oceanic reefs radiating aqua and pink light.",
+            "tactics": "Paint Bioluminescent Coral to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "bioluminescent_coral",
+            "actionLabel": "Paint Bioluminescent Coral"
+    },
+    "petrified_wood": {
+            "id": "petrified_wood",
+            "category": "Landscaping & Biomes",
+            "title": "Petrified Wood",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "petrified_wood",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "petrified_wood",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Ancient fossilized timber hard as stone and mineral.",
+            "tactics": "Paint Petrified Wood to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "petrified_wood",
+            "actionLabel": "Paint Petrified Wood"
+    },
+    "golden_sand": {
+            "id": "golden_sand",
+            "category": "Landscaping & Biomes",
+            "title": "Golden Sand",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "golden_sand",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "golden_sand",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Shimmering desert sand dunes infused with mineral dust.",
+            "tactics": "Paint Golden Sand to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "golden_sand",
+            "actionLabel": "Paint Golden Sand"
+    },
+    "obsidian_spire": {
+            "id": "obsidian_spire",
+            "category": "Landscaping & Biomes",
+            "title": "Obsidian Spire",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "obsidian_spire",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "obsidian_spire",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Jagged volcanic glass monoliths projecting upward.",
+            "tactics": "Paint Obsidian Spire to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "obsidian_spire",
+            "actionLabel": "Paint Obsidian Spire"
+    },
+    "glacial_permafrost": {
+            "id": "glacial_permafrost",
+            "category": "Landscaping & Biomes",
+            "title": "Glacial Permafrost",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "glacial_permafrost",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "glacial_permafrost",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Hard-packed prehistoric ice and frozen loam.",
+            "tactics": "Paint Glacial Permafrost to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "glacial_permafrost",
+            "actionLabel": "Paint Glacial Permafrost"
+    },
+    "radioactive_waste": {
+            "id": "radioactive_waste",
+            "category": "Landscaping & Biomes",
+            "title": "Radioactive Slag",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "radioactive_waste",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "radioactive_waste",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Irradiated glowing green nuclear fallout sediment.",
+            "tactics": "Paint Radioactive Slag to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "radioactive_waste",
+            "actionLabel": "Paint Radioactive Slag"
+    },
+    "aether_soil": {
+            "id": "aether_soil",
+            "category": "Landscaping & Biomes",
+            "title": "Aether Soil",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "aether_soil",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "aether_soil",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Celestial enchanted earth nourishing glowing flora.",
+            "tactics": "Paint Aether Soil to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "aether_soil",
+            "actionLabel": "Paint Aether Soil"
+    },
+    "deep_trench": {
+            "id": "deep_trench",
+            "category": "Landscaping & Biomes",
+            "title": "Deep Abyssal Trench",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "deep_trench",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "deep_trench",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Bottomless ocean chasm plunging into utter darkness.",
+            "tactics": "Paint Deep Abyssal Trench to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "deep_trench",
+            "actionLabel": "Paint Deep Abyssal Trench"
+    },
+    "basalt_mesa": {
+            "id": "basalt_mesa",
+            "category": "Landscaping & Biomes",
+            "title": "Basalt Mesa",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "basalt_mesa",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "basalt_mesa",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Steep-sided volcanic basalt rock plateaus.",
+            "tactics": "Paint Basalt Mesa to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "basalt_mesa",
+            "actionLabel": "Paint Basalt Mesa"
+    },
+    "sacred_soil": {
+            "id": "sacred_soil",
+            "category": "Landscaping & Biomes",
+            "title": "Sacred Soil",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "sacred_soil",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "sacred_soil",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Blessed holy earth preventing corruption and blight.",
+            "tactics": "Paint Sacred Soil to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "sacred_soil",
+            "actionLabel": "Paint Sacred Soil"
+    },
+    "crystal_geode": {
+            "id": "crystal_geode",
+            "category": "Landscaping & Biomes",
+            "title": "Crystal Geode",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "crystal_geode",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "crystal_geode",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Prismatic gemstone bedrock sparkling with multi-colored facets.",
+            "tactics": "Paint Crystal Geode to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "crystal_geode",
+            "actionLabel": "Paint Crystal Geode"
+    },
+    "sunbaked_clay": {
+            "id": "sunbaked_clay",
+            "category": "Landscaping & Biomes",
+            "title": "Sunbaked Clay",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "sunbaked_clay",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "sunbaked_clay",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Terracotta clay plains hardened under intense sunlight.",
+            "tactics": "Paint Sunbaked Clay to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "sunbaked_clay",
+            "actionLabel": "Paint Sunbaked Clay"
+    },
+    "toxic_slime": {
+            "id": "toxic_slime",
+            "category": "Landscaping & Biomes",
+            "title": "Toxic Slime",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "toxic_slime",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "toxic_slime",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Bubbling caustic green ooze melting non-native biology.",
+            "tactics": "Paint Toxic Slime to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "toxic_slime",
+            "actionLabel": "Paint Toxic Slime"
+    },
+    "living_vines": {
+            "id": "living_vines",
+            "category": "Landscaping & Biomes",
+            "title": "Living Vines",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "living_vines",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "living_vines",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Sentient tangled jungle creepers spreading across surfaces.",
+            "tactics": "Paint Living Vines to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "living_vines",
+            "actionLabel": "Paint Living Vines"
+    },
+    "star_metal_ore": {
+            "id": "star_metal_ore",
+            "category": "Landscaping & Biomes",
+            "title": "Star Metal Ore",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "star_metal_ore",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "star_metal_ore",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Fallen meteoric ore veins containing indestructible celestial alloys.",
+            "tactics": "Paint Star Metal Ore to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "star_metal_ore",
+            "actionLabel": "Paint Star Metal Ore"
+    },
+    "floating_rock": {
+            "id": "floating_rock",
+            "category": "Landscaping & Biomes",
+            "title": "Aether Floating Rock",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "floating_rock",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "floating_rock",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Anti-gravity floating islands levitating in the air.",
+            "tactics": "Paint Aether Floating Rock to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "floating_rock",
+            "actionLabel": "Paint Aether Floating Rock"
+    },
+    "magma_fissure": {
+            "id": "magma_fissure",
+            "category": "Landscaping & Biomes",
+            "title": "Magma Fissure",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "magma_fissure",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "magma_fissure",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Deep tectonic faultline venting molten magma.",
+            "tactics": "Paint Magma Fissure to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "magma_fissure",
+            "actionLabel": "Paint Magma Fissure"
+    },
+    "lush_meadow": {
+            "id": "lush_meadow",
+            "category": "Landscaping & Biomes",
+            "title": "Lush Meadow",
+            "subtitle": "Landscaping & Biomes Entry",
+            "tags": [
+                    "lush_meadow",
+                    "landscaping",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Landscaping & Biomes",
+                    "Tool ID": "lush_meadow",
+                    "Material Type": "Geological / Ecological Substrate",
+                    "Hardness": "High",
+                    "Flammability": "Variable"
+            },
+            "abilities": [
+                    "Terrain Substrate: Serves as foundation for kingdoms, flora, and mineral harvesting.",
+                    "Elemental Interaction: Reacts dynamically with water, lava, acid, and temperature."
+            ],
+            "lore": "Flowering wildflower meadows teeming with butterflies.",
+            "tactics": "Paint Lush Meadow to establish specialized resource biomes or defensive natural barriers around allied settlements.",
+            "counters": "Can be excavated, blown away with high explosives, or terraformed with brushes.",
+            "related": [],
+            "toolId": "lush_meadow",
+            "actionLabel": "Paint Lush Meadow"
+    },
+    "equip_void_halberd": {
+            "id": "equip_void_halberd",
+            "category": "Powers & Weapons",
+            "title": "Equip: Void Halberd",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_void_halberd",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_void_halberd",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with an abyssal polearm cleaving dark energy (+45 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_void_halberd",
+            "actionLabel": "Equip Equip: Void Halberd"
+    },
+    "equip_frost_scythe": {
+            "id": "equip_frost_scythe",
+            "category": "Powers & Weapons",
+            "title": "Equip: Frost Scythe",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_frost_scythe",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_frost_scythe",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with a glacial crescent scythe that freezes foes (+35 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_frost_scythe",
+            "actionLabel": "Equip Equip: Frost Scythe"
+    },
+    "equip_plasma_cannon": {
+            "id": "equip_plasma_cannon",
+            "category": "Powers & Weapons",
+            "title": "Equip: Heavy Plasma Cannon",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_plasma_cannon",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_plasma_cannon",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with shoulder-mounted heavy plasma artillery (+50 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_plasma_cannon",
+            "actionLabel": "Equip Equip: Heavy Plasma Cannon"
+    },
+    "equip_arcane_crossbow": {
+            "id": "equip_arcane_crossbow",
+            "category": "Powers & Weapons",
+            "title": "Equip: Arcane Crossbow",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_arcane_crossbow",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_arcane_crossbow",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with repeating crossbow firing magic bolts (+30 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_arcane_crossbow",
+            "actionLabel": "Equip Equip: Arcane Crossbow"
+    },
+    "equip_chaos_flail": {
+            "id": "equip_chaos_flail",
+            "category": "Powers & Weapons",
+            "title": "Equip: Chaos Flail",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_chaos_flail",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_chaos_flail",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with spiked flail triggering explosive impacts (+40 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_chaos_flail",
+            "actionLabel": "Equip Equip: Chaos Flail"
+    },
+    "equip_sun_spear": {
+            "id": "equip_sun_spear",
+            "category": "Powers & Weapons",
+            "title": "Equip: Radiant Sun Spear",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "equip_sun_spear",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "equip_sun_spear",
+                    "Item Type": "Legendary Weapon",
+                    "Combat Role": "Offensive / Tactical"
+            },
+            "abilities": [
+                    "Weapon Equip: Arms possessed creatures or highlighted warriors with specialized projectile and melee strikes.",
+                    "Specialized Attack: Delivers high critical damage and elemental projectile bursts."
+            ],
+            "lore": "Arm creature with solar javelin burning with radiant fury (+40 Atk).",
+            "tactics": "Equip onto heroes, champions, or your possessed avatar to turn the tide of kingdom wars.",
+            "counters": "Disarm with Holy Light, defeat the wielder in combat, or strike from outside weapon range.",
+            "related": [],
+            "toolId": "equip_sun_spear",
+            "actionLabel": "Equip Equip: Radiant Sun Spear"
+    },
+    "midas_touch": {
+            "id": "midas_touch",
+            "category": "Powers & Weapons",
+            "title": "Midas Touch",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "midas_touch",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "midas_touch",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Transmutes touched stone and soil into lustrous gold ore veins.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "midas_touch",
+            "actionLabel": "Use Midas Touch"
+    },
+    "plague_cure": {
+            "id": "plague_cure",
+            "category": "Powers & Weapons",
+            "title": "Divine Panacea",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "plague_cure",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "plague_cure",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Global healing light cleansing all diseases, infections, and curses.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "plague_cure",
+            "actionLabel": "Use Divine Panacea"
+    },
+    "chronos_rewind": {
+            "id": "chronos_rewind",
+            "category": "Powers & Weapons",
+            "title": "Chronos Rewind",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "chronos_rewind",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "chronos_rewind",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Restores lost HP to all living entities and cools down burning terrain.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "chronos_rewind",
+            "actionLabel": "Use Chronos Rewind"
+    },
+    "mass_polymorph": {
+            "id": "mass_polymorph",
+            "category": "Powers & Weapons",
+            "title": "Mass Polymorph",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "mass_polymorph",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "mass_polymorph",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Transforms all nearby hostiles and monsters into harmless sheep!",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "mass_polymorph",
+            "actionLabel": "Use Mass Polymorph"
+    },
+    "titan_ascension": {
+            "id": "titan_ascension",
+            "category": "Powers & Weapons",
+            "title": "Titan Ascension",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "titan_ascension",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "titan_ascension",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Ascends target creature to godlike scale with massive HP and seismic steps.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "titan_ascension",
+            "actionLabel": "Use Titan Ascension"
+    },
+    "celestial_dome": {
+            "id": "celestial_dome",
+            "category": "Powers & Weapons",
+            "title": "Aegis Sanctuary Dome",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "celestial_dome",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "celestial_dome",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Deploys a giant luminous protective barrier across the region.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "celestial_dome",
+            "actionLabel": "Use Aegis Sanctuary Dome"
+    },
+    "aether_fountain": {
+            "id": "aether_fountain",
+            "category": "Powers & Weapons",
+            "title": "Aether Geyser",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "aether_fountain",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "aether_fountain",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Spouts celestial glowing mana mist healing and invigorating life.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "aether_fountain",
+            "actionLabel": "Use Aether Geyser"
+    },
+    "seraph_summon": {
+            "id": "seraph_summon",
+            "category": "Powers & Weapons",
+            "title": "Summon Seraph Cohort",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "seraph_summon",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "seraph_summon",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Summons a phalanx of celestial guardian angels.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "seraph_summon",
+            "actionLabel": "Use Summon Seraph Cohort"
+    },
+    "gravity_crush": {
+            "id": "gravity_crush",
+            "category": "Powers & Weapons",
+            "title": "Gravitational Singularity",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "gravity_crush",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "gravity_crush",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Violently slams all airborne and ground creatures into bedrock.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "gravity_crush",
+            "actionLabel": "Use Gravitational Singularity"
+    },
+    "starlight_beam": {
+            "id": "starlight_beam",
+            "category": "Powers & Weapons",
+            "title": "Starlight Beam",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "starlight_beam",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "starlight_beam",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Concentrated celestial beam blessing and rejuvenating allies.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "starlight_beam",
+            "actionLabel": "Use Starlight Beam"
+    },
+    "dragon_tame": {
+            "id": "dragon_tame",
+            "category": "Powers & Weapons",
+            "title": "Dragon Whisper",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "dragon_tame",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "dragon_tame",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Soothes all dragons and mythical beasts into peaceful kingdom allies.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "dragon_tame",
+            "actionLabel": "Use Dragon Whisper"
+    },
+    "peace_dove": {
+            "id": "peace_dove",
+            "category": "Powers & Weapons",
+            "title": "Empyrean Dove",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "peace_dove",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "peace_dove",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Releases sacred doves establishing an enduring world peace pact.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "peace_dove",
+            "actionLabel": "Use Empyrean Dove"
+    },
+    "abyssal_gate": {
+            "id": "abyssal_gate",
+            "category": "Powers & Weapons",
+            "title": "Abyssal Gate",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "abyssal_gate",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "abyssal_gate",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Opens an infernal portal summoning allied nether fiends.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "abyssal_gate",
+            "actionLabel": "Use Abyssal Gate"
+    },
+    "supercharge": {
+            "id": "supercharge",
+            "category": "Powers & Weapons",
+            "title": "Divine Overcharge",
+            "subtitle": "Powers & Weapons Entry",
+            "tags": [
+                    "supercharge",
+                    "powers",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Powers & Weapons",
+                    "Tool ID": "supercharge",
+                    "Power Type": "Divine Intervention",
+                    "Cosmic Tier": "Empyrean"
+            },
+            "abilities": [
+                    "Miracle Manifestation: Bends physical reality to bestow blessings, shields, or transformations.",
+                    "Aether Resonance: Restores harmony and enhances civilization potential."
+            ],
+            "lore": "Instantly supercharges all creatures with maximum energy, speed and shields.",
+            "tactics": "Invoke during critical battles or ecological emergencies to protect cherished civilizations.",
+            "counters": "Nullified only by antimatter singularities and cosmic decay forces.",
+            "related": [],
+            "toolId": "supercharge",
+            "actionLabel": "Use Divine Overcharge"
+    },
+    "storm_griffin": {
+            "id": "storm_griffin",
+            "category": "Creatures & Civs",
+            "title": "Storm Griffin",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "storm_griffin",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "storm_griffin",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Majestic winged griffin firing lightning arcs and diving.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "storm_griffin",
+            "actionLabel": "Spawn Storm Griffin"
+    },
+    "abyssal_angler": {
+            "id": "abyssal_angler",
+            "category": "Creatures & Civs",
+            "title": "Abyssal Angler",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "abyssal_angler",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "abyssal_angler",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Deep sea terror with glowing lure and razor maw.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "abyssal_angler",
+            "actionLabel": "Spawn Abyssal Angler"
+    },
+    "sun_falcon": {
+            "id": "sun_falcon",
+            "category": "Creatures & Civs",
+            "title": "Solar Sun Falcon",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "sun_falcon",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "sun_falcon",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Blazing aerial raptor leaving radiant fire trails.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "sun_falcon",
+            "actionLabel": "Spawn Solar Sun Falcon"
+    },
+    "magma_salamander": {
+            "id": "magma_salamander",
+            "category": "Creatures & Civs",
+            "title": "Magma Salamander",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "magma_salamander",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "magma_salamander",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Volcanic lizard swimming through molten lava.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "magma_salamander",
+            "actionLabel": "Spawn Magma Salamander"
+    },
+    "crystal_spider": {
+            "id": "crystal_spider",
+            "category": "Creatures & Civs",
+            "title": "Crystal Arachnid",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "crystal_spider",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "crystal_spider",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Luminescent prismatic spider weaving crystal webs.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "crystal_spider",
+            "actionLabel": "Spawn Crystal Arachnid"
+    },
+    "void_stalker": {
+            "id": "void_stalker",
+            "category": "Creatures & Civs",
+            "title": "Void Stalker",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "void_stalker",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "void_stalker",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Shadow predator phasing through reality with stealth.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "void_stalker",
+            "actionLabel": "Spawn Void Stalker"
+    },
+    "thunder_ram": {
+            "id": "thunder_ram",
+            "category": "Creatures & Civs",
+            "title": "Thunder Ram",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "thunder_ram",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "thunder_ram",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Horned storm ram charging with electric concussions.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "thunder_ram",
+            "actionLabel": "Spawn Thunder Ram"
+    },
+    "sand_wurm": {
+            "id": "sand_wurm",
+            "category": "Creatures & Civs",
+            "title": "Primeval Sand Wurm",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "sand_wurm",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "sand_wurm",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Segmented desert titan devouring dunes.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "sand_wurm",
+            "actionLabel": "Spawn Primeval Sand Wurm"
+    },
+    "elder_wyrm": {
+            "id": "elder_wyrm",
+            "category": "Creatures & Civs",
+            "title": "Ancient Elder Wyrm",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "elder_wyrm",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "elder_wyrm",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Legendary winged arch-dragon with cosmic beam breath.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "elder_wyrm",
+            "actionLabel": "Spawn Ancient Elder Wyrm"
+    },
+    "chimera": {
+            "id": "chimera",
+            "category": "Creatures & Civs",
+            "title": "Mythic Chimera",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "chimera",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "chimera",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Lion, goat and snake hybrid breathing venom and fire.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "chimera",
+            "actionLabel": "Spawn Mythic Chimera"
+    },
+    "basilisk": {
+            "id": "basilisk",
+            "category": "Creatures & Civs",
+            "title": "Petrifying Basilisk",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "basilisk",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "basilisk",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Reptilian beast freezing victims into solid stone.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "basilisk",
+            "actionLabel": "Spawn Petrifying Basilisk"
+    },
+    "lich_king": {
+            "id": "lich_king",
+            "category": "Creatures & Civs",
+            "title": "Nether Lich King",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "lich_king",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "lich_king",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Undead sovereign commanding legions of skeletons.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "lich_king",
+            "actionLabel": "Spawn Nether Lich King"
+    },
+    "cyber_mech_titan": {
+            "id": "cyber_mech_titan",
+            "category": "Creatures & Civs",
+            "title": "Cyber Mech Titan",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "cyber_mech_titan",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "cyber_mech_titan",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Armored quadruped war mech with twin rotary lasers.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "cyber_mech_titan",
+            "actionLabel": "Spawn Cyber Mech Titan"
+    },
+    "cerberus": {
+            "id": "cerberus",
+            "category": "Creatures & Civs",
+            "title": "Three-Headed Cerberus",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "cerberus",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "cerberus",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Nether hellhound guarding the underworld with hellfire.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "cerberus",
+            "actionLabel": "Spawn Three-Headed Cerberus"
+    },
+    "sea_serpent": {
+            "id": "sea_serpent",
+            "category": "Creatures & Civs",
+            "title": "Azure Sea Serpent",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "sea_serpent",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "sea_serpent",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Aquatic leviathan coiled in the deepest oceanic trenches.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "sea_serpent",
+            "actionLabel": "Spawn Azure Sea Serpent"
+    },
+    "yeti": {
+            "id": "yeti",
+            "category": "Creatures & Civs",
+            "title": "Abominable Yeti",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "yeti",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "yeti",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Mountain frost colossus hurling giant snow boulders.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "yeti",
+            "actionLabel": "Spawn Abominable Yeti"
+    },
+    "djinn": {
+            "id": "djinn",
+            "category": "Creatures & Civs",
+            "title": "Mystic Djinn",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "djinn",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "djinn",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Levitating genie of the lamp conjuring mystic whirlwinds.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "djinn",
+            "actionLabel": "Spawn Mystic Djinn"
+    },
+    "centaur": {
+            "id": "centaur",
+            "category": "Creatures & Civs",
+            "title": "Sylvan Centaur",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "centaur",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "centaur",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Half-human half-horse archer galloping through woods.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "centaur",
+            "actionLabel": "Spawn Sylvan Centaur"
+    },
+    "mummy_pharaoh": {
+            "id": "mummy_pharaoh",
+            "category": "Creatures & Civs",
+            "title": "Cursed Mummy Pharaoh",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "mummy_pharaoh",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "mummy_pharaoh",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Ancient royal corpse summoning sandstorms and curses.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "mummy_pharaoh",
+            "actionLabel": "Spawn Cursed Mummy Pharaoh"
+    },
+    "alien_overlord": {
+            "id": "alien_overlord",
+            "category": "Creatures & Civs",
+            "title": "Alien Overlord",
+            "subtitle": "Creatures & Civs Entry",
+            "tags": [
+                    "alien_overlord",
+                    "creatures",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Creatures & Civs",
+                    "Tool ID": "alien_overlord",
+                    "Creature Tier": "Living Entity / Apex Beast",
+                    "Controllable": "Fully Possessable (WASD / Space / Q)",
+                    "First-Person Mode": "Supported (Press 'F')"
+            },
+            "abilities": [
+                    "Active AI Routine: Roams, hunts, defends territory, and interacts with world fauna.",
+                    "Direct Possession: Take direct control with WASD navigation and unique primary/special combat abilities."
+            ],
+            "lore": "Extraterrestrial mastermind with psychic telekinesis.",
+            "tactics": "Spawn in compatible biomes or directly possess via Right-Click to experience the world through their eyes in 1st-Person Mode.",
+            "counters": "Vulnerable to heavy siege artillery, void weapons, and extreme environmental hazards.",
+            "related": [],
+            "toolId": "alien_overlord",
+            "actionLabel": "Spawn Alien Overlord"
+    },
+    "btn_fpv_quick": {
+            "id": "btn_fpv_quick",
+            "category": "Menu & World Tools",
+            "title": "Launch 1st-Person",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_fpv_quick",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_fpv_quick",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Jump straight into 3D First-Person View mode.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_fpv_quick",
+            "actionLabel": "Execute Launch 1st-Person"
+    },
+    "btn_codex_quick": {
+            "id": "btn_codex_quick",
+            "category": "Menu & World Tools",
+            "title": "Open Galaxy Codex",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_codex_quick",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_codex_quick",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Browse the complete encyclopedia and guides.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_codex_quick",
+            "actionLabel": "Execute Open Galaxy Codex"
+    },
+    "btn_3d_quick": {
+            "id": "btn_3d_quick",
+            "category": "Menu & World Tools",
+            "title": "Toggle 3D Mode",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_3d_quick",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_3d_quick",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Switch between 2D pixel view and 3D heightfield voxel view.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_3d_quick",
+            "actionLabel": "Execute Toggle 3D Mode"
+    },
+    "btn_time_day": {
+            "id": "btn_time_day",
+            "category": "Menu & World Tools",
+            "title": "Set Time: Dawn",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_time_day",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_time_day",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Set time of day to sunrise (6:00 AM).",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_time_day",
+            "actionLabel": "Execute Set Time: Dawn"
+    },
+    "btn_time_noon": {
+            "id": "btn_time_noon",
+            "category": "Menu & World Tools",
+            "title": "Set Time: Noon",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_time_noon",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_time_noon",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Set time of day to high noon (12:00 PM).",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_time_noon",
+            "actionLabel": "Execute Set Time: Noon"
+    },
+    "btn_time_dusk": {
+            "id": "btn_time_dusk",
+            "category": "Menu & World Tools",
+            "title": "Set Time: Dusk",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_time_dusk",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_time_dusk",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Set time of day to sunset (6:00 PM).",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_time_dusk",
+            "actionLabel": "Execute Set Time: Dusk"
+    },
+    "btn_time_night": {
+            "id": "btn_time_night",
+            "category": "Menu & World Tools",
+            "title": "Set Time: Midnight",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_time_night",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_time_night",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Set time of day to starry midnight (12:00 AM).",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_time_night",
+            "actionLabel": "Execute Set Time: Midnight"
+    },
+    "btn_kill_all_monsters": {
+            "id": "btn_kill_all_monsters",
+            "category": "Menu & World Tools",
+            "title": "Slay All Monsters",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_kill_all_monsters",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_kill_all_monsters",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Cleanse the realm of all hostile beasts and undead.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_kill_all_monsters",
+            "actionLabel": "Execute Slay All Monsters"
+    },
+    "btn_bless_all": {
+            "id": "btn_bless_all",
+            "category": "Menu & World Tools",
+            "title": "Bless All Creatures",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_bless_all",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_bless_all",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Grant divine blessing, 2x HP, and immortality to all.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_bless_all",
+            "actionLabel": "Execute Bless All Creatures"
+    },
+    "btn_heal_all_world": {
+            "id": "btn_heal_all_world",
+            "category": "Menu & World Tools",
+            "title": "Heal Entire World",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_heal_all_world",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_heal_all_world",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Instantly restore all creatures to 100% health.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_heal_all_world",
+            "actionLabel": "Execute Heal Entire World"
+    },
+    "btn_unfreeze_world": {
+            "id": "btn_unfreeze_world",
+            "category": "Menu & World Tools",
+            "title": "Thaw All Ice",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_unfreeze_world",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_unfreeze_world",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Melt all ice sheets and glaciated permafrost into water.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_unfreeze_world",
+            "actionLabel": "Execute Thaw All Ice"
+    },
+    "btn_extinguish_all": {
+            "id": "btn_extinguish_all",
+            "category": "Menu & World Tools",
+            "title": "Extinguish Wildfires",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_extinguish_all",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_extinguish_all",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Extinguish all raging fires and cooling hot spots.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_extinguish_all",
+            "actionLabel": "Execute Extinguish Wildfires"
+    },
+    "btn_repopulate": {
+            "id": "btn_repopulate",
+            "category": "Menu & World Tools",
+            "title": "Repopulate Settlements",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_repopulate",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_repopulate",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Spawn 5 humans, elves, dwarves, and orcs into villages.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_repopulate",
+            "actionLabel": "Execute Repopulate Settlements"
+    },
+    "btn_advance_eras": {
+            "id": "btn_advance_eras",
+            "category": "Menu & World Tools",
+            "title": "Advance All Eras",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_advance_eras",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_advance_eras",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Accelerate civilization technological era for all kingdoms.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_advance_eras",
+            "actionLabel": "Execute Advance All Eras"
+    },
+    "btn_clean_corpses": {
+            "id": "btn_clean_corpses",
+            "category": "Menu & World Tools",
+            "title": "Clear All Corpses",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_clean_corpses",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_clean_corpses",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Vaporize all fallen bodies, skeletons, and battlefield debris.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_clean_corpses",
+            "actionLabel": "Execute Clear All Corpses"
+    },
+    "btn_quicken_crops": {
+            "id": "btn_quicken_crops",
+            "category": "Menu & World Tools",
+            "title": "Maximize Agriculture",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_quicken_crops",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_quicken_crops",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Instantly mature all crops, forests, and flora.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_quicken_crops",
+            "actionLabel": "Execute Maximize Agriculture"
+    },
+    "btn_random_event": {
+            "id": "btn_random_event",
+            "category": "Menu & World Tools",
+            "title": "Trigger Chaos Event",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_random_event",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_random_event",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Roll a random cosmic or environmental event!",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_random_event",
+            "actionLabel": "Execute Trigger Chaos Event"
+    },
+    "btn_turbo_speed": {
+            "id": "btn_turbo_speed",
+            "category": "Menu & World Tools",
+            "title": "Turbo Speed (10x)",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_turbo_speed",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_turbo_speed",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Run simulation at ultra-fast 10x clock rate.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_turbo_speed",
+            "actionLabel": "Execute Turbo Speed (10x)"
+    },
+    "btn_camera_center": {
+            "id": "btn_camera_center",
+            "category": "Menu & World Tools",
+            "title": "Recenter Camera",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_camera_center",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_camera_center",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Reset zoom and pan directly to the world center.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_camera_center",
+            "actionLabel": "Execute Recenter Camera"
+    },
+    "btn_photo_mode": {
+            "id": "btn_photo_mode",
+            "category": "Menu & World Tools",
+            "title": "Cinematic Clean View",
+            "subtitle": "Menu & World Tools Entry",
+            "tags": [
+                    "btn_photo_mode",
+                    "menu",
+                    "v3_update"
+            ],
+            "stats": {
+                    "Category": "Menu & World Tools",
+                    "Tool ID": "btn_photo_mode",
+                    "Command Type": "God Engine Utility",
+                    "Execution Scope": "Global Simulation"
+            },
+            "abilities": [
+                    "Immediate Execution: Modifies world rules, camera perspective, or temporal flow in real-time."
+            ],
+            "lore": "Toggle full immersion mode hiding all HUD elements.",
+            "tactics": "Use for swift navigation, perspective switching, or managing overall simulation flow with single-click convenience.",
+            "counters": "Reversible using opposing commands or temporal rewind.",
+            "related": [],
+            "toolId": "btn_photo_mode",
+            "actionLabel": "Execute Cinematic Clean View"
+    }
+};
 }

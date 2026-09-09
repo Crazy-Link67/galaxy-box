@@ -3435,6 +3435,716 @@ class DisasterManager {
         }
     }
 
+    // ----------------------------------------------------
+    // 20 NEW DESTRUCTION & CHAOS POWERS
+    // ----------------------------------------------------
+    triggerTachyonLance(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        if (window.game) window.game.shakeCamera(24, 30);
+        if (particleSystem) {
+            for (let y = 0; y < world.height; y += 4) {
+                particleSystem.spawn(cx, y, (Math.random() - 0.5) * 2, 0, 2.5, '#38bdf8', 15, 'stardust');
+            }
+            particleSystem.burst(cx, cy, 30, ['#38bdf8', '#0284c7', '#ffffff'], 3, 7, 2, 4, 'spark');
+        }
+        for (let y = 0; y < world.height; y++) {
+            for (let dx = -2; dx <= 2; dx++) {
+                const tx = Math.floor(cx + dx);
+                if (world.inBounds(tx, y)) {
+                    const t = world.getTile(tx, y);
+                    if (t !== TILES.BEDROCK) world.setTile(tx, y, Math.abs(dx) <= 1 ? TILES.VOID : TILES.PLASMA_FIELD);
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.abs(e.x - cx) < 6) e.takeDamage(450);
+            });
+        }
+    }
+
+    triggerSubspaceTorpedo(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.8);
+        if (window.game) window.game.shakeCamera(32, 40);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 40, ['#7c3aed', '#c084fc', '#f43f5e', '#ffffff'], 4, 10, 2, 5, 'fire');
+            const sw = particleSystem.spawn(cx, cy, 0, 0, 10, '#c084fc', 35, 'shockwave', 0, 1);
+            if (sw) sw.extra = 60;
+        }
+        const rad = 18;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                const d2 = dx * dx + dy * dy;
+                if (d2 <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (d2 < 25) world.setTile(tx, ty, TILES.LAVA);
+                        else if (Math.random() < 0.6) world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                    }
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(200);
+            });
+        }
+    }
+
+    triggerSolarBeam(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        if (window.game) window.game.shakeCamera(16, 25);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 35, ['#fbbf24', '#f59e0b', '#ffffff'], 3, 8, 2, 4, 'spark');
+        }
+        const rad = 16;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty)) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.WATER || t === TILES.DEEP_WATER) world.setTile(tx, ty, TILES.SAND);
+                        else if (t === TILES.ICE || t === TILES.SNOW) world.setTile(tx, ty, TILES.WATER);
+                        else if (t === TILES.FOREST || t === TILES.GRASS) { world.setTile(tx, ty, TILES.ASH); world.ignite(tx, ty, 100); }
+                    }
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad && !e.hasTrait('fireproof')) e.takeDamage(250);
+            });
+        }
+    }
+
+    triggerDarkMatterDetonator(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        if (window.game) window.game.shakeCamera(28, 45);
+        if (particleSystem) {
+            particleSystem.burst(cx, cy, 50, ['#1e1b4b', '#4338ca', '#818cf8', '#000000'], 3, 9, 2, 5, 'stardust');
+        }
+        const rad = 22;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        const rnd = Math.random();
+                        if (rnd < 0.45) world.setTile(tx, ty, TILES.VOID);
+                        else if (rnd < 0.8) world.setTile(tx, ty, TILES.STARDUST);
+                    }
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(320);
+            });
+        }
+    }
+
+    triggerVoidDrill(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.4);
+        if (window.game) window.game.shakeCamera(20, 30);
+        for (let y = Math.floor(cy); y < world.height; y++) {
+            for (let dx = -2; dx <= 2; dx++) {
+                const tx = Math.floor(cx + dx);
+                if (world.inBounds(tx, y)) {
+                    world.setTile(tx, y, TILES.DEEP_TRENCH);
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#334155', '#64748b', '#0f172a'], 2, 6, 2, 4, 'smoke');
+    }
+
+    triggerMagmaMortar(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.3);
+        for (let s = 0; s < 7; s++) {
+            const ox = (Math.random() - 0.5) * 24;
+            const oy = (Math.random() - 0.5) * 24;
+            const tx = Math.floor(cx + ox), ty = Math.floor(cy + oy);
+            if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                world.setTile(tx, ty, TILES.LAVA);
+                world.ignite(tx, ty, 120);
+            }
+            if (particleSystem) particleSystem.burst(cx + ox, cy + oy, 15, ['#f97316', '#ef4444', '#facc15'], 2, 5, 1, 3, 'fire');
+        }
+    }
+
+    triggerHellfireVortex(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+        if (window.game) window.game.shakeCamera(18, 30);
+        const rad = 16;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (Math.random() < 0.4) world.setTile(tx, ty, TILES.MAGMA_ROCK);
+                        world.ignite(tx, ty, 150);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 40, ['#ef4444', '#b91c1c', '#f97316'], 3, 8, 2, 4, 'fire');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad && !e.hasTrait('fireproof')) e.takeDamage(180);
+            });
+        }
+    }
+
+    triggerGravityWell(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        const rad = 25;
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) {
+                    const ang = Math.atan2(cy - e.y, cx - e.x);
+                    e.vx += Math.cos(ang) * 8;
+                    e.vy += Math.sin(ang) * 8;
+                    e.takeDamage(120);
+                }
+            });
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 35, ['#a855f7', '#7c3aed', '#ffffff'], 3, 7, 2, 4, 'stardust');
+    }
+
+    triggerAntimatterSingularity(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        if (window.game) window.game.shakeCamera(35, 50);
+        this.nuclearFlashTimer = 35;
+        const rad = 26;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.VOID);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 60, ['#ffffff', '#e0e7ff', '#6366f1'], 4, 12, 2, 5, 'stardust');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(800);
+            });
+        }
+    }
+
+    triggerOrbitalKineticHarpoon(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(2.0);
+        if (window.game) window.game.shakeCamera(40, 50);
+        const rad = 14;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, dist2 < 20 ? TILES.DEEP_TRENCH : TILES.STONE);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 50, ['#94a3b8', '#cbd5e1', '#ffffff'], 4, 12, 2, 5, 'spark');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad * 1.5) e.takeDamage(350);
+            });
+        }
+    }
+
+    triggerGammaRayPulsar(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        const rad = 20;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        if (Math.random() < 0.4) world.setTile(tx, ty, TILES.RADIOACTIVE_WASTE);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#84cc16', '#a3e635', '#ffffff'], 3, 7, 2, 4, 'acid');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(220);
+            });
+        }
+    }
+
+    triggerChronosDecayBomb(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playChronoFreeze === 'function') audio.playChronoFreeze();
+        const rad = 18;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.FOREST || t === TILES.GRASS) world.setTile(tx, ty, TILES.ASH);
+                    }
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) {
+                    e.takeDamage(150);
+                    if (e.hp <= 0 && entityManager.spawn) entityManager.spawn('skeleton', e.x, e.y);
+                }
+            });
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#a855f7', '#475569', '#cbd5e1'], 2, 6, 2, 4, 'smoke');
+    }
+
+    triggerPlasmaTorrent(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        const rad = 15;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.PLASMA_FIELD);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 35, ['#06b6d4', '#38bdf8', '#ffffff'], 3, 8, 2, 4, 'spark');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(260);
+            });
+        }
+    }
+
+    triggerSeismicSplitter(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.6);
+        if (window.game) window.game.shakeCamera(25, 40);
+        for (let dx = -25; dx <= 25; dx++) {
+            const tx = Math.floor(cx + dx);
+            const ty = Math.floor(cy + (Math.random() - 0.5) * 3);
+            if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                world.setTile(tx, ty, TILES.MAGMA_FISSURE);
+                if (world.inBounds(tx, ty + 1)) world.setTile(tx, ty + 1, TILES.LAVA);
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 40, ['#dc2626', '#f97316', '#7f1d1d'], 3, 7, 2, 4, 'fire');
+    }
+
+    triggerAcidHail(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(0.8);
+        const rad = 18;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad && Math.random() < 0.4) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.ACID);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 35, ['#4ade80', '#22c55e', '#a3e635'], 2, 6, 2, 4, 'acid');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(160);
+            });
+        }
+    }
+
+    triggerBioweaponSiphon(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        const rad = 20;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad && Math.random() < 0.35) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty)) world.setTile(tx, ty, TILES.TOXIC_SLIME);
+                }
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) {
+                    e.takeDamage(120);
+                    e.infected = true;
+                }
+            });
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#15803d', '#22c55e', '#84cc16'], 2, 5, 2, 4, 'acid');
+    }
+
+    triggerCryoImplosion(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        const rad = 22;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        const t = world.getTile(tx, ty);
+                        if (t === TILES.WATER || t === TILES.DEEP_WATER) world.setTile(tx, ty, TILES.ICE);
+                        else if (t === TILES.LAVA) world.setTile(tx, ty, TILES.OBSIDIAN);
+                        else world.setTile(tx, ty, TILES.GLACIAL_PERMAFROST);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 40, ['#a5f3fc', '#38bdf8', '#ffffff'], 3, 8, 2, 4, 'spark');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) {
+                    e.frozen = 300;
+                    e.takeDamage(90);
+                }
+            });
+        }
+    }
+
+    triggerChaosMeteor(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.5);
+        if (window.game) window.game.shakeCamera(24, 35);
+        const rad = 14;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, Math.random() < 0.6 ? TILES.CRYSTAL_GEODE : TILES.CRYSTAL);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 45, ['#ec4899', '#a855f7', '#38bdf8', '#ffffff'], 3, 9, 2, 5, 'spark');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad) e.takeDamage(240);
+            });
+        }
+    }
+
+    triggerEmpCascade(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        if (particleSystem) particleSystem.burst(cx, cy, 35, ['#38bdf8', '#0284c7', '#ffffff'], 3, 7, 2, 4, 'spark');
+        if (entityManager) {
+            entityManager.projectiles = [];
+            if (entityManager.entities) {
+                entityManager.entities.forEach(e => {
+                    if (e.active && (e.isVehicle || e.type.includes('mech') || e.type.includes('tank') || e.type.includes('cyber'))) {
+                        e.takeDamage(400);
+                        if (particleSystem) particleSystem.burst(e.x, e.y, 15, ['#facc15', '#ef4444'], 2, 4, 1, 2, 'spark');
+                    }
+                });
+            }
+        }
+    }
+
+    triggerApocalypseBell(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        if (window.game) window.game.shakeCamera(30, 45);
+        if (particleSystem) {
+            for (let s = 1; s <= 3; s++) {
+                const sw = particleSystem.spawn(cx, cy, 0, 0, 8 * s, '#fbbf24', 35, 'shockwave', 0, 1);
+                if (sw) sw.extra = 60 * s;
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active) {
+                    const d = Math.hypot(e.x - cx, e.y - cy);
+                    if (d < 50) {
+                        const ang = Math.atan2(e.y - cy, e.x - cx);
+                        e.vx += Math.cos(ang) * 9;
+                        e.vy += Math.sin(ang) * 9;
+                        e.takeDamage(150);
+                    }
+                }
+            });
+        }
+    }
+
+    // ----------------------------------------------------
+    // 20 NEW NATURE & ENVIRONMENTAL POWERS
+    // ----------------------------------------------------
+    triggerBloodMoon(world, entityManager, disasterManager, particleSystem, audio) {
+        if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+        if (disasterManager) {
+            disasterManager.activeStorm = 'acid';
+            disasterManager.stormTimer = 700;
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && (e.type === 'wolf' || e.type === 'demon' || e.type === 'zombie' || e.hasTrait('bloodthirsty'))) {
+                    e.attack *= 2;
+                    e.speed *= 1.4;
+                    e.traits.add('bloodthirsty');
+                }
+            });
+        }
+        if (particleSystem && world) {
+            for (let i = 0; i < 25; i++) {
+                particleSystem.spawn(Math.random() * world.width, Math.random() * world.height, 0, 0, 2, '#991b1b', 40, 'stardust');
+            }
+        }
+    }
+
+    triggerBallLightning(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        for (let i = 0; i < 4; i++) {
+            const ang = (i / 4) * Math.PI * 2;
+            const bx = cx + Math.cos(ang) * 10;
+            const by = cy + Math.sin(ang) * 10;
+            if (particleSystem) particleSystem.burst(bx, by, 15, ['#38bdf8', '#facc15', '#ffffff'], 2, 5, 1, 3, 'spark');
+            if (world && world.inBounds(Math.floor(bx), Math.floor(by))) {
+                world.ignite(Math.floor(bx), Math.floor(by), 60);
+            }
+        }
+    }
+
+    triggerSolarWind(world, entityManager, disasterManager, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        if (disasterManager) {
+            disasterManager.activeStorm = 'clone_rain';
+            disasterManager.stormTimer = 400;
+        }
+        if (particleSystem && world) {
+            for (let i = 0; i < 40; i++) {
+                particleSystem.spawn(Math.random() * world.width, Math.random() * world.height, 2, 0.5, 2, '#fbbf24', 30, 'stardust');
+            }
+        }
+    }
+
+    triggerSupercellCyclone(cx, cy, world, disasterManager, particleSystem, audio) {
+        if (disasterManager) {
+            disasterManager.spawnTornado(cx, cy);
+            disasterManager.activeStorm = 'rain';
+            disasterManager.stormTimer = 800;
+        }
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+    }
+
+    triggerCryoDeluge(disasterManager, world) {
+        if (disasterManager) {
+            disasterManager.activeStorm = 'snow';
+            disasterManager.stormTimer = 900;
+        }
+        for (let i = 0; i < world.size; i++) {
+            if (world.tiles[i] === TILES.WATER && Math.random() < 0.3) world.tiles[i] = TILES.ICE;
+        }
+    }
+
+    triggerMagmaGeyser(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.3);
+        const rad = 8;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.LAVA);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 35, ['#ef4444', '#f97316', '#facc15'], 3, 8, 2, 4, 'fire');
+    }
+
+    triggerSporeFog(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        const rad = 15;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && (world.getTile(tx, ty) === TILES.SOIL || world.getTile(tx, ty) === TILES.GRASS)) {
+                        world.setTile(tx, ty, Math.random() < 0.5 ? TILES.GLOWCAP_MUSHROOM : TILES.MUSHROOM_SPORE);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#06b6d4', '#a855f7', '#c084fc'], 2, 6, 2, 4, 'stardust');
+    }
+
+    triggerStaticSquall(disasterManager) {
+        if (disasterManager) {
+            disasterManager.activeStorm = 'rain';
+            disasterManager.stormTimer = 700;
+        }
+    }
+
+    triggerPyroclasticCloud(cx, cy, world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.4);
+        const rad = 18;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.ASH_WASTELAND);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 40, ['#475569', '#334155', '#78350f'], 3, 7, 2, 5, 'smoke');
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active && Math.hypot(e.x - cx, e.y - cy) < rad && !e.hasTrait('fireproof')) e.takeDamage(175);
+            });
+        }
+    }
+
+    triggerDustDevil(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playRain === 'function') audio.playRain();
+        const rad = 10;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.GOLDEN_SAND);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 25, ['#dec17a', '#fbbf24'], 2, 5, 1, 3, 'stardust');
+    }
+
+    triggerMagneticAurora(world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        if (entityManager) {
+            entityManager.forcePeace = true;
+            if (entityManager.entities) {
+                entityManager.entities.forEach(e => {
+                    if (e.active) e.hp = e.maxHp;
+                });
+            }
+        }
+        if (particleSystem && world) {
+            for (let i = 0; i < 40; i++) {
+                particleSystem.spawn(Math.random() * world.width, Math.random() * 30, 1, 0, 3, '#34d399', 45, 'stardust');
+            }
+        }
+    }
+
+    triggerHailstorm(disasterManager) {
+        if (disasterManager) {
+            disasterManager.activeStorm = 'snow';
+            disasterManager.stormTimer = 800;
+        }
+    }
+
+    triggerAcidGeyser(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.1);
+        const rad = 8;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.ACID);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#4ade80', '#22c55e', '#84cc16'], 2.5, 6, 2, 4, 'acid');
+    }
+
+    triggerGlacialCrevasse(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+        for (let dy = -15; dy <= 15; dy++) {
+            const ty = Math.floor(cy + dy);
+            const tx = Math.floor(cx + (Math.random() - 0.5) * 2);
+            if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                world.setTile(tx, ty, TILES.ICE);
+                if (world.inBounds(tx + 1, ty)) world.setTile(tx + 1, ty, TILES.GLACIAL_PERMAFROST);
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#a5f3fc', '#ffffff', '#38bdf8'], 2, 5, 2, 4, 'spark');
+    }
+
+    triggerOzoneTear(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playLaser === 'function') audio.playLaser();
+        const rad = 14;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.SAND);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 25, ['#f59e0b', '#fbbf24', '#ffffff'], 2, 6, 2, 4, 'spark');
+    }
+
+    triggerCosmicRadiation(world, entityManager, particleSystem, audio) {
+        if (audio && typeof audio.playMagic === 'function') audio.playMagic();
+        if (particleSystem && world) {
+            for (let i = 0; i < 50; i++) {
+                particleSystem.spawn(Math.random() * world.width, Math.random() * world.height, 0, 1, 2.5, '#c084fc', 35, 'stardust');
+            }
+        }
+        if (entityManager && entityManager.entities) {
+            entityManager.entities.forEach(e => {
+                if (e.active) e.hp = Math.min(e.maxHp * 1.5, e.hp + 100);
+            });
+        }
+    }
+
+    triggerMaelstromVortex(cx, cy, world, entityManager, disasterManager, particleSystem, audio) {
+        if (disasterManager) disasterManager.spawnWhirlpool(cx, cy);
+        if (audio && typeof audio.playRain === 'function') audio.playRain();
+    }
+
+    triggerSwampGasEruption(cx, cy, world, particleSystem, audio) {
+        if (audio && typeof audio.playExplosion === 'function') audio.playExplosion(1.0);
+        const rad = 10;
+        for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+                if (dx * dx + dy * dy <= rad * rad) {
+                    const tx = Math.floor(cx + dx), ty = Math.floor(cy + dy);
+                    if (world.inBounds(tx, ty) && world.getTile(tx, ty) !== TILES.BEDROCK) {
+                        world.setTile(tx, ty, TILES.POISON_SWAMP);
+                    }
+                }
+            }
+        }
+        if (particleSystem) particleSystem.burst(cx, cy, 30, ['#22c55e', '#16a34a', '#4ade80'], 2, 6, 2, 4, 'acid');
+    }
+
+    triggerRadiantSunshower(disasterManager, world, particleSystem, audio) {
+        if (disasterManager) {
+            disasterManager.activeStorm = 'rain';
+            disasterManager.stormTimer = 600;
+        }
+        for (let i = 0; i < world.size; i++) {
+            if (world.tiles[i] === TILES.GRASS && Math.random() < 0.2) {
+                world.tiles[i] = TILES.LUSH_MEADOW;
+            }
+        }
+        if (audio && typeof audio.playRain === 'function') audio.playRain();
+    }
+
+    triggerGreatDeluge(disasterManager, world) {
+        if (disasterManager) {
+            disasterManager.activeStorm = 'rain';
+            disasterManager.stormTimer = 1200;
+        }
+        for (let i = 0; i < world.size; i++) {
+            if (world.tiles[i] === TILES.SAND && Math.random() < 0.4) {
+                world.tiles[i] = TILES.WATER;
+            }
+        }
+    }
+
     clear() {
         this.blackHoles = [];
         this.tornadoes = [];
