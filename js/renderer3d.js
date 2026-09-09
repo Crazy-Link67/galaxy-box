@@ -209,6 +209,7 @@ in float v_tileType;
 
 uniform vec3 u_lightDir;
 uniform vec3 u_viewPos;
+uniform vec3 u_skyFogColor;
 uniform float u_time;
 
 out vec4 fragColor;
@@ -295,11 +296,10 @@ void main() {
 
     vec3 finalColor = baseColor * light;
 
-    // Cosmic distance fog blending into dark starry twilight
+    // Atmospheric distance fog blending seamlessly into dynamic celestial sky dome
     float dist = length(u_viewPos - v_worldPos);
-    float fogFactor = clamp((dist - 100.0) / 320.0, 0.0, 0.85);
-    vec3 fogColor = vec3(0.04, 0.04, 0.09);
-    finalColor = mix(finalColor, fogColor, fogFactor);
+    float fogFactor = clamp((dist - 75.0) / 440.0, 0.0, 0.88);
+    finalColor = mix(finalColor, u_skyFogColor, fogFactor);
 
     fragColor = vec4(finalColor, v_color.a);
 }
@@ -2077,8 +2077,8 @@ class Renderer3D {
             cam.target[1] = cam.eye[1] + cam.forward[1] * 10.0;
             cam.target[2] = cam.eye[2] + cam.forward[2] * 10.0;
 
-            cam.right[0] = cam.forward[1];
-            cam.right[1] = -cam.forward[0];
+            cam.right[0] = cosY;
+            cam.right[1] = sinY;
             cam.right[2] = 0.0;
             Vec3.normalize(cam.right, cam.right);
 
@@ -2087,7 +2087,7 @@ class Renderer3D {
             cam.up[2] = cam.right[0] * cam.forward[1] - cam.right[1] * cam.forward[0];
             Vec3.normalize(cam.up, cam.up);
 
-            Mat4.perspective(cam.projMat, 65 * Math.PI / 180, aspect, 0.2, 1200.0);
+            Mat4.perspective(cam.projMat, 70 * Math.PI / 180, aspect, 0.2, 1200.0);
             Mat4.lookAt(cam.viewMat, cam.eye, cam.target, cam.up);
             Mat4.multiply(cam.viewProj, cam.projMat, cam.viewMat);
             Mat4.invert(cam.invViewProj, cam.viewProj);
@@ -2439,6 +2439,7 @@ class Renderer3D {
             gl.uniformMatrix4fv(gl.getUniformLocation(this.terrainProgram, 'u_viewProjection'), false, this.camera.viewProj);
             gl.uniform3fv(gl.getUniformLocation(this.terrainProgram, 'u_lightDir'), this.sunLightDir);
             gl.uniform3fv(gl.getUniformLocation(this.terrainProgram, 'u_viewPos'), this.camera.eye);
+            gl.uniform3fv(gl.getUniformLocation(this.terrainProgram, 'u_skyFogColor'), [skyR, skyG, skyB]);
             gl.uniform1f(gl.getUniformLocation(this.terrainProgram, 'u_time'), this.animTime);
 
             gl.bindVertexArray(this.terrainVAO);
@@ -2448,6 +2449,90 @@ class Renderer3D {
 
         // 2. Render 3D Billboards (Creatures, Drop Shadows, Weapons, Health Bars, Buildings, Particles)
         this.renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay);
+
+        // 3. Render Animated First-Person Viewmodel & Crosshair
+        if (this.isFirstPerson) {
+            this.renderFPVViewmodel();
+        }
+    }
+
+    renderFPVViewmodel() {
+        if (!this.isFirstPerson || !this.possessedEntity) return;
+        const canvas = document.getElementById('fpv-weapon-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const ent = this.possessedEntity;
+        const weapon = ent.weapon || 'sword';
+
+        ctx.save();
+        ctx.translate(canvas.width * 0.5, canvas.height * 0.45);
+        ctx.rotate(-0.35);
+
+        if (weapon.includes('staff') || weapon.includes('wand') || weapon.includes('lance')) {
+            // Arcane / Divine Staff
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-5, -70, 10, 140);
+            ctx.fillStyle = '#38bdf8';
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 18;
+            ctx.beginPath();
+            ctx.arc(0, -85, 16, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (weapon.includes('bow') || weapon.includes('crossbow')) {
+            // Bow / Crossbow
+            ctx.strokeStyle = '#92400e';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.arc(0, 0, 60, -Math.PI * 0.4, Math.PI * 0.4);
+            ctx.stroke();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(20, -50);
+            ctx.lineTo(20, 50);
+            ctx.stroke();
+        } else if (weapon.includes('plasma') || weapon.includes('gun') || weapon.includes('cannon')) {
+            // Plasma Gun / Cannon
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(-18, -80, 36, 120);
+            ctx.fillStyle = '#38bdf8';
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 20;
+            ctx.fillRect(-8, -100, 16, 25);
+        } else {
+            // Broadsword / Claws / Melee
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(-30, 20, 60, 12);
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-7, 32, 14, 35);
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, 72, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.moveTo(0, -110);
+            ctx.lineTo(14, -90);
+            ctx.lineTo(12, 20);
+            ctx.lineTo(-12, 20);
+            ctx.lineTo(-14, -90);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(-2, -85, 4, 95);
+        }
+
+        ctx.restore();
+
+        const isMoving = Math.hypot(ent.vx || 0, ent.vy || 0) > 0.05;
+        const vmEl = document.getElementById('fpv-viewmodel');
+        if (vmEl) {
+            vmEl.classList.toggle('bobbing', isMoving);
+        }
     }
 
     renderBillboards(world, entityManager, disasterManager, particleSystem, activeTool, brushSize, mouseWorldPos, timeOfDay = 12.0) {

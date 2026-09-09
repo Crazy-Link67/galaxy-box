@@ -20,8 +20,16 @@
         <canvas id="game-canvas-3d" style="display: none;"></canvas>
         <!-- First-Person Viewport Reticle & Info Overlay -->
         <div id="fpv-overlay" style="display: none;">
+            <div class="fpv-vignette"></div>
             <div class="fpv-crosshair"></div>
-            <div class="fpv-hud-badge">FIRST-PERSON VIEW [F: EXIT | WASD: MOVE | CLICK: ATTACK]</div>
+            <div class="fpv-hitmarker" id="fpv-hitmarker"></div>
+            <div class="fpv-viewmodel-container" id="fpv-viewmodel-container">
+                <div class="fpv-viewmodel" id="fpv-viewmodel">
+                    <canvas id="fpv-weapon-canvas" width="256" height="256"></canvas>
+                </div>
+            </div>
+            <div class="fpv-hud-badge" id="fpv-hud-badge">FIRST-PERSON VIEW [F: EXIT | WASD / JOYSTICK: MOVE | CLICK: ATTACK]</div>
+            <button class="fpv-exit-pill" id="fpv-exit-btn" title="Exit First-Person View">❌ Exit FPV (F)</button>
         </div>
     </div>
 
@@ -470,10 +478,15 @@
         <div class="ctrl-right">
             <button id="btn-exit-control" class="btn btn-sm btn-danger">Exit (ESC)</button>
         </div>
+    </div>
 
-        <!-- Mobile Touch Virtual On-Screen Controller -->
-        <div id="mobile-virtual-controls">
-            <div id="mobile-dpad">
+    <!-- Mobile Touch Virtual On-Screen Controller -->
+    <div id="mobile-virtual-controls">
+        <div id="mobile-joystick-zone">
+            <div id="virtual-joystick-base">
+                <div id="virtual-joystick-thumb"></div>
+            </div>
+            <div id="mobile-dpad" class="dpad-fallback">
                 <button class="dpad-btn" id="dpad-up" data-key="up">▲</button>
                 <div class="dpad-middle">
                     <button class="dpad-btn" id="dpad-left" data-key="left">◀</button>
@@ -482,13 +495,18 @@
                 </div>
                 <button class="dpad-btn" id="dpad-down" data-key="down">▼</button>
             </div>
-            <div id="mobile-actions">
-                <button class="action-btn action-atk" id="btn-touch-atk" title="Primary Attack">⚔️<br><span>ATK</span></button>
-                <button class="action-btn action-spec" id="btn-touch-spec" title="Special Ability">💥<br><span>SPEC</span></button>
-                <button class="action-btn action-exit" id="btn-touch-exit" title="Exit Control">❌<br><span>EXIT</span></button>
-            </div>
+        </div>
+        <div id="mobile-actions">
+            <button class="action-btn action-atk" id="btn-touch-atk" title="Primary Attack / Interact">⚔️<br><span>ATK</span></button>
+            <button class="action-btn action-spec" id="btn-touch-spec" title="Special Ability">💥<br><span>SPEC</span></button>
+            <button class="action-btn action-jump" id="btn-touch-jump" title="Dash / Jump">🏃<br><span>JUMP</span></button>
+            <button class="action-btn action-fpv" id="btn-touch-fpv" title="Toggle 1st-Person View">👁️<br><span>FPV</span></button>
+            <button class="action-btn action-exit" id="btn-touch-exit" title="Exit Control">❌<br><span>EXIT</span></button>
         </div>
     </div>
+
+    <!-- Mobile Quick Mode Floating Pill (Pan / Draw Mode) -->
+    <button id="mobile-pan-toggle" class="mobile-pan-toggle" title="Toggle Pan / Draw Mode">✏️ Draw Mode</button>
 
     <!-- 5. Creature Creator Studio Modal -->
     <div class="modal-overlay" id="modal-creator">

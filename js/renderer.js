@@ -34,12 +34,56 @@ class Renderer {
         // Animation counters
         this.animTime = 0;
         this.showGrid = false;
+
+        // High-Fidelity Graphics: Offscreen Bloom Buffer & Cinematic Vignette
+        this.bloomBuffer = document.createElement('canvas');
+        this.bloomCtx = this.bloomBuffer.getContext('2d');
+        this.vignetteCanvas = document.createElement('canvas');
+        this.vignetteCtx = this.vignetteCanvas.getContext('2d');
+        this.stardust = [];
+        for (let i = 0; i < 40; i++) {
+            this.stardust.push({
+                x: Math.random() * (window.innerWidth || 1280),
+                y: Math.random() * (window.innerHeight || 720),
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: -0.15 - Math.random() * 0.35,
+                size: Math.random() * 2 + 1,
+                alpha: Math.random() * 0.6 + 0.3,
+                color: Math.random() > 0.4 ? '#38bdf8' : '#facc15'
+            });
+        }
     }
 
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         this.ctx.imageSmoothingEnabled = false;
+
+        if (this.bloomBuffer) {
+            this.bloomBuffer.width = Math.max(64, Math.floor(window.innerWidth / 3));
+            this.bloomBuffer.height = Math.max(64, Math.floor(window.innerHeight / 3));
+        }
+        if (this.vignetteCanvas) {
+            this.vignetteCanvas.width = window.innerWidth;
+            this.vignetteCanvas.height = window.innerHeight;
+            this.updateVignette();
+        }
+    }
+
+    updateVignette() {
+        if (!this.vignetteCanvas) return;
+        const ctx = this.vignetteCtx;
+        const w = this.vignetteCanvas.width;
+        const h = this.vignetteCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const r0 = Math.min(w, h) * 0.42;
+        const r1 = Math.hypot(w, h) * 0.65;
+        const grad = ctx.createRadialGradient(w / 2, h / 2, r0, w / 2, h / 2, r1);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(0.75, 'rgba(0, 5, 15, 0.2)');
+        grad.addColorStop(1, 'rgba(0, 2, 8, 0.6)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
     }
 
     screenToWorld(screenX, screenY) {
@@ -172,12 +216,23 @@ class Renderer {
         // 8.8. Day/Night Atmospheric Lighting Overlay
         this.renderDayNightAtmosphere(ctx, world, entityManager, timeOfDay);
 
+        // 8.9. Dynamic Luminous Bloom Overlay for Fire, Lava, Lasers & Explosions
+        this.renderDynamicBloom(ctx, world, entityManager, disasterManager, particleSystem);
+
         // 9. Render Brush Cursor Indicator
         if (mouseWorldPos && activeTool) {
             this.renderBrushCursor(mouseWorldPos.x, mouseWorldPos.y, brushSize, activeTool);
         }
 
         ctx.restore();
+
+        // 9.3. Drifting Atmospheric Stardust & Ambient Moters
+        this.renderAtmosphericStardust(ctx, timeOfDay);
+
+        // 9.4. Cinematic Viewport Vignette
+        if (this.vignetteCanvas) {
+            ctx.drawImage(this.vignetteCanvas, 0, 0, w, h);
+        }
 
         // 9.5. Full-Screen Apocalyptic Nuclear Blast Flash Overlay
         if (disasterManager && disasterManager.nuclearFlashTimer > 0) {
@@ -193,6 +248,108 @@ class Renderer {
 
         // 10. Render Minimap
         this.renderMinimap(world, entityManager);
+    }
+
+    renderDynamicBloom(ctx, world, entityManager, disasterManager, particleSystem) {
+        if (!this.bloomBuffer || this.bloomBuffer.width <= 0) return;
+        const bCtx = this.bloomCtx;
+        const bw = this.bloomBuffer.width;
+        const bh = this.bloomBuffer.height;
+        const cam = this.camera;
+
+        bCtx.clearRect(0, 0, bw, bh);
+
+        bCtx.save();
+        const scaleX = bw / this.canvas.width;
+        const scaleY = bh / this.canvas.height;
+        bCtx.scale(scaleX, scaleY);
+        bCtx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        bCtx.scale(cam.zoom, cam.zoom);
+        bCtx.translate(-cam.x, -cam.y);
+
+        // Fire & Lava Bloom
+        if (world && world.fire) {
+            const minX = Math.max(0, Math.floor(cam.x - this.canvas.width / (cam.zoom * 2)));
+            const maxX = Math.min(world.width - 1, Math.ceil(cam.x + this.canvas.width / (cam.zoom * 2)));
+            const minY = Math.max(0, Math.floor(cam.y - this.canvas.height / (cam.zoom * 2)));
+            const maxY = Math.min(world.height - 1, Math.ceil(cam.y + this.canvas.height / (cam.zoom * 2)));
+
+            bCtx.fillStyle = 'rgba(255, 140, 30, 0.75)';
+            for (let y = minY; y <= maxY; y += 3) {
+                for (let x = minX; x <= maxX; x += 3) {
+                    const idx = world.idx(x, y);
+                    if (world.fire[idx] > 0 || world.tiles[idx] === TILES.LAVA || world.tiles[idx] === 60) {
+                        bCtx.fillRect(x, y, 3, 3);
+                    }
+                }
+            }
+        }
+
+        // Projectiles Bloom
+        if (entityManager && entityManager.projectiles) {
+            bCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            for (let i = 0; i < entityManager.projectiles.length; i++) {
+                const p = entityManager.projectiles[i];
+                if (p.active) {
+                    bCtx.beginPath();
+                    bCtx.arc(p.x, p.y, Math.max(2, p.size * 1.6), 0, Math.PI * 2);
+                    bCtx.fill();
+                }
+            }
+        }
+
+        // Disasters Bloom
+        if (disasterManager) {
+            if (disasterManager.rifts) {
+                bCtx.fillStyle = 'rgba(168, 85, 247, 0.85)';
+                for (let r of disasterManager.rifts) {
+                    bCtx.beginPath();
+                    bCtx.arc(r.x, r.y, 25, 0, Math.PI * 2);
+                    bCtx.fill();
+                }
+            }
+            if (disasterManager.ionCannons) {
+                bCtx.fillStyle = 'rgba(56, 189, 248, 0.9)';
+                for (let ic of disasterManager.ionCannons) {
+                    bCtx.fillRect(ic.x - 8, 0, 16, ic.y);
+                }
+            }
+        }
+
+        bCtx.restore();
+
+        // Screen blend back to main canvas
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 0.45;
+        ctx.drawImage(this.bloomBuffer, 0, 0, this.canvas.width, this.canvas.height);
+        ctx.restore();
+    }
+
+    renderAtmosphericStardust(ctx, timeOfDay) {
+        if (!this.stardust) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const isNight = timeOfDay >= 19 || timeOfDay < 6;
+
+        ctx.save();
+        for (let i = 0; i < this.stardust.length; i++) {
+            const s = this.stardust[i];
+            s.x += s.vx + Math.sin(this.animTime + i) * 0.25;
+            s.y += s.vy;
+            if (s.x < 0) s.x = w;
+            if (s.x > w) s.x = 0;
+            if (s.y < 0) s.y = h;
+            if (s.y > h) s.y = 0;
+
+            const pulse = (Math.sin(this.animTime * 2 + i * 1.5) * 0.35 + 0.65) * s.alpha;
+            ctx.globalAlpha = pulse * (isNight ? 0.75 : 0.4);
+            ctx.fillStyle = s.color;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
     renderWorldTiles(world) {
@@ -226,12 +383,22 @@ class Renderer {
                         case TILES.VOID:
                             r = 10; g = 10; b = 20;
                             break;
-                        case TILES.DEEP_WATER:
-                            r = 14 + waterWave * 0.3; g = 44 + waterWave * 0.5; b = 105 + waterWave;
+                        case TILES.DEEP_WATER: {
+                            const shimmer = Math.sin(x * 0.22 + this.animTime * 2.0) * Math.cos(y * 0.22 + this.animTime * 1.6);
+                            const spark = shimmer > 0.62 ? 35 : 0;
+                            r = Math.min(255, 14 + spark);
+                            g = Math.min(255, 44 + spark * 1.2);
+                            b = Math.min(255, 105 + waterWave + spark * 1.5);
                             break;
-                        case TILES.WATER:
-                            r = 28 + waterWave * 0.5; g = 100 + waterWave * 0.8; b = 180 + waterWave;
+                        }
+                        case TILES.WATER: {
+                            const shimmer = Math.sin(x * 0.2 + this.animTime * 2.2) * Math.cos(y * 0.2 + this.animTime * 1.8);
+                            const spark = shimmer > 0.58 ? 42 : 0;
+                            r = Math.min(255, 28 + spark * 0.8);
+                            g = Math.min(255, 100 + waterWave * 0.8 + spark);
+                            b = Math.min(255, 180 + waterWave + spark * 1.4);
                             break;
+                        }
                         case TILES.SAND:
                             r = 222 - varOffset; g = 193 - varOffset; b = 122 - varOffset;
                             break;
@@ -256,12 +423,21 @@ class Renderer {
                         case TILES.ICE:
                             r = 165; g = 243; b = 252;
                             break;
-                        case TILES.LAVA:
-                            r = 255; g = 69 + lavaWave; b = 0;
+                        case TILES.LAVA: {
+                            const shimmer = Math.sin(x * 0.28 + y * 0.28 + this.animTime * 3.0);
+                            const spark = shimmer > 0.4 ? 45 : 0;
+                            r = 255;
+                            g = Math.min(255, 69 + lavaWave + spark * 2);
+                            b = spark;
                             break;
-                        case TILES.ACID:
-                            r = 74; g = 222 + waterWave * 0.8; b = 128;
+                        }
+                        case TILES.ACID: {
+                            const bubble = Math.sin(x * 0.35 + y * 0.35 + this.animTime * 3.5);
+                            r = bubble > 0.5 ? 85 : 74;
+                            g = bubble > 0.5 ? 248 : 222 + waterWave * 0.8;
+                            b = bubble > 0.5 ? 140 : 128;
                             break;
+                        }
                         case TILES.BEDROCK:
                             r = 31; g = 41; b = 55;
                             break;
@@ -853,6 +1029,16 @@ class Renderer {
             const py = ent.y;
 
             ctx.save();
+
+            // Soft Ground Contact Drop Shadow
+            const isFlying = ent.isFlying || (ent.species && (ent.species.includes('dragon') || ent.species.includes('falcon') || ent.species.includes('griffin') || ent.species.includes('angel') || ent.species.includes('bird')));
+            const shadowW = Math.max(2, size * (isFlying ? 0.75 : 0.95));
+            const shadowH = Math.max(1, size * (isFlying ? 0.35 : 0.45));
+            const shadowY = py + (isFlying ? size * 0.75 : size * 0.42);
+            ctx.fillStyle = isFlying ? 'rgba(0, 0, 0, 0.22)' : 'rgba(0, 0, 0, 0.38)';
+            ctx.beginPath();
+            ctx.ellipse(px, shadowY, shadowW, shadowH, 0, 0, Math.PI * 2);
+            ctx.fill();
 
             // Hit Flash: White-hot brightness when struck
             if (ent.hitFlash > 0) {

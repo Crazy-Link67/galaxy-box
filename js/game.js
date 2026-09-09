@@ -65,6 +65,7 @@ class Game {
         // Key states
         this.keys = {};
         this.virtualKeys = { up: false, down: false, left: false, right: false };
+        this.mobilePanMode = false;
         this.touchPinchDist = null;
         this.touchMidX = 0;
         this.touchMidY = 0;
@@ -104,6 +105,14 @@ class Game {
         }
         this.controlledEntity = entity;
         entity.isControlled = true;
+
+        if (this.renderer3D) {
+            this.renderer3D.setFirstPerson(this.isFirstPerson, entity);
+        }
+
+        const mvc = document.getElementById('mobile-virtual-controls');
+        if (mvc) mvc.classList.add('active');
+
         this.ui.showControlHUD(entity);
         if (this.audio) this.audio.playMagic();
     }
@@ -116,6 +125,11 @@ class Game {
             this.controlledEntity.isControlled = false;
             this.controlledEntity = null;
         }
+        if (this.renderer3D) {
+            this.renderer3D.setFirstPerson(false, null);
+        }
+        const mvc = document.getElementById('mobile-virtual-controls');
+        if (mvc && !this.isFirstPerson) mvc.classList.remove('active');
         this.ui.hideControlHUD();
     }
 
@@ -167,7 +181,7 @@ class Game {
     toggleFirstPerson(forceState = null) {
         if (!this.renderer3D || !this.renderer3D.gl) {
             if (this.ui && typeof this.ui.showNotification === 'function') {
-                this.ui.showNotification("⚠️ WebGL 2.0 required for First-Person View", "error");
+                this.ui.showNotification("⚠️ WebGL 2.0 required for 3D First-Person View", "error");
             }
             return;
         }
@@ -180,7 +194,6 @@ class Game {
         }
 
         this.isFirstPerson = nextState;
-        this.renderer3D.isFirstPerson = this.isFirstPerson;
 
         // If entering FPV without a controlled entity, auto-possess nearest creature or first creature
         if (this.isFirstPerson && (!this.controlledEntity || !this.controlledEntity.active)) {
@@ -197,22 +210,31 @@ class Game {
             }
         }
 
+        if (this.renderer3D) {
+            this.renderer3D.setFirstPerson(this.isFirstPerson, this.controlledEntity);
+        }
+
         const fpvOverlay = document.getElementById('fpv-overlay');
         if (fpvOverlay) {
             fpvOverlay.style.display = this.isFirstPerson ? 'flex' : 'none';
         }
 
+        const mvc = document.getElementById('mobile-virtual-controls');
+        if (mvc) {
+            mvc.classList.toggle('active', this.isFirstPerson || !!this.controlledEntity);
+        }
+
         const btnFpv = document.getElementById('btn-toggle-fpv');
-        if (btnFpv) {
-            btnFpv.classList.toggle('active', this.isFirstPerson);
-        }
+        if (btnFpv) btnFpv.classList.toggle('active', this.isFirstPerson);
         const qaFpv = document.getElementById('qa-fpv-btn');
-        if (qaFpv) {
-            qaFpv.classList.toggle('active', this.isFirstPerson);
-        }
+        if (qaFpv) qaFpv.classList.toggle('active', this.isFirstPerson);
         const dockFpv = document.getElementById('dock-btn-fpv');
-        if (dockFpv) {
-            dockFpv.classList.toggle('active', this.isFirstPerson);
+        if (dockFpv) dockFpv.classList.toggle('active', this.isFirstPerson);
+
+        if (this.isFirstPerson && !this.isMobileDevice()) {
+            if (document.body.requestPointerLock) {
+                try { document.body.requestPointerLock(); } catch(err) {}
+            }
         }
 
         if (this.audio) this.audio.playMagic();
@@ -220,11 +242,15 @@ class Game {
         if (this.ui && typeof this.ui.showNotification === 'function') {
             this.ui.showNotification(
                 this.isFirstPerson
-                    ? "👁️ First-Person Mode Activated! (WASD: Move, Mouse/Drag: Look, Left-Click/Space: Attack, Q/E: Special, F: Exit)"
+                    ? "👁️ First-Person Mode Activated! (WASD/Joystick: Move, Look/Drag: Aim, Click/ATK: Attack, F/Exit: Exit)"
                     : "🌐 Exited First-Person Mode",
                 "info"
             );
         }
+    }
+
+    isMobileDevice() {
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     }
 
     shakeCamera(intensity = 10, duration = 20) {
@@ -364,6 +390,19 @@ class Game {
 
         if (this.controlledEntity && this.controlledEntity.active) {
             if (e.button === 0) {
+                // Request pointer lock on click if in FPV
+                if (this.isFirstPerson && !this.isMobileDevice()) {
+                    if (document.body.requestPointerLock && document.pointerLockElement !== document.body) {
+                        try { document.body.requestPointerLock(); } catch(err) {}
+                    }
+                }
+                // Trigger viewmodel swing animation
+                const vm = document.getElementById('fpv-viewmodel');
+                if (vm) {
+                    vm.classList.remove('swinging');
+                    void vm.offsetWidth;
+                    vm.classList.add('swinging');
+                }
                 // Primary attack towards mouse cursor
                 this.controlledEntity.usePrimaryAbility(this.mouse.worldX, this.mouse.worldY, this.world, this.entityManager, this.particleSystem, this.audio);
                 return;
@@ -495,14 +534,47 @@ class Game {
     }
 
     handleTouchStart(e) {
-        if (e.target !== this.canvas) return;
+        const isCanvas = (e.target === this.canvas || e.target === this.canvas3D || (e.target && e.target.id === 'fpv-overlay'));
+        if (!isCanvas) return;
         this.audio.ensureContext();
 
         if (e.touches.length === 1) {
             const touch = e.touches[0];
-            const wPos = this.renderer.screenToWorld(touch.clientX, touch.clientY);
             this.mouse.screenX = touch.clientX;
             this.mouse.screenY = touch.clientY;
+            this.mouse.lastX = touch.clientX;
+            this.mouse.lastY = touch.clientY;
+
+            // In 3D / First-Person View
+            if (this.is3DMode && this.renderer3D) {
+                const wPos = this.renderer3D.screenToWorld(touch.clientX, touch.clientY, this.world);
+                if (wPos) {
+                    this.mouse.worldX = wPos.x;
+                    this.mouse.worldY = wPos.y;
+                }
+
+                if (this.isFirstPerson) {
+                    // Touch Look on the right side of the screen
+                    if (touch.clientX > window.innerWidth * 0.35) {
+                        this.touchLookId = touch.identifier;
+                        this.touchLookLastX = touch.clientX;
+                        this.touchLookLastY = touch.clientY;
+                    }
+                    return;
+                }
+
+                // 3D God Mode
+                if (this.mobilePanMode) {
+                    this.mouse.isOrbiting3D = true;
+                } else if (wPos) {
+                    this.mouse.isDown = true;
+                    this.applyTool(wPos.x, wPos.y, true);
+                }
+                return;
+            }
+
+            // 2D Tactical View
+            const wPos = this.renderer.screenToWorld(touch.clientX, touch.clientY);
             this.mouse.worldX = wPos.x;
             this.mouse.worldY = wPos.y;
 
@@ -511,49 +583,124 @@ class Game {
                 return;
             }
 
+            if (this.mobilePanMode) {
+                this.isPanning2D = true;
+                return;
+            }
+
             this.mouse.isDown = true;
             this.applyTool(wPos.x, wPos.y, true);
         } else if (e.touches.length === 2) {
             e.preventDefault();
             this.mouse.isDown = false;
+            this.mouse.isOrbiting3D = false;
+            this.isPanning2D = false;
+            this.touchLookId = null;
+
             const t1 = e.touches[0];
             const t2 = e.touches[1];
             this.touchPinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
             this.touchMidX = (t1.clientX + t2.clientX) / 2;
             this.touchMidY = (t1.clientY + t2.clientY) / 2;
-            this.camStartTouchX = this.renderer.camera.x;
-            this.camStartTouchY = this.renderer.camera.y;
-            this.camStartTouchZoom = this.renderer.camera.zoom;
+
+            if (this.is3DMode && this.renderer3D) {
+                this.camStartTouchDist3D = this.renderer3D.camera.distance;
+                this.camStartTouchTargetX = this.renderer3D.camera.target[0];
+                this.camStartTouchTargetY = this.renderer3D.camera.target[1];
+            } else {
+                this.camStartTouchX = this.renderer.camera.x;
+                this.camStartTouchY = this.renderer.camera.y;
+                this.camStartTouchZoom = this.renderer.camera.zoom;
+            }
         }
     }
 
     handleTouchMove(e) {
-        if (e.target !== this.canvas) return;
+        const isCanvas = (e.target === this.canvas || e.target === this.canvas3D || (e.target && e.target.id === 'fpv-overlay'));
+        if (!isCanvas) return;
         e.preventDefault();
 
-        if (e.touches.length === 1 && this.mouse.isDown && !this.controlledEntity) {
+        if (e.touches.length === 1) {
             const touch = e.touches[0];
-            const wPos = this.renderer.screenToWorld(touch.clientX, touch.clientY);
-            this.mouse.screenX = touch.clientX;
-            this.mouse.screenY = touch.clientY;
-            this.mouse.worldX = wPos.x;
-            this.mouse.worldY = wPos.y;
-            this.applyTool(wPos.x, wPos.y, false);
+
+            if (this.is3DMode && this.renderer3D) {
+                if (this.isFirstPerson && this.touchLookId === touch.identifier) {
+                    const dx = touch.clientX - this.touchLookLastX;
+                    const dy = touch.clientY - this.touchLookLastY;
+                    this.touchLookLastX = touch.clientX;
+                    this.touchLookLastY = touch.clientY;
+                    this.renderer3D.rotateCamera(dx * 0.9, dy * 0.9);
+                    return;
+                }
+
+                if (this.mouse.isOrbiting3D) {
+                    const dx = touch.clientX - this.mouse.lastX;
+                    const dy = touch.clientY - this.mouse.lastY;
+                    this.mouse.lastX = touch.clientX;
+                    this.mouse.lastY = touch.clientY;
+                    this.renderer3D.orbit(dx * 1.2, dy * 1.2);
+                    return;
+                }
+
+                if (this.mouse.isDown && !this.controlledEntity) {
+                    const wPos = this.renderer3D.screenToWorld(touch.clientX, touch.clientY, this.world);
+                    if (wPos) {
+                        this.mouse.screenX = touch.clientX;
+                        this.mouse.screenY = touch.clientY;
+                        this.mouse.worldX = wPos.x;
+                        this.mouse.worldY = wPos.y;
+                        this.applyTool(wPos.x, wPos.y, false);
+                    }
+                }
+                return;
+            }
+
+            // 2D Tactical Mode
+            if (this.isPanning2D) {
+                const dx = (touch.clientX - this.mouse.lastX) / this.renderer.camera.zoom;
+                const dy = (touch.clientY - this.mouse.lastY) / this.renderer.camera.zoom;
+                this.renderer.camera.x -= dx;
+                this.renderer.camera.y -= dy;
+                this.mouse.lastX = touch.clientX;
+                this.mouse.lastY = touch.clientY;
+                return;
+            }
+
+            if (this.mouse.isDown && !this.controlledEntity) {
+                const wPos = this.renderer.screenToWorld(touch.clientX, touch.clientY);
+                this.mouse.screenX = touch.clientX;
+                this.mouse.screenY = touch.clientY;
+                this.mouse.worldX = wPos.x;
+                this.mouse.worldY = wPos.y;
+                this.applyTool(wPos.x, wPos.y, false);
+            }
         } else if (e.touches.length === 2 && this.touchPinchDist) {
             const t1 = e.touches[0];
             const t2 = e.touches[1];
             const newDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
             const scale = newDist / Math.max(1, this.touchPinchDist);
-            const cam = this.renderer.camera;
 
-            cam.zoom = Math.max(cam.minZoom, Math.min(cam.maxZoom, this.camStartTouchZoom * scale));
-
-            const curMidX = (t1.clientX + t2.clientX) / 2;
-            const curMidY = (t1.clientY + t2.clientY) / 2;
-            const dx = (curMidX - this.touchMidX) / cam.zoom;
-            const dy = (curMidY - this.touchMidY) / cam.zoom;
-            cam.x = this.camStartTouchX - dx;
-            cam.y = this.camStartTouchY - dy;
+            if (this.is3DMode && this.renderer3D) {
+                this.renderer3D.camera.distance = Math.max(
+                    this.renderer3D.camera.minDistance,
+                    Math.min(this.renderer3D.camera.maxDistance, (this.camStartTouchDist3D || 120) / Math.max(0.1, scale))
+                );
+                const curMidX = (t1.clientX + t2.clientX) / 2;
+                const curMidY = (t1.clientY + t2.clientY) / 2;
+                const dx = (curMidX - this.touchMidX) * 0.3;
+                const dy = (curMidY - this.touchMidY) * 0.3;
+                this.renderer3D.camera.target[0] = (this.camStartTouchTargetX || 160) - dx;
+                this.renderer3D.camera.target[1] = (this.camStartTouchTargetY || 90) + dy;
+            } else {
+                const cam = this.renderer.camera;
+                cam.zoom = Math.max(cam.minZoom, Math.min(cam.maxZoom, this.camStartTouchZoom * scale));
+                const curMidX = (t1.clientX + t2.clientX) / 2;
+                const curMidY = (t1.clientY + t2.clientY) / 2;
+                const dx = (curMidX - this.touchMidX) / cam.zoom;
+                const dy = (curMidY - this.touchMidY) / cam.zoom;
+                cam.x = this.camStartTouchX - dx;
+                cam.y = this.camStartTouchY - dy;
+            }
         }
     }
 
@@ -563,6 +710,9 @@ class Game {
         }
         if (e.touches.length === 0) {
             this.mouse.isDown = false;
+            this.mouse.isOrbiting3D = false;
+            this.isPanning2D = false;
+            this.touchLookId = null;
         }
     }
 
@@ -1578,8 +1728,8 @@ class Game {
             const ent = this.controlledEntity;
             if (this.isFirstPerson && this.renderer3D) {
                 const yaw = this.renderer3D.camera.yaw;
-                const fx = -Math.sin(yaw);
-                const fy = Math.cos(yaw);
+                const fx = Math.sin(yaw);
+                const fy = -Math.cos(yaw);
                 const rx = Math.cos(yaw);
                 const ry = Math.sin(yaw);
 
@@ -1593,7 +1743,7 @@ class Game {
                     const vx = fx * moveFwd + rx * moveRight;
                     const vy = fy * moveFwd + ry * moveRight;
                     const len = Math.hypot(vx, vy) || 1;
-                    const spd = ent.speed * 1.8;
+                    const spd = (ent.speed || 1.0) * 1.8;
                     ent.x += (vx / len) * spd;
                     ent.y += (vy / len) * spd;
                     ent.x = Math.max(2, Math.min(this.world.width - 2, ent.x));
@@ -1601,7 +1751,7 @@ class Game {
                     if (vx < 0) ent.facingLeft = true;
                     else if (vx > 0) ent.facingLeft = false;
 
-                    if (ent.hasTrait('super_speed') && Math.random() < 0.4) {
+                    if (typeof ent.hasTrait === 'function' && ent.hasTrait('super_speed') && Math.random() < 0.4) {
                         this.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, ent.color, 10, 'spark');
                     }
                 }
@@ -1616,13 +1766,13 @@ class Game {
                     if (mx < 0) ent.facingLeft = true;
                     else if (mx > 0) ent.facingLeft = false;
                     const len = Math.hypot(mx, my);
-                    const spd = ent.speed * 1.8;
+                    const spd = (ent.speed || 1.0) * 1.8;
                     ent.x += (mx / len) * spd;
                     ent.y += (my / len) * spd;
                     ent.x = Math.max(2, Math.min(this.world.width - 2, ent.x));
                     ent.y = Math.max(2, Math.min(this.world.height - 2, ent.y));
 
-                    if (ent.hasTrait('super_speed') && Math.random() < 0.4) {
+                    if (typeof ent.hasTrait === 'function' && ent.hasTrait('super_speed') && Math.random() < 0.4) {
                         this.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, ent.color, 10, 'spark');
                     }
                 }
@@ -1790,6 +1940,8 @@ class Game {
         }
     }
 }
+
+window.Game = Game;
 
 // Start on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', () => {

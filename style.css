@@ -1703,10 +1703,10 @@ body.cinematic #minimap-container {
 #mobile-virtual-controls {
     display: none;
     position: fixed;
-    bottom: 24px;
+    bottom: 20px;
     left: 0;
     width: 100vw;
-    padding: 0 24px;
+    padding: 0 18px;
     box-sizing: border-box;
     justify-content: space-between;
     align-items: flex-end;
@@ -1714,75 +1714,55 @@ body.cinematic #minimap-container {
     z-index: 150;
 }
 
-#control-hud.active #mobile-virtual-controls {
+#mobile-virtual-controls.active {
     display: flex;
 }
 
-/* Touch D-Pad */
-#mobile-dpad {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+/* Touch Analog Joystick */
+#mobile-joystick-zone {
     pointer-events: auto;
-    background: rgba(15, 23, 42, 0.75);
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+#virtual-joystick-base {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.88) 100%);
+    border: 2px solid rgba(56, 189, 248, 0.45);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(56, 189, 248, 0.4);
-    border-radius: 18px;
-    padding: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-}
-
-.dpad-middle {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.dpad-btn {
-    width: 48px;
-    height: 48px;
-    background: rgba(30, 41, 59, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.5);
-    border-radius: 8px;
-    color: #38bdf8;
-    font-size: 1.1rem;
-    font-weight: 900;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.1s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
 }
 
-.dpad-btn:active, .dpad-btn.pressed {
-    background: #38bdf8;
-    color: #0f172a;
-    transform: scale(0.92);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+#virtual-joystick-thumb {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #38bdf8 0%, #0284c7 100%);
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.8);
+    transform: translate(0px, 0px);
+    pointer-events: none;
+    transition: transform 0.05s ease-out;
 }
 
-.dpad-center-hub {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(56, 189, 248, 0.3);
-    font-size: 0.8rem;
+.dpad-fallback {
+    display: none !important; /* Retain for button key mappings */
 }
 
 /* Touch Action Buttons */
 #mobile-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     pointer-events: auto;
     user-select: none;
@@ -1791,14 +1771,14 @@ body.cinematic #minimap-container {
 }
 
 .action-btn {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.1s ease;
@@ -1810,13 +1790,13 @@ body.cinematic #minimap-container {
 }
 
 .action-btn span {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     letter-spacing: 0.5px;
     margin-top: 1px;
 }
 
 .action-atk {
-    background: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.45);
     border: 2px solid #ef4444;
     color: #ffffff;
     box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
@@ -1829,7 +1809,7 @@ body.cinematic #minimap-container {
 }
 
 .action-spec {
-    background: rgba(168, 85, 247, 0.35);
+    background: rgba(168, 85, 247, 0.45);
     border: 2px solid #a855f7;
     color: #ffffff;
     box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
@@ -1841,10 +1821,34 @@ body.cinematic #minimap-container {
     box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
 }
 
+.action-jump {
+    background: rgba(16, 185, 129, 0.45);
+    border: 2px solid #10b981;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+}
+
+.action-jump:active {
+    background: #10b981;
+    transform: scale(0.92);
+}
+
+.action-fpv {
+    background: rgba(14, 165, 233, 0.45);
+    border: 2px solid #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(14, 165, 233, 0.4);
+}
+
+.action-fpv:active {
+    background: #0ea5e9;
+    transform: scale(0.92);
+}
+
 .action-exit {
-    width: 48px;
-    height: 48px;
-    background: rgba(100, 116, 139, 0.35);
+    width: 46px;
+    height: 46px;
+    background: rgba(100, 116, 139, 0.4);
     border: 2px solid #94a3b8;
     color: #ffffff;
     box-shadow: 0 0 12px rgba(148, 163, 184, 0.3);
@@ -1856,42 +1860,128 @@ body.cinematic #minimap-container {
     transform: scale(0.92);
 }
 
+/* Mobile Quick Mode Floating Pill (Pan / Draw Mode) */
+.mobile-pan-toggle {
+    position: fixed;
+    top: 76px;
+    right: 14px;
+    z-index: 120;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid #38bdf8;
+    border-radius: 20px;
+    color: #e2e8f0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    display: none;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobile-pan-toggle.pan-active {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+}
+
+@media (max-width: 768px), (pointer: coarse) {
+    .mobile-pan-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+}
+
 /* ==========================================
    MOBILE & TABLET RESPONSIVE QUERIES
    ========================================== */
 @media (max-width: 768px) {
     #top-hud {
-        top: 8px;
-        left: 8px;
-        right: 8px;
+        top: 6px;
+        left: 6px;
+        right: 6px;
         transform: none;
         width: auto;
-        padding: 6px 10px;
-        flex-wrap: wrap;
+        padding: 4px 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
         gap: 6px;
+        max-height: 50px;
+    }
+
+    #top-hud::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hud-group {
+        flex-shrink: 0;
+        gap: 4px;
     }
 
     .game-logo span:first-child {
-        font-size: 0.92rem;
+        font-size: 0.82rem;
     }
 
     .stat-tag {
-        font-size: 0.68rem;
-        padding: 2px 5px;
+        font-size: 0.64rem;
+        padding: 2px 4px;
+    }
+
+    #stat-fps, #stat-kingdoms {
+        display: none; /* Hide less critical stats on small phone screens */
+    }
+
+    .time-btn {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        min-height: 36px;
+    }
+
+    /* Floating Quick Access Bar on Mobile: horizontal compact strip */
+    #quick-access-bar {
+        top: 60px;
+        left: 6px;
+        flex-direction: row;
+        gap: 6px;
+        z-index: 95;
+    }
+
+    .qa-btn {
+        padding: 5px 10px;
+        border-radius: 10px;
+    }
+
+    .qa-btn .qa-sub {
+        display: none; /* Keep buttons sleek and readable on mobile */
+    }
+
+    .qa-btn .qa-title {
+        font-size: 0.72rem;
+    }
+
+    .qa-btn .qa-icon {
+        font-size: 1.05rem;
     }
 
     #dock-container {
         bottom: 6px;
-        width: 96vw;
-        max-width: 96vw;
-        padding: 6px 8px;
+        width: 98vw;
+        max-width: 98vw;
+        padding: 5px 6px;
     }
 
     #category-tools {
         overflow-x: auto;
         flex-wrap: nowrap;
         justify-content: flex-start;
-        padding-bottom: 6px;
+        padding-bottom: 4px;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
     }
@@ -1901,9 +1991,9 @@ body.cinematic #minimap-container {
     }
 
     .tool-btn {
-        min-width: 42px;
-        height: 42px;
-        font-size: 1.1rem;
+        min-width: 44px;
+        height: 44px;
+        font-size: 1.15rem;
         flex-shrink: 0;
     }
 
@@ -1923,6 +2013,7 @@ body.cinematic #minimap-container {
         padding: 6px 10px;
         font-size: 0.72rem;
         flex-shrink: 0;
+        min-height: 36px;
     }
 
     #control-hud {
@@ -1949,9 +2040,9 @@ body.cinematic #minimap-container {
     }
 
     #minimap-container {
-        bottom: 120px;
+        bottom: 110px;
         right: 8px;
-        transform: scale(0.8);
+        transform: scale(0.75);
         transform-origin: bottom right;
     }
 }
@@ -2312,6 +2403,126 @@ body.cinematic #minimap-container {
     color: #fff;
     border-color: #38bdf8;
     box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+}
+
+/* FPV Atmospheric Vignette */
+.fpv-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, transparent 55%, rgba(10, 10, 20, 0.45) 85%, rgba(5, 5, 12, 0.8) 100%);
+}
+
+/* FPV Hitmarker */
+.fpv-hitmarker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.05s ease;
+}
+
+.fpv-hitmarker.active {
+    opacity: 1;
+}
+
+.fpv-hitmarker::before,
+.fpv-hitmarker::after {
+    content: '';
+    position: absolute;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
+
+.fpv-hitmarker::before {
+    top: 11px;
+    left: 0;
+    width: 24px;
+    height: 2px;
+}
+
+.fpv-hitmarker::after {
+    top: 0;
+    left: 11px;
+    width: 2px;
+    height: 24px;
+}
+
+/* FPV Viewmodel (Weapon / Hands in Viewport) */
+.fpv-viewmodel-container {
+    position: absolute;
+    bottom: 0;
+    right: 15%;
+    width: 240px;
+    height: 240px;
+    pointer-events: none;
+    z-index: 6;
+    overflow: visible;
+}
+
+.fpv-viewmodel {
+    width: 100%;
+    height: 100%;
+    transform-origin: bottom right;
+    transition: transform 0.08s ease-out;
+}
+
+.fpv-viewmodel.bobbing {
+    animation: fpvBob 0.6s infinite alternate ease-in-out;
+}
+
+.fpv-viewmodel.swinging {
+    animation: fpvSwing 0.22s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes fpvBob {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-8px, -12px) rotate(-3deg); }
+}
+
+@keyframes fpvSwing {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    40% { transform: translate(-30px, -20px) rotate(-35deg) scale(1.15); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+#fpv-weapon-canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.7));
+}
+
+/* FPV Exit Pill Button */
+.fpv-exit-pill {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: auto;
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid #ef4444;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 7px 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    backdrop-filter: blur(10px);
+    transition: all 0.15s ease;
+}
+
+.fpv-exit-pill:hover, .fpv-exit-pill:active {
+    background: #ef4444;
+    transform: translateX(-50%) scale(1.05);
 }
 
 

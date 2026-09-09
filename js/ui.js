@@ -1555,41 +1555,109 @@ class UIManager {
     hideControlHUD() {
         const hud = document.getElementById('control-hud');
         if (hud) hud.classList.remove('active');
+        const mvc = document.getElementById('mobile-virtual-controls');
+        if (mvc && !(this.game && this.game.isFirstPerson)) {
+            mvc.classList.remove('active');
+        }
     }
 
     setupVirtualMobileControls() {
-        // Virtual D-Pad buttons
-        const dpadButtons = document.querySelectorAll('.dpad-btn');
-        dpadButtons.forEach(btn => {
-            const key = btn.dataset.key;
-            if (!key) return;
+        // --- Modern Touch Virtual Analog Joystick ---
+        const joystickZone = document.getElementById('mobile-joystick-zone');
+        const joystickBase = document.getElementById('virtual-joystick-base');
+        const joystickThumb = document.getElementById('virtual-joystick-thumb');
 
-            const press = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+        if (joystickZone && joystickBase && joystickThumb) {
+            let activeTouchId = null;
+            let baseCenterX = 0;
+            let baseCenterY = 0;
+            const maxRadius = 38;
+
+            const updateJoystick = (clientX, clientY) => {
+                const dx = clientX - baseCenterX;
+                const dy = clientY - baseCenterY;
+                const dist = Math.hypot(dx, dy);
+                const angle = Math.atan2(dy, dx);
+                const clampedDist = Math.min(dist, maxRadius);
+
+                const thumbX = Math.cos(angle) * clampedDist;
+                const thumbY = Math.sin(angle) * clampedDist;
+                joystickThumb.style.transform = `translate(${thumbX}px, ${thumbY}px)`;
+
+                const normX = thumbX / maxRadius;
+                const normY = thumbY / maxRadius;
+
                 if (this.game && this.game.virtualKeys) {
-                    this.game.virtualKeys[key] = true;
+                    this.game.virtualKeys.up = normY < -0.3;
+                    this.game.virtualKeys.down = normY > 0.3;
+                    this.game.virtualKeys.left = normX < -0.3;
+                    this.game.virtualKeys.right = normX > 0.3;
                 }
-                btn.classList.add('pressed');
             };
 
-            const release = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            const resetJoystick = () => {
+                activeTouchId = null;
+                joystickThumb.style.transform = 'translate(0px, 0px)';
                 if (this.game && this.game.virtualKeys) {
-                    this.game.virtualKeys[key] = false;
+                    this.game.virtualKeys.up = false;
+                    this.game.virtualKeys.down = false;
+                    this.game.virtualKeys.left = false;
+                    this.game.virtualKeys.right = false;
                 }
-                btn.classList.remove('pressed');
             };
 
-            btn.addEventListener('pointerdown', press);
-            btn.addEventListener('pointerup', release);
-            btn.addEventListener('pointercancel', release);
-            btn.addEventListener('pointerleave', release);
-            btn.addEventListener('touchstart', press, { passive: false });
-            btn.addEventListener('touchend', release);
-            btn.addEventListener('touchcancel', release);
-        });
+            const handleJoyStart = (e) => {
+                const touch = e.changedTouches ? e.changedTouches[0] : e;
+                activeTouchId = touch.identifier !== undefined ? touch.identifier : 'mouse';
+                const rect = joystickBase.getBoundingClientRect();
+                baseCenterX = rect.left + rect.width / 2;
+                baseCenterY = rect.top + rect.height / 2;
+                updateJoystick(touch.clientX, touch.clientY);
+            };
+
+            const handleJoyMove = (e) => {
+                if (activeTouchId === null) return;
+                let touch = null;
+                if (e.changedTouches) {
+                    for (let i = 0; i < e.changedTouches.length; i++) {
+                        if (e.changedTouches[i].identifier === activeTouchId) {
+                            touch = e.changedTouches[i];
+                            break;
+                        }
+                    }
+                } else if (activeTouchId === 'mouse') {
+                    touch = e;
+                }
+                if (touch) {
+                    e.preventDefault();
+                    updateJoystick(touch.clientX, touch.clientY);
+                }
+            };
+
+            const handleJoyEnd = (e) => {
+                if (activeTouchId === null) return;
+                if (e.changedTouches) {
+                    for (let i = 0; i < e.changedTouches.length; i++) {
+                        if (e.changedTouches[i].identifier === activeTouchId) {
+                            resetJoystick();
+                            break;
+                        }
+                    }
+                } else {
+                    resetJoystick();
+                }
+            };
+
+            joystickZone.addEventListener('touchstart', handleJoyStart, { passive: false });
+            window.addEventListener('touchmove', handleJoyMove, { passive: false });
+            window.addEventListener('touchend', handleJoyEnd);
+            window.addEventListener('touchcancel', handleJoyEnd);
+
+            joystickZone.addEventListener('pointerdown', handleJoyStart);
+            window.addEventListener('pointermove', handleJoyMove);
+            window.addEventListener('pointerup', handleJoyEnd);
+            window.addEventListener('pointercancel', handleJoyEnd);
+        }
 
         // Action: Attack
         const atkBtn = document.getElementById('btn-touch-atk');
@@ -1599,9 +1667,17 @@ class UIManager {
                 e.stopPropagation();
                 if (this.game && this.game.controlledEntity && this.game.controlledEntity.active) {
                     const ent = this.game.controlledEntity;
-                    const aimX = this.game.mouse.worldX || (ent.x + 10);
+                    const aimX = this.game.mouse.worldX || (ent.x + (ent.facingLeft ? -10 : 10));
                     const aimY = this.game.mouse.worldY || ent.y;
                     ent.usePrimaryAbility(aimX, aimY, this.game.world, this.game.entityManager, this.game.particleSystem, this.game.audio);
+
+                    // Viewmodel swing
+                    const vm = document.getElementById('fpv-viewmodel');
+                    if (vm) {
+                        vm.classList.remove('swinging');
+                        void vm.offsetWidth;
+                        vm.classList.add('swinging');
+                    }
                 }
             };
             atkBtn.addEventListener('pointerdown', triggerAtk);
@@ -1622,6 +1698,42 @@ class UIManager {
             specBtn.addEventListener('touchstart', triggerSpec, { passive: false });
         }
 
+        // Action: Jump / Dash
+        const jumpBtn = document.getElementById('btn-touch-jump');
+        if (jumpBtn) {
+            const triggerJump = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game) {
+                    this.game.keys[' '] = true;
+                    if (this.game.controlledEntity && this.game.controlledEntity.active) {
+                        const ent = this.game.controlledEntity;
+                        const spd = ent.speed * 4;
+                        ent.x += (ent.facingLeft ? -spd : spd);
+                        if (this.game.audio) this.game.audio.playJump();
+                        if (this.game.particleSystem) {
+                            this.game.particleSystem.spawn(ent.x, ent.y, 0, 0, ent.size, '#ffffff', 8, 'smoke');
+                        }
+                    }
+                    setTimeout(() => { if (this.game) this.game.keys[' '] = false; }, 180);
+                }
+            };
+            jumpBtn.addEventListener('pointerdown', triggerJump);
+            jumpBtn.addEventListener('touchstart', triggerJump, { passive: false });
+        }
+
+        // Action: Toggle FPV
+        const fpvBtn = document.getElementById('btn-touch-fpv');
+        if (fpvBtn) {
+            const triggerFpv = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game) this.game.toggleFirstPerson();
+            };
+            fpvBtn.addEventListener('pointerdown', triggerFpv);
+            fpvBtn.addEventListener('touchstart', triggerFpv, { passive: false });
+        }
+
         // Action: Exit Control
         const exitTouchBtn = document.getElementById('btn-touch-exit');
         if (exitTouchBtn) {
@@ -1638,6 +1750,36 @@ class UIManager {
         if (exitCtrlBtn) {
             exitCtrlBtn.onclick = () => {
                 if (this.game) this.game.unpossess();
+            };
+        }
+
+        // FPV Overlay Exit Button
+        const fpvExitBtn = document.getElementById('fpv-exit-btn');
+        if (fpvExitBtn) {
+            fpvExitBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.game) this.game.toggleFirstPerson(false);
+            };
+        }
+
+        // Mobile Pan / Draw Mode Toggle
+        const panToggleBtn = document.getElementById('mobile-pan-toggle');
+        if (panToggleBtn) {
+            panToggleBtn.onclick = () => {
+                if (this.game) {
+                    this.game.mobilePanMode = !this.game.mobilePanMode;
+                    panToggleBtn.classList.toggle('pan-active', this.game.mobilePanMode);
+                    panToggleBtn.innerHTML = this.game.mobilePanMode ? '✋ Pan Mode' : '✏️ Draw Mode';
+                    if (this.showNotification) {
+                        this.showNotification(
+                            this.game.mobilePanMode
+                                ? "✋ Mobile Pan Mode: Drag to scroll camera across world"
+                                : "✏️ Mobile Draw Mode: Drag to apply selected tool",
+                            "info"
+                        );
+                    }
+                }
             };
         }
     }
