@@ -64,7 +64,37 @@ const TILES = {
     STAR_METAL_ORE: 58,
     FLOATING_ROCK: 59,
     MAGMA_FISSURE: 60,
-    LUSH_MEADOW: 61
+    LUSH_MEADOW: 61,
+    OBSIDIAN_BLOCK: 62,
+    BASALT: 63,
+    GLACIAL_ICE: 64,
+    CRYSTAL_ORE: 65,
+    GOLD_VEIN: 66,
+    AETHER_ROCK: 67,
+    MUD: 68,
+    PEAT: 69,
+    MYCELIUM: 70,
+    CORAL_BARRIER: 71,
+    DUNE_QUICKSAND: 72,
+    VOLCANIC_CINDER: 73,
+    SULFUR_STONE: 74,
+    CHLOROPHYLL_MOSS: 75,
+    STARFALL_DUST: 76,
+    VOID_STONE: 77,
+    ANCIENT_BRICK: 78,
+    MARBLE_ROAD: 79,
+    RUNIC_SLATE: 80,
+    CRIMSON_RED_SAND: 81,
+    BAMBOO_THICKET: 82,
+    TUNDRA_PERMAFROST: 83,
+    PETRIFIED_GROVE: 84,
+    LUMINESCENT_LICHEN: 85,
+    SILVER_ORE: 86,
+    METEORITE_CORE: 87,
+    PRISMATIC_CRYSTAL: 88,
+    DEEP_EARTH_MANTLE: 89,
+    DIVINE_SOIL: 90,
+    ABYSSAL_CHASM: 91
 };
 
 const TILE_INFO = {
@@ -129,7 +159,37 @@ const TILE_INFO = {
     [TILES.STAR_METAL_ORE]: { name: "Star-Metal Ore", color: "#6366f1", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.FLOATING_ROCK]: { name: "Floating Sky Rock", color: "#64748b", isLiquid: false, isSolid: true, flammability: 0 },
     [TILES.MAGMA_FISSURE]: { name: "Smoldering Magma Fissure", color: "#dc2626", isLiquid: false, isSolid: true, flammability: 0 },
-    [TILES.LUSH_MEADOW]: { name: "Wildflower Meadow", color: "#a3e635", isLiquid: false, isSolid: true, flammability: 0.6 }
+    [TILES.LUSH_MEADOW]: { name: "Wildflower Meadow", color: "#a3e635", isLiquid: false, isSolid: true, flammability: 0.6 },
+    [TILES.OBSIDIAN_BLOCK]: { name: "Obsidian Block", color: "#161324", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.BASALT]: { name: "Basalt Crust", color: "#292524", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.GLACIAL_ICE]: { name: "Glacial Blue Ice", color: "#67e8f9", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.CRYSTAL_ORE]: { name: "Prismatic Geode Ore", color: "#c084fc", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.GOLD_VEIN]: { name: "Rich Gold Vein", color: "#eab308", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.AETHER_ROCK]: { name: "Aether Floating Rock", color: "#818cf8", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.MUD]: { name: "Wet River Mud", color: "#451a03", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.PEAT]: { name: "Peat Moss Bog", color: "#3f2e18", isLiquid: false, isSolid: true, flammability: 0.2 },
+    [TILES.MYCELIUM]: { name: "Bioluminescent Mycelium", color: "#9333ea", isLiquid: false, isSolid: true, flammability: 0.4 },
+    [TILES.CORAL_BARRIER]: { name: "Coral Barrier Reef", color: "#fb7185", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.DUNE_QUICKSAND]: { name: "Sinking Dune Sand", color: "#d97706", isLiquid: false, isSolid: false, flammability: 0 },
+    [TILES.VOLCANIC_CINDER]: { name: "Volcanic Cinder Ash", color: "#57534e", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.SULFUR_STONE]: { name: "Yellow Sulfur Deposit", color: "#facc15", isLiquid: false, isSolid: true, flammability: 0.3 },
+    [TILES.CHLOROPHYLL_MOSS]: { name: "Verdant Chlorophyll Moss", color: "#16a34a", isLiquid: false, isSolid: true, flammability: 0.5 },
+    [TILES.STARFALL_DUST]: { name: "Starfall Stardust Dune", color: "#38bdf8", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.VOID_STONE]: { name: "Dark Matter Void Stone", color: "#0f0a1c", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.ANCIENT_BRICK]: { name: "Ancient Ruin Brick", color: "#78716c", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.MARBLE_ROAD]: { name: "Imperial Marble Highway", color: "#f1f5f9", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.RUNIC_SLATE]: { name: "Runic Inscribed Slate", color: "#475569", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.CRIMSON_RED_SAND]: { name: "Crimson Martian Sand", color: "#b91c1c", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.BAMBOO_THICKET]: { name: "Emerald Bamboo Thicket", color: "#15803d", isLiquid: false, isSolid: true, flammability: 0.8 },
+    [TILES.TUNDRA_PERMAFROST]: { name: "Frozen Tundra Soil", color: "#94a3b8", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.PETRIFIED_GROVE]: { name: "Petrified Stone Forest", color: "#52525b", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.LUMINESCENT_LICHEN]: { name: "Glowing Cyan Lichen", color: "#06b6d4", isLiquid: false, isSolid: true, flammability: 0.3 },
+    [TILES.SILVER_ORE]: { name: "Gleaming Silver Ore", color: "#cbd5e1", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.METEORITE_CORE]: { name: "Searing Meteor Core", color: "#f97316", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.PRISMATIC_CRYSTAL]: { name: "Prismatic Rainbow Crystal", color: "#ec4899", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.DEEP_EARTH_MANTLE]: { name: "Deep Earth Mantle", color: "#7f1d1d", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.DIVINE_SOIL]: { name: "Hallowed Celestial Soil", color: "#fef08a", isLiquid: false, isSolid: true, flammability: 0 },
+    [TILES.ABYSSAL_CHASM]: { name: "Bottomless Abyssal Chasm", color: "#020617", isLiquid: true, isSolid: false, flammability: 0 }
 };
 
 const TILE_BASE_ELEVATION = {
@@ -194,7 +254,37 @@ const TILE_BASE_ELEVATION = {
     [TILES.STAR_METAL_ORE]: 5.8,
     [TILES.FLOATING_ROCK]: 9.0,
     [TILES.MAGMA_FISSURE]: 2.2,
-    [TILES.LUSH_MEADOW]: 3.1
+    [TILES.LUSH_MEADOW]: 3.1,
+    [TILES.OBSIDIAN_BLOCK]: 4.5,
+    [TILES.BASALT]: 3.8,
+    [TILES.GLACIAL_ICE]: 2.5,
+    [TILES.CRYSTAL_ORE]: 4.8,
+    [TILES.GOLD_VEIN]: 4.2,
+    [TILES.AETHER_ROCK]: 8.5,
+    [TILES.MUD]: 2,
+    [TILES.PEAT]: 2.1,
+    [TILES.MYCELIUM]: 2.7,
+    [TILES.CORAL_BARRIER]: 1.1,
+    [TILES.DUNE_QUICKSAND]: 1.8,
+    [TILES.VOLCANIC_CINDER]: 2.6,
+    [TILES.SULFUR_STONE]: 3.2,
+    [TILES.CHLOROPHYLL_MOSS]: 2.8,
+    [TILES.STARFALL_DUST]: 3,
+    [TILES.VOID_STONE]: 4,
+    [TILES.ANCIENT_BRICK]: 3.3,
+    [TILES.MARBLE_ROAD]: 3.1,
+    [TILES.RUNIC_SLATE]: 3.6,
+    [TILES.CRIMSON_RED_SAND]: 2.4,
+    [TILES.BAMBOO_THICKET]: 3.4,
+    [TILES.TUNDRA_PERMAFROST]: 3.2,
+    [TILES.PETRIFIED_GROVE]: 4.1,
+    [TILES.LUMINESCENT_LICHEN]: 2.9,
+    [TILES.SILVER_ORE]: 4.4,
+    [TILES.METEORITE_CORE]: 5.4,
+    [TILES.PRISMATIC_CRYSTAL]: 5,
+    [TILES.DEEP_EARTH_MANTLE]: 2.2,
+    [TILES.DIVINE_SOIL]: 3.3,
+    [TILES.ABYSSAL_CHASM]: -2
 };
 
 // Compact Fast Perlin/Simplex-style Noise Generator
@@ -1103,4 +1193,5 @@ class World {
 
 window.TILES = TILES;
 window.TILE_INFO = TILE_INFO;
+window.TILE_BASE_ELEVATION = TILE_BASE_ELEVATION;
 window.World = World;

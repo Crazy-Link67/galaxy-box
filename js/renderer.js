@@ -674,6 +674,96 @@ class Renderer {
                             if ((x * 7 + y * 11) % 9 === 0) { r = 244; g = 114; b = 182; } // Wildflower pink
                             else if ((x * 13 + y * 5) % 11 === 0) { r = 250; g = 204; b = 21; } // Wildflower yellow
                             break;
+                        case TILES.OBSIDIAN_BLOCK:
+                            r = 22 - varOffset; g = 19 - varOffset; b = 36 - varOffset;
+                            break;
+                        case TILES.BASALT:
+                            r = 41 - varOffset; g = 37 - varOffset; b = 36 - varOffset;
+                            break;
+                        case TILES.GLACIAL_ICE:
+                            r = 103 - varOffset; g = 232 - varOffset; b = 249 - varOffset;
+                            break;
+                        case TILES.CRYSTAL_ORE:
+                            r = 192 - varOffset; g = 132 - varOffset; b = 252 - varOffset;
+                            break;
+                        case TILES.GOLD_VEIN:
+                            r = 234 - varOffset; g = 179 - varOffset; b = 8 - varOffset;
+                            break;
+                        case TILES.AETHER_ROCK:
+                            r = 129 - varOffset; g = 140 - varOffset; b = 248 - varOffset;
+                            break;
+                        case TILES.MUD:
+                            r = 69 - varOffset; g = 26 - varOffset; b = 3 - varOffset;
+                            break;
+                        case TILES.PEAT:
+                            r = 63 - varOffset; g = 46 - varOffset; b = 24 - varOffset;
+                            break;
+                        case TILES.MYCELIUM:
+                            r = 147 - varOffset; g = 51 - varOffset; b = 234 - varOffset;
+                            break;
+                        case TILES.CORAL_BARRIER:
+                            r = 251 - varOffset; g = 113 - varOffset; b = 133 - varOffset;
+                            break;
+                        case TILES.DUNE_QUICKSAND:
+                            r = 217 - varOffset; g = 119 - varOffset; b = 6 - varOffset;
+                            break;
+                        case TILES.VOLCANIC_CINDER:
+                            r = 87 - varOffset; g = 83 - varOffset; b = 78 - varOffset;
+                            break;
+                        case TILES.SULFUR_STONE:
+                            r = 250 - varOffset; g = 204 - varOffset; b = 21 - varOffset;
+                            break;
+                        case TILES.CHLOROPHYLL_MOSS:
+                            r = 22 - varOffset; g = 163 - varOffset; b = 74 - varOffset;
+                            break;
+                        case TILES.STARFALL_DUST:
+                            r = 56 - varOffset; g = 189 - varOffset; b = 248 - varOffset;
+                            break;
+                        case TILES.VOID_STONE:
+                            r = 15 - varOffset; g = 10 - varOffset; b = 28 - varOffset;
+                            break;
+                        case TILES.ANCIENT_BRICK:
+                            r = 120 - varOffset; g = 113 - varOffset; b = 108 - varOffset;
+                            break;
+                        case TILES.MARBLE_ROAD:
+                            r = 241 - varOffset; g = 245 - varOffset; b = 249 - varOffset;
+                            break;
+                        case TILES.RUNIC_SLATE:
+                            r = 71 - varOffset; g = 85 - varOffset; b = 105 - varOffset;
+                            break;
+                        case TILES.CRIMSON_RED_SAND:
+                            r = 185 - varOffset; g = 28 - varOffset; b = 28 - varOffset;
+                            break;
+                        case TILES.BAMBOO_THICKET:
+                            r = 21 - varOffset; g = 128 - varOffset; b = 61 - varOffset;
+                            break;
+                        case TILES.TUNDRA_PERMAFROST:
+                            r = 148 - varOffset; g = 163 - varOffset; b = 184 - varOffset;
+                            break;
+                        case TILES.PETRIFIED_GROVE:
+                            r = 82 - varOffset; g = 82 - varOffset; b = 91 - varOffset;
+                            break;
+                        case TILES.LUMINESCENT_LICHEN:
+                            r = 6 - varOffset; g = 182 - varOffset; b = 212 - varOffset;
+                            break;
+                        case TILES.SILVER_ORE:
+                            r = 203 - varOffset; g = 213 - varOffset; b = 225 - varOffset;
+                            break;
+                        case TILES.METEORITE_CORE:
+                            r = 249 - varOffset; g = 115 - varOffset; b = 22 - varOffset;
+                            break;
+                        case TILES.PRISMATIC_CRYSTAL:
+                            r = 236 - varOffset; g = 72 - varOffset; b = 153 - varOffset;
+                            break;
+                        case TILES.DEEP_EARTH_MANTLE:
+                            r = 127 - varOffset; g = 29 - varOffset; b = 29 - varOffset;
+                            break;
+                        case TILES.DIVINE_SOIL:
+                            r = 254 - varOffset; g = 240 - varOffset; b = 138 - varOffset;
+                            break;
+                        case TILES.ABYSSAL_CHASM:
+                            r = 2 - varOffset; g = 6 - varOffset; b = 23 - varOffset;
+                            break;
                         default:
                             r = 0; g = 0; b = 0;
                     }
@@ -2047,14 +2137,50 @@ class Renderer {
             else if (ent.bodyParts || (ent.customData && ent.customData.bodyParts)) {
                 this.renderCustomModularCreature(ctx, ent, px, py, size);
             }
-            // Standard / Custom Creature Body Fallback
+            // Standard / Custom Creature Body Shaded Pixel-Art Renderer
             else {
                 let bodyColor = ent.color;
                 if (ent.isCiv && ent.kingdomId && kingdoms.has(ent.kingdomId)) {
                     bodyColor = kingdoms.get(ent.kingdomId).color;
                 }
+                const s = Math.max(2, size);
+                const halfS = s * 0.5;
+                const isWalking = (Math.abs(ent.vx) > 0.02 || Math.abs(ent.vy) > 0.02);
+                const legSwing = isWalking ? Math.sin(this.animTime * 12 + ent.id) * (s * 0.25) : 0;
+                const breathe = Math.sin(this.animTime * 3 + ent.id) * (s * 0.06);
+
+                // Dark Outline
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+                ctx.fillRect(Math.floor(px - halfS - 1), Math.floor(py - halfS - 1), Math.ceil(s + 2), Math.ceil(s + 2));
+
+                // Torso & Body Base
                 ctx.fillStyle = bodyColor;
-                ctx.fillRect(Math.floor(px - size * 0.5), Math.floor(py - size * 0.5), Math.ceil(size), Math.ceil(size));
+                ctx.fillRect(Math.floor(px - halfS), Math.floor(py - halfS + breathe), Math.ceil(s), Math.ceil(s));
+
+                // Multi-Tier Highlight & Shading
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.fillRect(Math.floor(px - halfS + 1), Math.floor(py - halfS + 1 + breathe), Math.max(1, Math.floor(s * 0.45)), Math.max(1, Math.floor(s * 0.35)));
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(Math.floor(px - halfS), Math.floor(py + halfS * 0.4 + breathe), Math.ceil(s), Math.max(1, Math.ceil(s * 0.35)));
+
+                // Walking Legs
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                ctx.fillRect(Math.floor(px - halfS * 0.7), Math.floor(py + halfS * 0.6 + legSwing), Math.max(1, Math.floor(s * 0.3)), Math.max(1, Math.floor(s * 0.35)));
+                ctx.fillRect(Math.floor(px + halfS * 0.4), Math.floor(py + halfS * 0.6 - legSwing), Math.max(1, Math.floor(s * 0.3)), Math.max(1, Math.floor(s * 0.35)));
+
+                // Glowing Eyes
+                const eyeCol = (ent.isBoss || (ent.species && ent.species.includes('dragon'))) ? '#facc15' : '#ffffff';
+                const pupilCol = '#0f172a';
+                const eyeY = Math.floor(py - halfS * 0.3 + breathe);
+                const eyeW = Math.max(1, Math.floor(s * 0.22));
+                const eyeH = Math.max(1, Math.floor(s * 0.22));
+                ctx.fillStyle = eyeCol;
+                ctx.fillRect(Math.floor(px - halfS * 0.45), eyeY, eyeW, eyeH);
+                ctx.fillRect(Math.floor(px + halfS * 0.25), eyeY, eyeW, eyeH);
+                ctx.fillStyle = pupilCol;
+                ctx.fillRect(Math.floor(px - halfS * 0.3), eyeY + 0.5, Math.max(1, eyeW * 0.5), Math.max(1, eyeH * 0.5));
+                ctx.fillRect(Math.floor(px + halfS * 0.4), eyeY + 0.5, Math.max(1, eyeW * 0.5), Math.max(1, eyeH * 0.5));
             }
 
             // Crown for King

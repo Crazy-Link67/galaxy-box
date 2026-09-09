@@ -1429,6 +1429,411 @@ class Entity {
                 this.traits.add('immortal');
                 this.traits.add('starlight_aura');
                 break;
+            case 'solar_phoenix':
+                this.name = 'Solar Phoenix';
+                this.hp = 3800;
+                this.maxHp = 3800;
+                this.speed = 0.95;
+                this.attack = 90;
+                this.size = 12;
+                this.color = '#f59e0b';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                this.traits.add('starlight_aura');
+                this.traits.add('flying');
+                break;
+            case 'frost_wyrm':
+                this.name = 'Frost Wyrm';
+                this.hp = 4200;
+                this.maxHp = 4200;
+                this.speed = 0.85;
+                this.attack = 95;
+                this.size = 14;
+                this.color = '#38bdf8';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('cryomancer');
+                this.traits.add('flying');
+                this.traits.add('water_walker');
+                break;
+            case 'iron_behemoth':
+                this.name = 'Iron Behemoth';
+                this.hp = 5500;
+                this.maxHp = 5500;
+                this.speed = 0.45;
+                this.attack = 120;
+                this.size = 15;
+                this.color = '#64748b';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('earthshaker');
+                this.traits.add('thorny');
+                this.traits.add('immortal');
+                break;
+            case 'celestial_archon':
+                this.name = 'Celestial Archon';
+                this.hp = 4000;
+                this.maxHp = 4000;
+                this.speed = 0.9;
+                this.attack = 110;
+                this.size = 11;
+                this.color = '#fef08a';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('starlight_aura');
+                this.traits.add('immortal');
+                this.traits.add('laser_eyes');
+                break;
+            case 'shadow_stalker':
+                this.name = 'Shadow Stalker';
+                this.hp = 1200;
+                this.maxHp = 1200;
+                this.speed = 1.25;
+                this.attack = 75;
+                this.size = 7;
+                this.color = '#18181b';
+                
+                this.traits.add('invisibility');
+                this.traits.add('super_speed');
+                this.traits.add('vampiric');
+                break;
+            case 'deep_leviathan':
+                this.name = 'Deep Leviathan';
+                this.hp = 6000;
+                this.maxHp = 6000;
+                this.speed = 0.7;
+                this.attack = 130;
+                this.size = 16;
+                this.color = '#0369a1';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('water_walker');
+                this.traits.add('amphibious');
+                this.traits.add('regenerating');
+                break;
+            case 'volcanic_drake':
+                this.name = 'Volcanic Drake';
+                this.hp = 3500;
+                this.maxHp = 3500;
+                this.speed = 0.9;
+                this.attack = 85;
+                this.size = 12;
+                this.color = '#dc2626';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                this.traits.add('pyromaniac');
+                this.traits.add('flying');
+                break;
+            case 'storm_valkyrie':
+                this.name = 'Storm Valkyrie';
+                this.hp = 2800;
+                this.maxHp = 2800;
+                this.speed = 1.1;
+                this.attack = 80;
+                this.size = 8;
+                this.color = '#67e8f9';
+                
+                this.traits.add('electrocharged');
+                this.traits.add('super_speed');
+                this.traits.add('flying');
+                this.traits.add('starlight_aura');
+                break;
+            case 'mecha_colossus':
+                this.name = 'Mecha Colossus';
+                this.hp = 5800;
+                this.maxHp = 5800;
+                this.speed = 0.5;
+                this.attack = 125;
+                this.size = 15;
+                this.color = '#334155';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('laser_eyes');
+                this.traits.add('explosive_death');
+                this.traits.add('fireproof');
+                break;
+            case 'astral_unicorn':
+                this.name = 'Astral Unicorn';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 1.15;
+                this.attack = 65;
+                this.size = 8;
+                this.color = '#f472b6';
+                
+                this.traits.add('starlight_aura');
+                this.traits.add('regenerating');
+                this.traits.add('peaceful');
+                this.traits.add('water_walker');
+                break;
+            case 'chronomancer':
+                this.name = 'Chronomancer';
+                this.hp = 1800;
+                this.maxHp = 1800;
+                this.speed = 0.9;
+                this.attack = 70;
+                this.size = 6;
+                this.color = '#818cf8';
+                
+                this.traits.add('teleporter');
+                this.traits.add('immortal');
+                this.traits.add('cryomancer');
+                break;
+            case 'spectral_knight':
+                this.name = 'Spectral Knight';
+                this.hp = 2400;
+                this.maxHp = 2400;
+                this.speed = 0.85;
+                this.attack = 75;
+                this.size = 7;
+                this.color = '#94a3b8';
+                
+                this.traits.add('invisibility');
+                this.traits.add('immortal');
+                this.traits.add('thorny');
+                break;
+            case 'sand_reaper':
+                this.name = 'Sand Reaper';
+                this.hp = 2600;
+                this.maxHp = 2600;
+                this.speed = 1.05;
+                this.attack = 85;
+                this.size = 8;
+                this.color = '#d97706';
+                
+                this.traits.add('super_speed');
+                this.traits.add('venomous');
+                this.traits.add('vampiric');
+                break;
+            case 'forest_ancient':
+                this.name = 'Forest Ancient';
+                this.hp = 4800;
+                this.maxHp = 4800;
+                this.speed = 0.55;
+                this.attack = 90;
+                this.size = 14;
+                this.color = '#166534';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('regenerating');
+                this.traits.add('earthshaker');
+                this.traits.add('thorny');
+                break;
+            case 'plague_bringer':
+                this.name = 'Plague Bringer';
+                this.hp = 2500;
+                this.maxHp = 2500;
+                this.speed = 0.8;
+                this.attack = 65;
+                this.size = 7;
+                this.color = '#84cc16';
+                
+                this.traits.add('acid_blood');
+                this.traits.add('venomous');
+                this.traits.add('necromancer');
+                break;
+            case 'crystal_scorpion':
+                this.name = 'Crystal Scorpion';
+                this.hp = 2900;
+                this.maxHp = 2900;
+                this.speed = 0.9;
+                this.attack = 80;
+                this.size = 9;
+                this.color = '#ec4899';
+                
+                this.traits.add('thorny');
+                this.traits.add('venomous');
+                this.traits.add('laser_eyes');
+                break;
+            case 'thunder_hawk':
+                this.name = 'Thunder Hawk';
+                this.hp = 2100;
+                this.maxHp = 2100;
+                this.speed = 1.3;
+                this.attack = 75;
+                this.size = 8;
+                this.color = '#0284c7';
+                
+                this.traits.add('electrocharged');
+                this.traits.add('super_speed');
+                this.traits.add('flying');
+                break;
+            case 'magma_elemental':
+                this.name = 'Magma Elemental';
+                this.hp = 3600;
+                this.maxHp = 3600;
+                this.speed = 0.65;
+                this.attack = 95;
+                this.size = 11;
+                this.color = '#ea580c';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('fireproof');
+                this.traits.add('pyromaniac');
+                break;
+            case 'frost_banshee':
+                this.name = 'Frost Banshee';
+                this.hp = 1900;
+                this.maxHp = 1900;
+                this.speed = 1;
+                this.attack = 70;
+                this.size = 6;
+                this.color = '#a5f3fc';
+                
+                this.traits.add('cryomancer');
+                this.traits.add('invisibility');
+                this.traits.add('flying');
+                break;
+            case 'dune_crawler':
+                this.name = 'Dune Crawler';
+                this.hp = 2700;
+                this.maxHp = 2700;
+                this.speed = 0.85;
+                this.attack = 70;
+                this.size = 9;
+                this.color = '#b45309';
+                
+                this.traits.add('earthshaker');
+                this.traits.add('thorny');
+                this.traits.add('amphibious');
+                break;
+            case 'void_horror':
+                this.name = 'Void Horror';
+                this.hp = 4500;
+                this.maxHp = 4500;
+                this.speed = 0.8;
+                this.attack = 110;
+                this.size = 13;
+                this.color = '#4c1d95';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('teleporter');
+                this.traits.add('laser_eyes');
+                this.traits.add('bloodthirsty');
+                break;
+            case 'sun_warrior':
+                this.name = 'Sun Warrior';
+                this.hp = 2200;
+                this.maxHp = 2200;
+                this.speed = 1;
+                this.attack = 75;
+                this.size = 6;
+                this.color = '#facc15';
+                
+                this.traits.add('fireproof');
+                this.traits.add('starlight_aura');
+                break;
+            case 'abyssal_kraken_spawn':
+                this.name = 'Kraken Spawn';
+                this.hp = 3200;
+                this.maxHp = 3200;
+                this.speed = 0.8;
+                this.attack = 85;
+                this.size = 10;
+                this.color = '#0f172a';
+                
+                this.traits.add('water_walker');
+                this.traits.add('amphibious');
+                this.traits.add('venomous');
+                break;
+            case 'runic_golem':
+                this.name = 'Runic Golem';
+                this.hp = 4600;
+                this.maxHp = 4600;
+                this.speed = 0.5;
+                this.attack = 105;
+                this.size = 12;
+                this.color = '#475569';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('earthshaker');
+                this.traits.add('immortal');
+                this.traits.add('electrocharged');
+                break;
+            case 'cyber_hound':
+                this.name = 'Cyber Hound';
+                this.hp = 1600;
+                this.maxHp = 1600;
+                this.speed = 1.35;
+                this.attack = 65;
+                this.size = 6;
+                this.color = '#06b6d4';
+                
+                this.traits.add('super_speed');
+                this.traits.add('laser_eyes');
+                this.traits.add('electrocharged');
+                break;
+            case 'blood_fiend':
+                this.name = 'Blood Fiend';
+                this.hp = 2600;
+                this.maxHp = 2600;
+                this.speed = 1.1;
+                this.attack = 90;
+                this.size = 7;
+                this.color = '#991b1b';
+                
+                this.traits.add('vampiric');
+                this.traits.add('bloodthirsty');
+                this.traits.add('super_speed');
+                break;
+            case 'titan_dreadnought':
+                this.name = 'Titan Dreadnought';
+                this.hp = 6500;
+                this.maxHp = 6500;
+                this.speed = 0.4;
+                this.attack = 140;
+                this.size = 18;
+                this.color = '#1e293b';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('laser_eyes');
+                this.traits.add('explosive_death');
+                this.traits.add('immortal');
+                break;
+            case 'steampunk_airship':
+                this.name = 'Steampunk Airship';
+                this.hp = 3400;
+                this.maxHp = 3400;
+                this.speed = 0.75;
+                this.attack = 85;
+                this.size = 14;
+                this.color = '#78350f';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('flying');
+                this.traits.add('explosive_death');
+                break;
+            case 'quantum_mech':
+                this.name = 'Quantum Mech';
+                this.hp = 4400;
+                this.maxHp = 4400;
+                this.speed = 0.9;
+                this.attack = 100;
+                this.size = 11;
+                this.color = '#00e5ff';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('teleporter');
+                this.traits.add('laser_eyes');
+                this.traits.add('electrocharged');
+                break;
+            case 'cosmic_dragon':
+                this.name = 'Cosmic Dragon';
+                this.hp = 6200;
+                this.maxHp = 6200;
+                this.speed = 1;
+                this.attack = 135;
+                this.size = 16;
+                this.color = '#a21caf';
+                this.isBoss = true;
+                this.traits.add('titan');
+                this.traits.add('flying');
+                this.traits.add('starlight_aura');
+                this.traits.add('immortal');
+                this.traits.add('laser_eyes');
+                break;
             default:
                 this.hp = 100;
                 this.maxHp = 100;
@@ -2722,6 +3127,966 @@ class Entity {
             }
             if (particleSystem) particleSystem.burst(this.x, this.y, 18, ['#a21caf', '#c084fc', '#38bdf8'], 2, 5, 1.5, 3, 'stardust');
             return;
+        } else if (this.type === 'solar_phoenix') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,starlight_aura,flying'.includes('laser') || 'solar_phoenix'.includes('mech') || 'solar_phoenix'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('solar_phoenix'.includes('storm') || 'solar_phoenix'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('solar_phoenix'.includes('dragon') || 'solar_phoenix'.includes('behemoth') || 'solar_phoenix'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#f59e0b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'solar_phoenix'.includes('frost') ? 'frost' : ('solar_phoenix'.includes('drake') || 'solar_phoenix'.includes('phoenix') || 'solar_phoenix'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'frost_wyrm') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,cryomancer,flying,water_walker'.includes('laser') || 'frost_wyrm'.includes('mech') || 'frost_wyrm'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('frost_wyrm'.includes('storm') || 'frost_wyrm'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('frost_wyrm'.includes('dragon') || 'frost_wyrm'.includes('behemoth') || 'frost_wyrm'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#38bdf8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'frost_wyrm'.includes('frost') ? 'frost' : ('frost_wyrm'.includes('drake') || 'frost_wyrm'.includes('phoenix') || 'frost_wyrm'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'iron_behemoth') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,earthshaker,thorny,immortal'.includes('laser') || 'iron_behemoth'.includes('mech') || 'iron_behemoth'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('iron_behemoth'.includes('storm') || 'iron_behemoth'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('iron_behemoth'.includes('dragon') || 'iron_behemoth'.includes('behemoth') || 'iron_behemoth'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#64748b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'iron_behemoth'.includes('frost') ? 'frost' : ('iron_behemoth'.includes('drake') || 'iron_behemoth'.includes('phoenix') || 'iron_behemoth'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'celestial_archon') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,starlight_aura,immortal,laser_eyes'.includes('laser') || 'celestial_archon'.includes('mech') || 'celestial_archon'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('celestial_archon'.includes('storm') || 'celestial_archon'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('celestial_archon'.includes('dragon') || 'celestial_archon'.includes('behemoth') || 'celestial_archon'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#fef08a', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'celestial_archon'.includes('frost') ? 'frost' : ('celestial_archon'.includes('drake') || 'celestial_archon'.includes('phoenix') || 'celestial_archon'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'shadow_stalker') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('invisibility,super_speed,vampiric'.includes('laser') || 'shadow_stalker'.includes('mech') || 'shadow_stalker'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('shadow_stalker'.includes('storm') || 'shadow_stalker'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('shadow_stalker'.includes('dragon') || 'shadow_stalker'.includes('behemoth') || 'shadow_stalker'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#18181b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'shadow_stalker'.includes('frost') ? 'frost' : ('shadow_stalker'.includes('drake') || 'shadow_stalker'.includes('phoenix') || 'shadow_stalker'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'deep_leviathan') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,water_walker,amphibious,regenerating'.includes('laser') || 'deep_leviathan'.includes('mech') || 'deep_leviathan'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('deep_leviathan'.includes('storm') || 'deep_leviathan'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('deep_leviathan'.includes('dragon') || 'deep_leviathan'.includes('behemoth') || 'deep_leviathan'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0369a1', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'deep_leviathan'.includes('frost') ? 'frost' : ('deep_leviathan'.includes('drake') || 'deep_leviathan'.includes('phoenix') || 'deep_leviathan'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'volcanic_drake') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,pyromaniac,flying'.includes('laser') || 'volcanic_drake'.includes('mech') || 'volcanic_drake'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('volcanic_drake'.includes('storm') || 'volcanic_drake'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('volcanic_drake'.includes('dragon') || 'volcanic_drake'.includes('behemoth') || 'volcanic_drake'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#dc2626', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'volcanic_drake'.includes('frost') ? 'frost' : ('volcanic_drake'.includes('drake') || 'volcanic_drake'.includes('phoenix') || 'volcanic_drake'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'storm_valkyrie') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('electrocharged,super_speed,flying,starlight_aura'.includes('laser') || 'storm_valkyrie'.includes('mech') || 'storm_valkyrie'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('storm_valkyrie'.includes('storm') || 'storm_valkyrie'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('storm_valkyrie'.includes('dragon') || 'storm_valkyrie'.includes('behemoth') || 'storm_valkyrie'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#67e8f9', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'storm_valkyrie'.includes('frost') ? 'frost' : ('storm_valkyrie'.includes('drake') || 'storm_valkyrie'.includes('phoenix') || 'storm_valkyrie'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'mecha_colossus') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,laser_eyes,explosive_death,fireproof'.includes('laser') || 'mecha_colossus'.includes('mech') || 'mecha_colossus'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('mecha_colossus'.includes('storm') || 'mecha_colossus'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('mecha_colossus'.includes('dragon') || 'mecha_colossus'.includes('behemoth') || 'mecha_colossus'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#334155', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'mecha_colossus'.includes('frost') ? 'frost' : ('mecha_colossus'.includes('drake') || 'mecha_colossus'.includes('phoenix') || 'mecha_colossus'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'astral_unicorn') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('starlight_aura,regenerating,peaceful,water_walker'.includes('laser') || 'astral_unicorn'.includes('mech') || 'astral_unicorn'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('astral_unicorn'.includes('storm') || 'astral_unicorn'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('astral_unicorn'.includes('dragon') || 'astral_unicorn'.includes('behemoth') || 'astral_unicorn'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#f472b6', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'astral_unicorn'.includes('frost') ? 'frost' : ('astral_unicorn'.includes('drake') || 'astral_unicorn'.includes('phoenix') || 'astral_unicorn'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'chronomancer') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('teleporter,immortal,cryomancer'.includes('laser') || 'chronomancer'.includes('mech') || 'chronomancer'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('chronomancer'.includes('storm') || 'chronomancer'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('chronomancer'.includes('dragon') || 'chronomancer'.includes('behemoth') || 'chronomancer'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#818cf8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'chronomancer'.includes('frost') ? 'frost' : ('chronomancer'.includes('drake') || 'chronomancer'.includes('phoenix') || 'chronomancer'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'spectral_knight') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('invisibility,immortal,thorny'.includes('laser') || 'spectral_knight'.includes('mech') || 'spectral_knight'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('spectral_knight'.includes('storm') || 'spectral_knight'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('spectral_knight'.includes('dragon') || 'spectral_knight'.includes('behemoth') || 'spectral_knight'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#94a3b8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'spectral_knight'.includes('frost') ? 'frost' : ('spectral_knight'.includes('drake') || 'spectral_knight'.includes('phoenix') || 'spectral_knight'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'sand_reaper') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('super_speed,venomous,vampiric'.includes('laser') || 'sand_reaper'.includes('mech') || 'sand_reaper'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('sand_reaper'.includes('storm') || 'sand_reaper'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('sand_reaper'.includes('dragon') || 'sand_reaper'.includes('behemoth') || 'sand_reaper'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#d97706', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'sand_reaper'.includes('frost') ? 'frost' : ('sand_reaper'.includes('drake') || 'sand_reaper'.includes('phoenix') || 'sand_reaper'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'forest_ancient') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,regenerating,earthshaker,thorny'.includes('laser') || 'forest_ancient'.includes('mech') || 'forest_ancient'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('forest_ancient'.includes('storm') || 'forest_ancient'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('forest_ancient'.includes('dragon') || 'forest_ancient'.includes('behemoth') || 'forest_ancient'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#166534', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'forest_ancient'.includes('frost') ? 'frost' : ('forest_ancient'.includes('drake') || 'forest_ancient'.includes('phoenix') || 'forest_ancient'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'plague_bringer') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('acid_blood,venomous,necromancer'.includes('laser') || 'plague_bringer'.includes('mech') || 'plague_bringer'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('plague_bringer'.includes('storm') || 'plague_bringer'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('plague_bringer'.includes('dragon') || 'plague_bringer'.includes('behemoth') || 'plague_bringer'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#84cc16', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'plague_bringer'.includes('frost') ? 'frost' : ('plague_bringer'.includes('drake') || 'plague_bringer'.includes('phoenix') || 'plague_bringer'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'crystal_scorpion') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('thorny,venomous,laser_eyes'.includes('laser') || 'crystal_scorpion'.includes('mech') || 'crystal_scorpion'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('crystal_scorpion'.includes('storm') || 'crystal_scorpion'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('crystal_scorpion'.includes('dragon') || 'crystal_scorpion'.includes('behemoth') || 'crystal_scorpion'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#ec4899', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'crystal_scorpion'.includes('frost') ? 'frost' : ('crystal_scorpion'.includes('drake') || 'crystal_scorpion'.includes('phoenix') || 'crystal_scorpion'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'thunder_hawk') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('electrocharged,super_speed,flying'.includes('laser') || 'thunder_hawk'.includes('mech') || 'thunder_hawk'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('thunder_hawk'.includes('storm') || 'thunder_hawk'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('thunder_hawk'.includes('dragon') || 'thunder_hawk'.includes('behemoth') || 'thunder_hawk'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0284c7', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'thunder_hawk'.includes('frost') ? 'frost' : ('thunder_hawk'.includes('drake') || 'thunder_hawk'.includes('phoenix') || 'thunder_hawk'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'magma_elemental') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,pyromaniac'.includes('laser') || 'magma_elemental'.includes('mech') || 'magma_elemental'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('magma_elemental'.includes('storm') || 'magma_elemental'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('magma_elemental'.includes('dragon') || 'magma_elemental'.includes('behemoth') || 'magma_elemental'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#ea580c', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'magma_elemental'.includes('frost') ? 'frost' : ('magma_elemental'.includes('drake') || 'magma_elemental'.includes('phoenix') || 'magma_elemental'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'frost_banshee') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('cryomancer,invisibility,flying'.includes('laser') || 'frost_banshee'.includes('mech') || 'frost_banshee'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('frost_banshee'.includes('storm') || 'frost_banshee'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('frost_banshee'.includes('dragon') || 'frost_banshee'.includes('behemoth') || 'frost_banshee'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#a5f3fc', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'frost_banshee'.includes('frost') ? 'frost' : ('frost_banshee'.includes('drake') || 'frost_banshee'.includes('phoenix') || 'frost_banshee'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'dune_crawler') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('earthshaker,thorny,amphibious'.includes('laser') || 'dune_crawler'.includes('mech') || 'dune_crawler'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('dune_crawler'.includes('storm') || 'dune_crawler'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('dune_crawler'.includes('dragon') || 'dune_crawler'.includes('behemoth') || 'dune_crawler'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#b45309', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'dune_crawler'.includes('frost') ? 'frost' : ('dune_crawler'.includes('drake') || 'dune_crawler'.includes('phoenix') || 'dune_crawler'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'void_horror') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,teleporter,laser_eyes,bloodthirsty'.includes('laser') || 'void_horror'.includes('mech') || 'void_horror'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('void_horror'.includes('storm') || 'void_horror'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('void_horror'.includes('dragon') || 'void_horror'.includes('behemoth') || 'void_horror'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#4c1d95', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'void_horror'.includes('frost') ? 'frost' : ('void_horror'.includes('drake') || 'void_horror'.includes('phoenix') || 'void_horror'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'sun_warrior') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('fireproof,starlight_aura'.includes('laser') || 'sun_warrior'.includes('mech') || 'sun_warrior'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('sun_warrior'.includes('storm') || 'sun_warrior'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('sun_warrior'.includes('dragon') || 'sun_warrior'.includes('behemoth') || 'sun_warrior'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#facc15', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'sun_warrior'.includes('frost') ? 'frost' : ('sun_warrior'.includes('drake') || 'sun_warrior'.includes('phoenix') || 'sun_warrior'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'abyssal_kraken_spawn') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('water_walker,amphibious,venomous'.includes('laser') || 'abyssal_kraken_spawn'.includes('mech') || 'abyssal_kraken_spawn'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('abyssal_kraken_spawn'.includes('storm') || 'abyssal_kraken_spawn'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('abyssal_kraken_spawn'.includes('dragon') || 'abyssal_kraken_spawn'.includes('behemoth') || 'abyssal_kraken_spawn'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0f172a', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'abyssal_kraken_spawn'.includes('frost') ? 'frost' : ('abyssal_kraken_spawn'.includes('drake') || 'abyssal_kraken_spawn'.includes('phoenix') || 'abyssal_kraken_spawn'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'runic_golem') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,earthshaker,immortal,electrocharged'.includes('laser') || 'runic_golem'.includes('mech') || 'runic_golem'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('runic_golem'.includes('storm') || 'runic_golem'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('runic_golem'.includes('dragon') || 'runic_golem'.includes('behemoth') || 'runic_golem'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#475569', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'runic_golem'.includes('frost') ? 'frost' : ('runic_golem'.includes('drake') || 'runic_golem'.includes('phoenix') || 'runic_golem'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'cyber_hound') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('super_speed,laser_eyes,electrocharged'.includes('laser') || 'cyber_hound'.includes('mech') || 'cyber_hound'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('cyber_hound'.includes('storm') || 'cyber_hound'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('cyber_hound'.includes('dragon') || 'cyber_hound'.includes('behemoth') || 'cyber_hound'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#06b6d4', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'cyber_hound'.includes('frost') ? 'frost' : ('cyber_hound'.includes('drake') || 'cyber_hound'.includes('phoenix') || 'cyber_hound'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'blood_fiend') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('vampiric,bloodthirsty,super_speed'.includes('laser') || 'blood_fiend'.includes('mech') || 'blood_fiend'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('blood_fiend'.includes('storm') || 'blood_fiend'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('blood_fiend'.includes('dragon') || 'blood_fiend'.includes('behemoth') || 'blood_fiend'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#991b1b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'blood_fiend'.includes('frost') ? 'frost' : ('blood_fiend'.includes('drake') || 'blood_fiend'.includes('phoenix') || 'blood_fiend'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'titan_dreadnought') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,laser_eyes,explosive_death,immortal'.includes('laser') || 'titan_dreadnought'.includes('mech') || 'titan_dreadnought'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('titan_dreadnought'.includes('storm') || 'titan_dreadnought'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('titan_dreadnought'.includes('dragon') || 'titan_dreadnought'.includes('behemoth') || 'titan_dreadnought'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#1e293b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'titan_dreadnought'.includes('frost') ? 'frost' : ('titan_dreadnought'.includes('drake') || 'titan_dreadnought'.includes('phoenix') || 'titan_dreadnought'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'steampunk_airship') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,flying,explosive_death'.includes('laser') || 'steampunk_airship'.includes('mech') || 'steampunk_airship'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('steampunk_airship'.includes('storm') || 'steampunk_airship'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('steampunk_airship'.includes('dragon') || 'steampunk_airship'.includes('behemoth') || 'steampunk_airship'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#78350f', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'steampunk_airship'.includes('frost') ? 'frost' : ('steampunk_airship'.includes('drake') || 'steampunk_airship'.includes('phoenix') || 'steampunk_airship'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'quantum_mech') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,teleporter,laser_eyes,electrocharged'.includes('laser') || 'quantum_mech'.includes('mech') || 'quantum_mech'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('quantum_mech'.includes('storm') || 'quantum_mech'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('quantum_mech'.includes('dragon') || 'quantum_mech'.includes('behemoth') || 'quantum_mech'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#00e5ff', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'quantum_mech'.includes('frost') ? 'frost' : ('quantum_mech'.includes('drake') || 'quantum_mech'.includes('phoenix') || 'quantum_mech'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'cosmic_dragon') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,flying,starlight_aura,immortal,laser_eyes'.includes('laser') || 'cosmic_dragon'.includes('mech') || 'cosmic_dragon'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('cosmic_dragon'.includes('storm') || 'cosmic_dragon'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('cosmic_dragon'.includes('dragon') || 'cosmic_dragon'.includes('behemoth') || 'cosmic_dragon'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#a21caf', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'cosmic_dragon'.includes('frost') ? 'frost' : ('cosmic_dragon'.includes('drake') || 'cosmic_dragon'.includes('phoenix') || 'cosmic_dragon'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'solar_phoenix') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,starlight_aura,flying'.includes('laser') || 'solar_phoenix'.includes('mech') || 'solar_phoenix'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('solar_phoenix'.includes('storm') || 'solar_phoenix'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('solar_phoenix'.includes('dragon') || 'solar_phoenix'.includes('behemoth') || 'solar_phoenix'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#f59e0b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'solar_phoenix'.includes('frost') ? 'frost' : ('solar_phoenix'.includes('drake') || 'solar_phoenix'.includes('phoenix') || 'solar_phoenix'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'frost_wyrm') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,cryomancer,flying,water_walker'.includes('laser') || 'frost_wyrm'.includes('mech') || 'frost_wyrm'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('frost_wyrm'.includes('storm') || 'frost_wyrm'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('frost_wyrm'.includes('dragon') || 'frost_wyrm'.includes('behemoth') || 'frost_wyrm'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#38bdf8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'frost_wyrm'.includes('frost') ? 'frost' : ('frost_wyrm'.includes('drake') || 'frost_wyrm'.includes('phoenix') || 'frost_wyrm'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'iron_behemoth') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,earthshaker,thorny,immortal'.includes('laser') || 'iron_behemoth'.includes('mech') || 'iron_behemoth'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('iron_behemoth'.includes('storm') || 'iron_behemoth'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('iron_behemoth'.includes('dragon') || 'iron_behemoth'.includes('behemoth') || 'iron_behemoth'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#64748b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'iron_behemoth'.includes('frost') ? 'frost' : ('iron_behemoth'.includes('drake') || 'iron_behemoth'.includes('phoenix') || 'iron_behemoth'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'celestial_archon') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,starlight_aura,immortal,laser_eyes'.includes('laser') || 'celestial_archon'.includes('mech') || 'celestial_archon'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('celestial_archon'.includes('storm') || 'celestial_archon'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('celestial_archon'.includes('dragon') || 'celestial_archon'.includes('behemoth') || 'celestial_archon'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#fef08a', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'celestial_archon'.includes('frost') ? 'frost' : ('celestial_archon'.includes('drake') || 'celestial_archon'.includes('phoenix') || 'celestial_archon'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'shadow_stalker') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('invisibility,super_speed,vampiric'.includes('laser') || 'shadow_stalker'.includes('mech') || 'shadow_stalker'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('shadow_stalker'.includes('storm') || 'shadow_stalker'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('shadow_stalker'.includes('dragon') || 'shadow_stalker'.includes('behemoth') || 'shadow_stalker'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#18181b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'shadow_stalker'.includes('frost') ? 'frost' : ('shadow_stalker'.includes('drake') || 'shadow_stalker'.includes('phoenix') || 'shadow_stalker'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'deep_leviathan') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,water_walker,amphibious,regenerating'.includes('laser') || 'deep_leviathan'.includes('mech') || 'deep_leviathan'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('deep_leviathan'.includes('storm') || 'deep_leviathan'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('deep_leviathan'.includes('dragon') || 'deep_leviathan'.includes('behemoth') || 'deep_leviathan'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0369a1', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'deep_leviathan'.includes('frost') ? 'frost' : ('deep_leviathan'.includes('drake') || 'deep_leviathan'.includes('phoenix') || 'deep_leviathan'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'volcanic_drake') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,pyromaniac,flying'.includes('laser') || 'volcanic_drake'.includes('mech') || 'volcanic_drake'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('volcanic_drake'.includes('storm') || 'volcanic_drake'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('volcanic_drake'.includes('dragon') || 'volcanic_drake'.includes('behemoth') || 'volcanic_drake'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#dc2626', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'volcanic_drake'.includes('frost') ? 'frost' : ('volcanic_drake'.includes('drake') || 'volcanic_drake'.includes('phoenix') || 'volcanic_drake'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'storm_valkyrie') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('electrocharged,super_speed,flying,starlight_aura'.includes('laser') || 'storm_valkyrie'.includes('mech') || 'storm_valkyrie'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('storm_valkyrie'.includes('storm') || 'storm_valkyrie'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('storm_valkyrie'.includes('dragon') || 'storm_valkyrie'.includes('behemoth') || 'storm_valkyrie'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#67e8f9', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'storm_valkyrie'.includes('frost') ? 'frost' : ('storm_valkyrie'.includes('drake') || 'storm_valkyrie'.includes('phoenix') || 'storm_valkyrie'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'mecha_colossus') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,laser_eyes,explosive_death,fireproof'.includes('laser') || 'mecha_colossus'.includes('mech') || 'mecha_colossus'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('mecha_colossus'.includes('storm') || 'mecha_colossus'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('mecha_colossus'.includes('dragon') || 'mecha_colossus'.includes('behemoth') || 'mecha_colossus'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#334155', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'mecha_colossus'.includes('frost') ? 'frost' : ('mecha_colossus'.includes('drake') || 'mecha_colossus'.includes('phoenix') || 'mecha_colossus'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'astral_unicorn') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('starlight_aura,regenerating,peaceful,water_walker'.includes('laser') || 'astral_unicorn'.includes('mech') || 'astral_unicorn'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('astral_unicorn'.includes('storm') || 'astral_unicorn'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('astral_unicorn'.includes('dragon') || 'astral_unicorn'.includes('behemoth') || 'astral_unicorn'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#f472b6', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'astral_unicorn'.includes('frost') ? 'frost' : ('astral_unicorn'.includes('drake') || 'astral_unicorn'.includes('phoenix') || 'astral_unicorn'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'chronomancer') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('teleporter,immortal,cryomancer'.includes('laser') || 'chronomancer'.includes('mech') || 'chronomancer'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('chronomancer'.includes('storm') || 'chronomancer'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('chronomancer'.includes('dragon') || 'chronomancer'.includes('behemoth') || 'chronomancer'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#818cf8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'chronomancer'.includes('frost') ? 'frost' : ('chronomancer'.includes('drake') || 'chronomancer'.includes('phoenix') || 'chronomancer'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'spectral_knight') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('invisibility,immortal,thorny'.includes('laser') || 'spectral_knight'.includes('mech') || 'spectral_knight'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('spectral_knight'.includes('storm') || 'spectral_knight'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('spectral_knight'.includes('dragon') || 'spectral_knight'.includes('behemoth') || 'spectral_knight'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#94a3b8', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'spectral_knight'.includes('frost') ? 'frost' : ('spectral_knight'.includes('drake') || 'spectral_knight'.includes('phoenix') || 'spectral_knight'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'sand_reaper') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('super_speed,venomous,vampiric'.includes('laser') || 'sand_reaper'.includes('mech') || 'sand_reaper'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('sand_reaper'.includes('storm') || 'sand_reaper'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('sand_reaper'.includes('dragon') || 'sand_reaper'.includes('behemoth') || 'sand_reaper'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#d97706', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'sand_reaper'.includes('frost') ? 'frost' : ('sand_reaper'.includes('drake') || 'sand_reaper'.includes('phoenix') || 'sand_reaper'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'forest_ancient') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,regenerating,earthshaker,thorny'.includes('laser') || 'forest_ancient'.includes('mech') || 'forest_ancient'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('forest_ancient'.includes('storm') || 'forest_ancient'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('forest_ancient'.includes('dragon') || 'forest_ancient'.includes('behemoth') || 'forest_ancient'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#166534', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'forest_ancient'.includes('frost') ? 'frost' : ('forest_ancient'.includes('drake') || 'forest_ancient'.includes('phoenix') || 'forest_ancient'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'plague_bringer') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('acid_blood,venomous,necromancer'.includes('laser') || 'plague_bringer'.includes('mech') || 'plague_bringer'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('plague_bringer'.includes('storm') || 'plague_bringer'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('plague_bringer'.includes('dragon') || 'plague_bringer'.includes('behemoth') || 'plague_bringer'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#84cc16', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'plague_bringer'.includes('frost') ? 'frost' : ('plague_bringer'.includes('drake') || 'plague_bringer'.includes('phoenix') || 'plague_bringer'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'crystal_scorpion') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('thorny,venomous,laser_eyes'.includes('laser') || 'crystal_scorpion'.includes('mech') || 'crystal_scorpion'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('crystal_scorpion'.includes('storm') || 'crystal_scorpion'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('crystal_scorpion'.includes('dragon') || 'crystal_scorpion'.includes('behemoth') || 'crystal_scorpion'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#ec4899', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'crystal_scorpion'.includes('frost') ? 'frost' : ('crystal_scorpion'.includes('drake') || 'crystal_scorpion'.includes('phoenix') || 'crystal_scorpion'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'thunder_hawk') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('electrocharged,super_speed,flying'.includes('laser') || 'thunder_hawk'.includes('mech') || 'thunder_hawk'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('thunder_hawk'.includes('storm') || 'thunder_hawk'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('thunder_hawk'.includes('dragon') || 'thunder_hawk'.includes('behemoth') || 'thunder_hawk'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0284c7', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'thunder_hawk'.includes('frost') ? 'frost' : ('thunder_hawk'.includes('drake') || 'thunder_hawk'.includes('phoenix') || 'thunder_hawk'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'magma_elemental') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,fireproof,pyromaniac'.includes('laser') || 'magma_elemental'.includes('mech') || 'magma_elemental'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('magma_elemental'.includes('storm') || 'magma_elemental'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('magma_elemental'.includes('dragon') || 'magma_elemental'.includes('behemoth') || 'magma_elemental'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#ea580c', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'magma_elemental'.includes('frost') ? 'frost' : ('magma_elemental'.includes('drake') || 'magma_elemental'.includes('phoenix') || 'magma_elemental'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'frost_banshee') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('cryomancer,invisibility,flying'.includes('laser') || 'frost_banshee'.includes('mech') || 'frost_banshee'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('frost_banshee'.includes('storm') || 'frost_banshee'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('frost_banshee'.includes('dragon') || 'frost_banshee'.includes('behemoth') || 'frost_banshee'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#a5f3fc', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'frost_banshee'.includes('frost') ? 'frost' : ('frost_banshee'.includes('drake') || 'frost_banshee'.includes('phoenix') || 'frost_banshee'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'dune_crawler') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('earthshaker,thorny,amphibious'.includes('laser') || 'dune_crawler'.includes('mech') || 'dune_crawler'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('dune_crawler'.includes('storm') || 'dune_crawler'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('dune_crawler'.includes('dragon') || 'dune_crawler'.includes('behemoth') || 'dune_crawler'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#b45309', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'dune_crawler'.includes('frost') ? 'frost' : ('dune_crawler'.includes('drake') || 'dune_crawler'.includes('phoenix') || 'dune_crawler'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'void_horror') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,teleporter,laser_eyes,bloodthirsty'.includes('laser') || 'void_horror'.includes('mech') || 'void_horror'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('void_horror'.includes('storm') || 'void_horror'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('void_horror'.includes('dragon') || 'void_horror'.includes('behemoth') || 'void_horror'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#4c1d95', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'void_horror'.includes('frost') ? 'frost' : ('void_horror'.includes('drake') || 'void_horror'.includes('phoenix') || 'void_horror'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'sun_warrior') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('fireproof,starlight_aura'.includes('laser') || 'sun_warrior'.includes('mech') || 'sun_warrior'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('sun_warrior'.includes('storm') || 'sun_warrior'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('sun_warrior'.includes('dragon') || 'sun_warrior'.includes('behemoth') || 'sun_warrior'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#facc15', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'sun_warrior'.includes('frost') ? 'frost' : ('sun_warrior'.includes('drake') || 'sun_warrior'.includes('phoenix') || 'sun_warrior'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'abyssal_kraken_spawn') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('water_walker,amphibious,venomous'.includes('laser') || 'abyssal_kraken_spawn'.includes('mech') || 'abyssal_kraken_spawn'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('abyssal_kraken_spawn'.includes('storm') || 'abyssal_kraken_spawn'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('abyssal_kraken_spawn'.includes('dragon') || 'abyssal_kraken_spawn'.includes('behemoth') || 'abyssal_kraken_spawn'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#0f172a', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'abyssal_kraken_spawn'.includes('frost') ? 'frost' : ('abyssal_kraken_spawn'.includes('drake') || 'abyssal_kraken_spawn'.includes('phoenix') || 'abyssal_kraken_spawn'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'runic_golem') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,earthshaker,immortal,electrocharged'.includes('laser') || 'runic_golem'.includes('mech') || 'runic_golem'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('runic_golem'.includes('storm') || 'runic_golem'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('runic_golem'.includes('dragon') || 'runic_golem'.includes('behemoth') || 'runic_golem'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#475569', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'runic_golem'.includes('frost') ? 'frost' : ('runic_golem'.includes('drake') || 'runic_golem'.includes('phoenix') || 'runic_golem'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'cyber_hound') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('super_speed,laser_eyes,electrocharged'.includes('laser') || 'cyber_hound'.includes('mech') || 'cyber_hound'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('cyber_hound'.includes('storm') || 'cyber_hound'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('cyber_hound'.includes('dragon') || 'cyber_hound'.includes('behemoth') || 'cyber_hound'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#06b6d4', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'cyber_hound'.includes('frost') ? 'frost' : ('cyber_hound'.includes('drake') || 'cyber_hound'.includes('phoenix') || 'cyber_hound'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'blood_fiend') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('vampiric,bloodthirsty,super_speed'.includes('laser') || 'blood_fiend'.includes('mech') || 'blood_fiend'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('blood_fiend'.includes('storm') || 'blood_fiend'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('blood_fiend'.includes('dragon') || 'blood_fiend'.includes('behemoth') || 'blood_fiend'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#991b1b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'blood_fiend'.includes('frost') ? 'frost' : ('blood_fiend'.includes('drake') || 'blood_fiend'.includes('phoenix') || 'blood_fiend'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'titan_dreadnought') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,laser_eyes,explosive_death,immortal'.includes('laser') || 'titan_dreadnought'.includes('mech') || 'titan_dreadnought'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('titan_dreadnought'.includes('storm') || 'titan_dreadnought'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('titan_dreadnought'.includes('dragon') || 'titan_dreadnought'.includes('behemoth') || 'titan_dreadnought'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#1e293b', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'titan_dreadnought'.includes('frost') ? 'frost' : ('titan_dreadnought'.includes('drake') || 'titan_dreadnought'.includes('phoenix') || 'titan_dreadnought'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'steampunk_airship') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,flying,explosive_death'.includes('laser') || 'steampunk_airship'.includes('mech') || 'steampunk_airship'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('steampunk_airship'.includes('storm') || 'steampunk_airship'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('steampunk_airship'.includes('dragon') || 'steampunk_airship'.includes('behemoth') || 'steampunk_airship'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#78350f', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'steampunk_airship'.includes('frost') ? 'frost' : ('steampunk_airship'.includes('drake') || 'steampunk_airship'.includes('phoenix') || 'steampunk_airship'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'quantum_mech') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,teleporter,laser_eyes,electrocharged'.includes('laser') || 'quantum_mech'.includes('mech') || 'quantum_mech'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('quantum_mech'.includes('storm') || 'quantum_mech'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('quantum_mech'.includes('dragon') || 'quantum_mech'.includes('behemoth') || 'quantum_mech'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#00e5ff', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'quantum_mech'.includes('frost') ? 'frost' : ('quantum_mech'.includes('drake') || 'quantum_mech'.includes('phoenix') || 'quantum_mech'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
+        } else if (this.type === 'cosmic_dragon') {
+            if (audio) {
+                if (typeof audio.playLaser === 'function' && ('titan,flying,starlight_aura,immortal,laser_eyes'.includes('laser') || 'cosmic_dragon'.includes('mech') || 'cosmic_dragon'.includes('archon'))) {
+                    audio.playLaser();
+                } else if (typeof audio.playThunder === 'function' && ('cosmic_dragon'.includes('storm') || 'cosmic_dragon'.includes('thunder'))) {
+                    audio.playThunder();
+                } else if (typeof audio.playRoar === 'function' && ('cosmic_dragon'.includes('dragon') || 'cosmic_dragon'.includes('behemoth') || 'cosmic_dragon'.includes('titan'))) {
+                    audio.playRoar();
+                } else {
+                    audio.playClick();
+                }
+            }
+            if (particleSystem) particleSystem.burst(this.x, this.y, 16, ['#a21caf', '#ffffff', '#38bdf8'], 2, 4, 1.5, 3, 'spark');
+            const pType = 'cosmic_dragon'.includes('frost') ? 'frost' : ('cosmic_dragon'.includes('drake') || 'cosmic_dragon'.includes('phoenix') || 'cosmic_dragon'.includes('magma') ? 'fireball' : 'laser');
+            entityManager.projectiles.push(new Projectile(this.x, this.y, dirX * 7.5, dirY * 7.5, pType, this.id, this.attack));
+            return;
         } else if (this.hasTrait('venomous') || this.type === 'hydra') {
             // Acid / Venom Spit
             if (audio) audio.playSplash();
@@ -3636,6 +5001,966 @@ class Entity {
                         other.x += Math.cos(ang) * 18;
                         other.y += Math.sin(ang) * 18;
                     }
+                }
+            }
+            return;
+        } else if (this.type === 'solar_phoenix') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#f59e0b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_wyrm') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#38bdf8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'iron_behemoth') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#64748b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'celestial_archon') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#fef08a', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'shadow_stalker') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#18181b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'deep_leviathan') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0369a1', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'volcanic_drake') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#dc2626', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'storm_valkyrie') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#67e8f9', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'mecha_colossus') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#334155', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'astral_unicorn') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#f472b6', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'chronomancer') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#818cf8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'spectral_knight') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#94a3b8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'sand_reaper') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#d97706', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'forest_ancient') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#166534', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'plague_bringer') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#84cc16', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'crystal_scorpion') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#ec4899', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'thunder_hawk') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0284c7', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'magma_elemental') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#ea580c', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_banshee') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#a5f3fc', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'dune_crawler') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#b45309', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'void_horror') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#4c1d95', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'sun_warrior') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#facc15', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'abyssal_kraken_spawn') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0f172a', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'runic_golem') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#475569', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'cyber_hound') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#06b6d4', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'blood_fiend') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#991b1b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'titan_dreadnought') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#1e293b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'steampunk_airship') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#78350f', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'quantum_mech') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#00e5ff', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'cosmic_dragon') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#a21caf', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'solar_phoenix') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#f59e0b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_wyrm') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#38bdf8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'iron_behemoth') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#64748b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'celestial_archon') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#fef08a', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'shadow_stalker') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#18181b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'deep_leviathan') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0369a1', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'volcanic_drake') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#dc2626', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'storm_valkyrie') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#67e8f9', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'mecha_colossus') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#334155', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'astral_unicorn') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#f472b6', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'chronomancer') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#818cf8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'spectral_knight') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#94a3b8', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'sand_reaper') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#d97706', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'forest_ancient') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#166534', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'plague_bringer') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#84cc16', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'crystal_scorpion') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#ec4899', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'thunder_hawk') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0284c7', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'magma_elemental') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#ea580c', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'frost_banshee') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#a5f3fc', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'dune_crawler') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#b45309', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'void_horror') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#4c1d95', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'sun_warrior') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#facc15', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'abyssal_kraken_spawn') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#0f172a', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'runic_golem') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#475569', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'cyber_hound') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#06b6d4', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'blood_fiend') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#991b1b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'titan_dreadnought') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#1e293b', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'steampunk_airship') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#78350f', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'quantum_mech') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#00e5ff', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
+                }
+            }
+            return;
+        } else if (this.type === 'cosmic_dragon') {
+            if (audio && typeof audio.playSingularity === 'function') audio.playSingularity();
+            else if (audio && typeof audio.playThunder === 'function') audio.playThunder();
+            if (window.game && window.game.shakeCamera) window.game.shakeCamera(12, 18);
+            if (particleSystem) particleSystem.burst(this.x, this.y, 35, ['#a21caf', '#ffffff', '#fbbf24'], 2.5, 6, 2, 4, 'stardust');
+            for (let i = 0; i < entityManager.entities.length; i++) {
+                const other = entityManager.entities[i];
+                if (!other.active || other.id === this.id) continue;
+                if (Math.hypot(other.x - this.x, other.y - this.y) < 45) {
+                    other.takeDamage(this.attack * 1.6, this);
+                    const ang = Math.atan2(other.y - this.y, other.x - this.x);
+                    other.x += Math.cos(ang) * 12;
+                    other.y += Math.sin(ang) * 12;
                 }
             }
             return;

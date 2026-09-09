@@ -231,9 +231,17 @@ class Game {
         const dockFpv = document.getElementById('dock-btn-fpv');
         if (dockFpv) dockFpv.classList.toggle('active', this.isFirstPerson);
 
-        if (this.isFirstPerson && !this.isMobileDevice()) {
-            if (document.body.requestPointerLock) {
-                try { document.body.requestPointerLock(); } catch(err) {}
+        if (this.isFirstPerson) {
+            try {
+                if (this.canvas3D && this.canvas3D.requestPointerLock) {
+                    this.canvas3D.requestPointerLock();
+                } else if (document.body.requestPointerLock) {
+                    document.body.requestPointerLock();
+                }
+            } catch(err) {}
+        } else {
+            if (document.exitPointerLock && document.pointerLockElement) {
+                try { document.exitPointerLock(); } catch(e) {}
             }
         }
 
@@ -391,10 +399,14 @@ class Game {
         if (this.controlledEntity && this.controlledEntity.active) {
             if (e.button === 0) {
                 // Request pointer lock on click if in FPV
-                if (this.isFirstPerson && !this.isMobileDevice()) {
-                    if (document.body.requestPointerLock && document.pointerLockElement !== document.body) {
-                        try { document.body.requestPointerLock(); } catch(err) {}
-                    }
+                if (this.isFirstPerson) {
+                    try {
+                        if (this.canvas3D && this.canvas3D.requestPointerLock && document.pointerLockElement !== this.canvas3D) {
+                            this.canvas3D.requestPointerLock();
+                        } else if (document.body.requestPointerLock && document.pointerLockElement !== document.body) {
+                            document.body.requestPointerLock();
+                        }
+                    } catch(err) {}
                 }
                 // Trigger viewmodel swing animation
                 const vm = document.getElementById('fpv-viewmodel');
@@ -463,10 +475,8 @@ class Game {
             this.mouse.lastY = e.clientY;
 
             if (this.isFirstPerson) {
-                // First-person mouse look with pointer lock, mouse drag, or right button
-                if (document.pointerLockElement || this.mouse.isOrbiting3D || this.mouse.button === 2 || this.mouse.isDown || (e.buttons && e.buttons > 0)) {
-                    this.renderer3D.rotateCamera(dx * 0.75, dy * 0.75);
-                }
+                // In First-Person View, mouse movement rotates the camera smoothly
+                this.renderer3D.rotateCamera(dx * 0.85, dy * 0.85);
                 return;
             }
 
@@ -1049,6 +1059,135 @@ class Game {
             if (isFirstClick) this.disasterManager.triggerGreatDeluge(this.disasterManager, this.world);
         }
 
+        // === 30 NEW DESTRUCTION TOOLS ===
+        else if (tool === 'dark_matter_implosion') {
+            if (isFirstClick) this.disasterManager.triggerDarkMatterImplosion(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'antimatter_bomb') {
+            if (isFirstClick) this.disasterManager.triggerAntimatterBomb(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'singularity_cannon') {
+            if (isFirstClick) this.disasterManager.triggerSingularityCannon(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'plasma_orbital_beam') {
+            if (isFirstClick) this.disasterManager.triggerPlasmaOrbitalBeam(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'gamma_ray_burst') {
+            if (isFirstClick) this.disasterManager.triggerGammaRayBurst(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'chrono_rift') {
+            if (isFirstClick) this.disasterManager.triggerChronoRift(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'dimension_collapse') {
+            if (isFirstClick) this.disasterManager.triggerDimensionCollapse(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'magnetic_storm') {
+            if (isFirstClick) this.disasterManager.triggerMagneticStorm(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'tachyon_blast') {
+            if (isFirstClick) this.disasterManager.triggerTachyonBlast(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'solar_flare_strike') {
+            if (isFirstClick) this.disasterManager.triggerSolarFlareStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'graviton_pulse') {
+            if (isFirstClick) this.disasterManager.triggerGravitonPulse(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'nanite_plague') {
+            if (isFirstClick) this.disasterManager.triggerNanitePlague(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'supernova_spark') {
+            if (isFirstClick) this.disasterManager.triggerSupernovaSpark(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'subzero_freeze_bomb') {
+            if (isFirstClick) this.disasterManager.triggerSubzeroFreezeBomb(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'chaos_meteor_shower') {
+            if (isFirstClick) this.disasterManager.triggerChaosMeteorShower(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'void_vortex') {
+            if (isFirstClick) this.disasterManager.triggerVoidVortex(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'tectonic_rupture') {
+            if (isFirstClick) this.disasterManager.triggerTectonicRupture(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'inferno_barrage') {
+            if (isFirstClick) this.disasterManager.triggerInfernoBarrage(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'acidic_deluge') {
+            if (isFirstClick) this.disasterManager.triggerAcidicDeluge(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'cosmic_lightning_storm') {
+            if (isFirstClick) this.disasterManager.triggerCosmicLightningStorm(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'abyssal_quake') {
+            if (isFirstClick) this.disasterManager.triggerAbyssalQuake(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'radioactive_fallout_strike') {
+            if (isFirstClick) this.disasterManager.triggerRadioactiveFalloutStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'photon_laser_grid') {
+            if (isFirstClick) this.disasterManager.triggerPhotonLaserGrid(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'entropy_wave') {
+            if (isFirstClick) this.disasterManager.triggerEntropyWave(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'hyperbeam_satellite') {
+            if (isFirstClick) this.disasterManager.triggerHyperbeamSatellite(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'star_eater_strike') {
+            if (isFirstClick) this.disasterManager.triggerStarEaterStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'vacuum_decay') {
+            if (isFirstClick) this.disasterManager.triggerVacuumDecay(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'blight_strike') {
+            if (isFirstClick) this.disasterManager.triggerBlightStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'stellar_flare') {
+            if (isFirstClick) this.disasterManager.triggerStellarFlare(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'void_collapse_cannon') {
+            if (isFirstClick) this.disasterManager.triggerVoidCollapseCannon(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'geomagnetic_solar_squall') {
+            if (isFirstClick) this.disasterManager.triggerGeomagneticSolarSquall(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'doomsday_clock_strike') {
+            if (isFirstClick) this.disasterManager.triggerDoomsdayClockStrike(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        }
+        // === 30 NEW NATURE TOOLS ===
+        else if (tool === 'blizzard_storm') {
+            if (isFirstClick) this.disasterManager.triggerBlizzardStorm(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'thundercloud_front') {
+            if (isFirstClick) this.disasterManager.triggerThundercloudFront(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'monsoon_surge') {
+            if (isFirstClick) this.disasterManager.triggerMonsoonSurge(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'mist_fog') {
+            if (isFirstClick) this.disasterManager.triggerMistFog(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'wildfire_spread') {
+            if (isFirstClick) this.disasterManager.triggerWildfireSpread(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'aurora_borealis') {
+            if (isFirstClick) this.disasterManager.triggerAuroraBorealis(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'sand_dune_shift') {
+            if (isFirstClick) this.disasterManager.triggerSandDuneShift(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'geyser_eruption') {
+            if (isFirstClick) this.disasterManager.triggerGeyserEruption(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'mudflow_slide') {
+            if (isFirstClick) this.disasterManager.triggerMudflowSlide(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'hailstorm_barrage') {
+            if (isFirstClick) this.disasterManager.triggerHailstormBarrage(this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'supercell_tornado') {
+            if (isFirstClick) this.disasterManager.triggerSupercellTornado(wx, wy, this.disasterManager, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'dust_devil_whirl') {
+            if (isFirstClick) this.disasterManager.triggerDustDevilWhirl(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'sinkhole_collapse') {
+            if (isFirstClick) this.disasterManager.triggerSinkholeCollapse(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'bioluminescent_bloom') {
+            if (isFirstClick) this.disasterManager.triggerBioluminescentBloom(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'spore_cloud_haze') {
+            if (isFirstClick) this.disasterManager.triggerSporeCloudHaze(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'frostbite_front') {
+            if (isFirstClick) this.disasterManager.triggerFrostbiteFront(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'thermal_spring_burst') {
+            if (isFirstClick) this.disasterManager.triggerThermalSpringBurst(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'tidal_surge_wave') {
+            if (isFirstClick) this.disasterManager.triggerTidalSurgeWave(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'oasis_spring') {
+            if (isFirstClick) this.disasterManager.triggerOasisSpring(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'rainbow_blessing') {
+            if (isFirstClick) this.disasterManager.triggerRainbowBlessing(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'drought_wave') {
+            if (isFirstClick) this.disasterManager.triggerDroughtWave(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'magma_surge_fissure') {
+            if (isFirstClick) this.disasterManager.triggerMagmaSurgeFissure(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'lightning_tree') {
+            if (isFirstClick) this.disasterManager.triggerLightningTree(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'coral_sprout') {
+            if (isFirstClick) this.disasterManager.triggerCoralSprout(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'vine_overgrowth') {
+            if (isFirstClick) this.disasterManager.triggerVineOvergrowth(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'crystal_growth') {
+            if (isFirstClick) this.disasterManager.triggerCrystalGrowth(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'glacier_advance') {
+            if (isFirstClick) this.disasterManager.triggerGlacierAdvance(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'pollen_wind') {
+            if (isFirstClick) this.disasterManager.triggerPollenWind(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'fossil_unearth') {
+            if (isFirstClick) this.disasterManager.triggerFossilUnearth(wx, wy, this.world, this.particleSystem, this.audio);
+        } else if (tool === 'spring_thaw') {
+            if (isFirstClick) this.disasterManager.triggerSpringThaw(wx, wy, this.world, this.particleSystem, this.audio);
+        }
+
         // 3. LANDSCAPING
         else if (tool === 'deep_water') this.world.applyBrush(wx, wy, bSize, TILES.DEEP_WATER);
         else if (tool === 'water') this.world.applyBrush(wx, wy, bSize, TILES.WATER);
@@ -1147,6 +1286,38 @@ class Game {
         else if (tool === 'floating_rock') this.world.applyBrush(wx, wy, bSize, TILES.FLOATING_ROCK);
         else if (tool === 'magma_fissure') this.world.applyBrush(wx, wy, bSize, TILES.MAGMA_FISSURE);
         else if (tool === 'lush_meadow') this.world.applyBrush(wx, wy, bSize, TILES.LUSH_MEADOW);
+
+        // === 30 NEW LANDSCAPING TILES ===
+        else if (tool === 'obsidian_block') this.world.applyBrush(wx, wy, bSize, TILES.OBSIDIAN_BLOCK);
+        else if (tool === 'basalt') this.world.applyBrush(wx, wy, bSize, TILES.BASALT);
+        else if (tool === 'glacial_ice') this.world.applyBrush(wx, wy, bSize, TILES.GLACIAL_ICE);
+        else if (tool === 'crystal_ore') this.world.applyBrush(wx, wy, bSize, TILES.CRYSTAL_ORE);
+        else if (tool === 'gold_vein') this.world.applyBrush(wx, wy, bSize, TILES.GOLD_VEIN);
+        else if (tool === 'aether_rock') this.world.applyBrush(wx, wy, bSize, TILES.AETHER_ROCK);
+        else if (tool === 'mud') this.world.applyBrush(wx, wy, bSize, TILES.MUD);
+        else if (tool === 'peat') this.world.applyBrush(wx, wy, bSize, TILES.PEAT);
+        else if (tool === 'mycelium') this.world.applyBrush(wx, wy, bSize, TILES.MYCELIUM);
+        else if (tool === 'coral_barrier') this.world.applyBrush(wx, wy, bSize, TILES.CORAL_BARRIER);
+        else if (tool === 'dune_quicksand') this.world.applyBrush(wx, wy, bSize, TILES.DUNE_QUICKSAND);
+        else if (tool === 'volcanic_cinder') this.world.applyBrush(wx, wy, bSize, TILES.VOLCANIC_CINDER);
+        else if (tool === 'sulfur_stone') this.world.applyBrush(wx, wy, bSize, TILES.SULFUR_STONE);
+        else if (tool === 'chlorophyll_moss') this.world.applyBrush(wx, wy, bSize, TILES.CHLOROPHYLL_MOSS);
+        else if (tool === 'starfall_dust') this.world.applyBrush(wx, wy, bSize, TILES.STARFALL_DUST);
+        else if (tool === 'void_stone') this.world.applyBrush(wx, wy, bSize, TILES.VOID_STONE);
+        else if (tool === 'ancient_brick') this.world.applyBrush(wx, wy, bSize, TILES.ANCIENT_BRICK);
+        else if (tool === 'marble_road') this.world.applyBrush(wx, wy, bSize, TILES.MARBLE_ROAD);
+        else if (tool === 'runic_slate') this.world.applyBrush(wx, wy, bSize, TILES.RUNIC_SLATE);
+        else if (tool === 'crimson_red_sand') this.world.applyBrush(wx, wy, bSize, TILES.CRIMSON_RED_SAND);
+        else if (tool === 'bamboo_thicket') this.world.applyBrush(wx, wy, bSize, TILES.BAMBOO_THICKET);
+        else if (tool === 'tundra_permafrost') this.world.applyBrush(wx, wy, bSize, TILES.TUNDRA_PERMAFROST);
+        else if (tool === 'petrified_grove') this.world.applyBrush(wx, wy, bSize, TILES.PETRIFIED_GROVE);
+        else if (tool === 'luminescent_lichen') this.world.applyBrush(wx, wy, bSize, TILES.LUMINESCENT_LICHEN);
+        else if (tool === 'silver_ore') this.world.applyBrush(wx, wy, bSize, TILES.SILVER_ORE);
+        else if (tool === 'meteorite_core') this.world.applyBrush(wx, wy, bSize, TILES.METEORITE_CORE);
+        else if (tool === 'prismatic_crystal') this.world.applyBrush(wx, wy, bSize, TILES.PRISMATIC_CRYSTAL);
+        else if (tool === 'deep_earth_mantle') this.world.applyBrush(wx, wy, bSize, TILES.DEEP_EARTH_MANTLE);
+        else if (tool === 'divine_soil') this.world.applyBrush(wx, wy, bSize, TILES.DIVINE_SOIL);
+        else if (tool === 'abyssal_chasm') this.world.applyBrush(wx, wy, bSize, TILES.ABYSSAL_CHASM);
 
         // 4. VARIOUS POWERS & MIRACLES
         else if (tool === 'hand') {
@@ -1580,6 +1751,364 @@ class Game {
             }
         }
 
+        // === 30 NEW POWERS TOOLS ===
+        else if (tool === 'divine_shield') {
+            if (isFirstClick) {
+                for (const ent of this.entityManager.entities) {
+                    if (ent.active && Math.hypot(ent.x - wx, ent.y - wy) < bSize * 8 + 20) {
+                        ent.blessed = true; ent.traits.add('immortal'); ent.hp = ent.maxHp;
+                    }
+                }
+                this.particleSystem.burst(wx, wy, 30, ['#facc15', '#fef08a', '#ffffff'], 2.5, 6, 2, 4);
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'wrath_of_god') {
+            if (isFirstClick) {
+                if (typeof window !== 'undefined' && window.game && window.game.shakeCamera) window.game.shakeCamera(25, 30);
+                this.particleSystem.burst(wx, wy, 40, ['#facc15', '#f97316', '#ffffff'], 3, 7, 2, 5);
+                for (const ent of this.entityManager.entities) {
+                    if (ent.active && Math.hypot(ent.x - wx, ent.y - wy) < bSize * 8 + 25) ent.takeDamage(5000, 'divine');
+                }
+                if (this.audio) this.audio.playHammerOfDawn();
+            }
+        } else if (tool === 'celestial_heal') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 10 + 25) {
+                        e.hp = e.maxHp; e.blessed = true; e.infected = false; e.cursed = false;
+                    }
+                });
+                this.particleSystem.burst(wx, wy, 30, ['#34d399', '#38bdf8', '#ffffff'], 2, 6, 2, 4);
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'time_warp_fast') {
+            if (isFirstClick) { this.timeScale = 5.0; if (this.audio) this.audio.playMagic(); }
+        } else if (tool === 'time_warp_slow') {
+            if (isFirstClick) { this.timeScale = 0.5; if (this.audio) this.audio.playMagic(); }
+        } else if (tool === 'mass_rejuvenation') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 25) e.age = 18;
+                });
+                this.particleSystem.burst(wx, wy, 25, ['#f472b6', '#ffffff'], 2, 5, 1.5, 3);
+            }
+        } else if (tool === 'teleport_all') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 12 + 40) { e.x = wx; e.y = wy; }
+                });
+                this.particleSystem.burst(wx, wy, 35, ['#a855f7', '#38bdf8', '#ffffff'], 3, 7, 2, 5);
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'peace_treaty_edict') {
+            if (isFirstClick) {
+                this.entityManager.forcePeace = true; this.entityManager.worldWar = false;
+                alert('Treaty of Olympus enacted: Universal Planetary Peace declared!');
+            }
+        } else if (tool === 'total_war_edict') {
+            if (isFirstClick) {
+                this.entityManager.forcePeace = false; this.entityManager.worldWar = true;
+                alert('Planetary War Protocol activated: All Kingdoms at Total War!');
+            }
+        } else if (tool === 'inspire_invention') {
+            if (isFirstClick) {
+                this.entityManager.kingdoms.forEach(k => {
+                    k.wood += 500; k.stone += 400; k.food += 300; k.gold += 200; k.aether += 100;
+                    if (k.era < 4) k.era++;
+                });
+                this.particleSystem.burst(wx, wy, 30, ['#facc15', '#38bdf8', '#ffffff'], 2.5, 6, 2, 4);
+                if (this.audio) this.audio.playMagic();
+            }
+        } else if (tool === 'sanctify_ground') {
+            for (let dy = -bSize; dy <= bSize; dy++) {
+                for (let dx = -bSize; dx <= bSize; dx++) {
+                    if (dx * dx + dy * dy <= bSize * bSize) {
+                        const px = Math.floor(wx + dx), py = Math.floor(wy + dy);
+                        if (this.world.inBounds(px, py)) this.world.setTile(px, py, TILES.HOLY_GROUND);
+                    }
+                }
+            }
+        } else if (tool === 'curse_of_decay') {
+            for (let dy = -bSize; dy <= bSize; dy++) {
+                for (let dx = -bSize; dx <= bSize; dx++) {
+                    if (dx * dx + dy * dy <= bSize * bSize) {
+                        const px = Math.floor(wx + dx), py = Math.floor(wy + dy);
+                        if (this.world.inBounds(px, py)) {
+                            const t = this.world.tiles[px + py * this.world.width];
+                            if (t === TILES.FOREST || t === TILES.GRASS) this.world.setTile(px, py, TILES.ASH);
+                        }
+                    }
+                }
+            }
+        } else if (tool === 'gravity_well') {
+            this.disasterManager.triggerSingularityCannon(wx, wy, this.world, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'levitation_field') {
+            this.disasterManager.triggerGravityInversion(wx, wy, this.entityManager, this.particleSystem, this.audio);
+        } else if (tool === 'elemental_infusion') {
+            if (isFirstClick) {
+                const traits = ['fireproof', 'cryomancer', 'pyromaniac', 'electrocharged'];
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) {
+                        e.traits.add(traits[Math.floor(Math.random() * traits.length)]);
+                    }
+                });
+                this.particleSystem.burst(wx, wy, 25, ['#f97316', '#38bdf8', '#a855f7'], 2, 5, 2, 4);
+            }
+        } else if (tool === 'clone_creature') {
+            if (isFirstClick) {
+                const nearest = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (nearest && Math.hypot(nearest.x - wx, nearest.y - wy) < 25) {
+                    this.entityManager.spawn(nearest.type, wx, wy);
+                    this.particleSystem.burst(wx, wy, 20, ['#38bdf8', '#ffffff'], 2, 4, 1.5, 3);
+                }
+            }
+        } else if (tool === 'evolution_surge') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) {
+                        e.scale *= 1.35; e.maxHp *= 1.5; e.hp = e.maxHp; e.attack *= 1.4;
+                    }
+                });
+                this.particleSystem.burst(wx, wy, 25, ['#22c55e', '#facc15', '#ffffff'], 2, 5, 2, 4);
+            }
+        } else if (tool === 'divine_fertility') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && e.isCiv && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) {
+                        this.entityManager.spawn(e.type, e.x + (Math.random() - 0.5) * 6, e.y + (Math.random() - 0.5) * 6);
+                    }
+                });
+                this.particleSystem.burst(wx, wy, 25, ['#f472b6', '#fb7185', '#ffffff'], 2, 5, 1.5, 3);
+            }
+        } else if (tool === 'hero_ascension') {
+            if (isFirstClick) {
+                const nearest = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (nearest && Math.hypot(nearest.x - wx, nearest.y - wy) < 25) {
+                    nearest.scale *= 1.6; nearest.maxHp += 2000; nearest.hp = nearest.maxHp; nearest.attack += 50;
+                    nearest.traits.add('titan'); nearest.traits.add('immortal'); nearest.blessed = true;
+                    this.particleSystem.burst(nearest.x, nearest.y, 35, ['#facc15', '#ffffff'], 3, 7, 2, 5);
+                }
+            }
+        } else if (tool === 'crown_monarch') {
+            if (isFirstClick) {
+                const nearest = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (nearest && Math.hypot(nearest.x - wx, nearest.y - wy) < 25) {
+                    nearest.isKing = true; nearest.blessed = true;
+                    this.particleSystem.burst(nearest.x, nearest.y, 20, ['#facc15', '#eab308', '#ffffff'], 2, 5, 1.5, 3);
+                }
+            }
+        } else if (tool === 'purify_world') {
+            if (isFirstClick) {
+                for (let i = 0; i < this.world.size; i++) {
+                    const t = this.world.tiles[i];
+                    if (t === TILES.FALLOUT || t === TILES.ASH || t === TILES.CORRUPTED || t === TILES.ACID) {
+                        this.world.tiles[i] = TILES.GRASS;
+                    }
+                    this.world.fire[i] = 0;
+                }
+                this.particleSystem.burst(wx, wy, 40, ['#34d399', '#38bdf8', '#ffffff'], 3, 7, 2, 5);
+                alert('Planetary Purification completed: Cleansed all blight and corruption!');
+            }
+        } else if (tool === 'mind_control_wave') {
+            if (isFirstClick) this.disasterManager.triggerMindControl(wx, wy, this.entityManager, this.particleSystem);
+        } else if (tool === 'invisibility_cloak') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) e.traits.add('invisibility');
+                });
+            }
+        } else if (tool === 'berserk_rage') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) {
+                        e.traits.add('bloodthirsty'); e.speedMultiplier = 2.5; e.attack *= 2.5;
+                    }
+                });
+            }
+        } else if (tool === 'frozen_in_time') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) e.frozen = 900;
+                });
+            }
+        } else if (tool === 'speed_boost_aura') {
+            if (isFirstClick) {
+                this.entityManager.entities.forEach(e => {
+                    if (e.active && Math.hypot(e.x - wx, e.y - wy) < bSize * 8 + 20) {
+                        e.speedMultiplier = 2.0; e.traits.add('super_speed');
+                    }
+                });
+            }
+        } else if (tool === 'resurrection_beacon') {
+            if (isFirstClick) this.entityManager.resurrectCorpses(wx, wy, 100, this.particleSystem, this.audio);
+        } else if (tool === 'wealth_shower') {
+            if (isFirstClick) {
+                this.entityManager.kingdoms.forEach(k => { k.gold += 1000; k.aether += 500; });
+                this.particleSystem.burst(wx, wy, 35, ['#eab308', '#facc15', '#ffffff'], 2.5, 6, 2, 4);
+            }
+        } else if (tool === 'cosmic_knowledge') {
+            if (isFirstClick) {
+                this.entityManager.kingdoms.forEach(k => { k.era = 4; k.wood += 1000; k.stone += 1000; });
+                alert('Cosmic Enlightenment bestowed upon civilizations!');
+            }
+        } else if (tool === 'apotheosis') {
+            if (isFirstClick) {
+                const nearest = this.entityManager.findNearestEntity({ id: -1, x: wx, y: wy });
+                if (nearest && Math.hypot(nearest.x - wx, nearest.y - wy) < 25) {
+                    nearest.scale = 5.0; nearest.maxHp = 10000; nearest.hp = 10000; nearest.attack = 250;
+                    nearest.traits.add('titan'); nearest.traits.add('immortal'); nearest.traits.add('starlight_aura');
+                    this.particleSystem.burst(nearest.x, nearest.y, 50, ['#ffffff', '#facc15', '#ec4899', '#38bdf8'], 4, 8, 2.5, 6, 'stardust');
+                }
+            }
+        }
+
+        // === 30 NEW MENU & WORLD TOOLS ===
+        else if (tool === 'brush_circle_small') { this.ui.brushSize = 1; this.ui.updateBrushSizeDisplay(); }
+        else if (tool === 'brush_square_medium') { this.ui.brushSize = 3; this.ui.updateBrushSizeDisplay(); }
+        else if (tool === 'brush_diamond_large') { this.ui.brushSize = 7; this.ui.updateBrushSizeDisplay(); }
+        else if (tool === 'fill_bucket') {
+            if (isFirstClick) {
+                const targetTile = this.world.getTile(tx, ty);
+                const replaceWith = TILES.GRASS;
+                if (targetTile !== replaceWith) {
+                    const q = [[tx, ty]];
+                    const visited = new Uint8Array(this.world.size);
+                    visited[tx + ty * this.world.width] = 1;
+                    let count = 0;
+                    while (q.length > 0 && count < 2000) {
+                        const [cx, cy] = q.pop();
+                        this.world.setTile(cx, cy, replaceWith);
+                        count++;
+                        const neighbors = [[cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]];
+                        for (const [nx, ny] of neighbors) {
+                            if (this.world.inBounds(nx, ny)) {
+                                const idx = nx + ny * this.world.width;
+                                if (!visited[idx] && this.world.getTile(nx, ny) === targetTile) {
+                                    visited[idx] = 1; q.push([nx, ny]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (tool === 'smooth_terrain') {
+            if (isFirstClick) {
+                for (let y = 1; y < this.world.height - 1; y++) {
+                    for (let x = 1; x < this.world.width - 1; x++) {
+                        const avg = (this.world.elevation[x + y * this.world.width] + this.world.elevation[(x-1) + y * this.world.width] + this.world.elevation[(x+1) + y * this.world.width]) / 3;
+                        this.world.elevation[x + y * this.world.width] = avg;
+                    }
+                }
+            }
+        } else if (tool === 'noise_generator') {
+            if (isFirstClick && this.world.generateNoiseMap) this.world.generateNoiseMap();
+        } else if (tool === 'erase_all_fire') {
+            if (isFirstClick) {
+                for (let i = 0; i < this.world.size; i++) this.world.fire[i] = 0;
+                alert('All fires extinguished worldwide!');
+            }
+        } else if (tool === 'quench_lava') {
+            if (isFirstClick) {
+                for (let i = 0; i < this.world.size; i++) {
+                    if (this.world.tiles[i] === TILES.LAVA) this.world.tiles[i] = TILES.OBSIDIAN;
+                }
+                alert('All lava quenched into solid obsidian!');
+            }
+        } else if (tool === 'clear_all_acid') {
+            if (isFirstClick) {
+                for (let i = 0; i < this.world.size; i++) {
+                    if (this.world.tiles[i] === TILES.ACID) this.world.tiles[i] = TILES.WATER;
+                }
+                alert('All acid neutralized into clean water!');
+            }
+        } else if (tool === 'resurrect_dead') {
+            if (isFirstClick) this.entityManager.resurrectCorpses(wx, wy, 500, this.particleSystem, this.audio);
+        } else if (tool === 'clear_debris') {
+            if (isFirstClick) {
+                for (let i = 0; i < this.world.size; i++) {
+                    if (this.world.tiles[i] === TILES.ASH) this.world.tiles[i] = TILES.SOIL;
+                }
+                alert('All ash and debris cleared!');
+            }
+        } else if (tool === 'biome_temperate_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.FOREST);
+        } else if (tool === 'biome_desert_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.SAND);
+        } else if (tool === 'biome_snow_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.SNOW);
+        } else if (tool === 'biome_volcanic_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.MAGMA_ROCK);
+        } else if (tool === 'biome_alien_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.NEBULA);
+        } else if (tool === 'biome_ocean_stamp') {
+            this.world.applyBrush(wx, wy, bSize * 2, TILES.DEEP_WATER);
+        } else if (tool === 'stat_viewer') {
+            if (isFirstClick) alert(`Simulation Stats:\nLiving Entities: ${this.entityManager.entities.filter(e => e.active).length}\nActive Kingdoms: ${this.entityManager.kingdoms.size}\nWorld Dimensions: ${this.world.width}x${this.world.height}`);
+        } else if (tool === 'kingdom_ledger') {
+            if (isFirstClick) this.ui.showModal('modal-diplomacy');
+        } else if (tool === 'creature_census') {
+            if (isFirstClick) {
+                const counts = {};
+                this.entityManager.entities.forEach(e => { if (e.active) counts[e.type] = (counts[e.type] || 0) + 1; });
+                alert('World Population Census:\n' + Object.entries(counts).map(([k, v]) => `${k}: ${v}`).join('\n'));
+            }
+        } else if (tool === 'day_speed_slider') {
+            if (isFirstClick) {
+                this.daySpeed = (this.daySpeed || 1) * 2;
+                if (this.daySpeed > 8) this.daySpeed = 1;
+                alert(`Day cycle speed: ${this.daySpeed}x`);
+            }
+        } else if (tool === 'night_skip') {
+            if (isFirstClick) { this.timeOfDay = 8.0; alert('Skipped forward to 8:00 AM Sunrise!'); }
+        } else if (tool === 'toggle_bloom') {
+            if (isFirstClick) { this.bloomEnabled = !this.bloomEnabled; alert(`Starlight Bloom: ${this.bloomEnabled ? 'ON' : 'OFF'}`); }
+        } else if (tool === 'toggle_vignette') {
+            if (isFirstClick) { document.body.classList.toggle('cinematic'); }
+        } else if (tool === 'toggle_shadows') {
+            if (isFirstClick) { this.shadowsEnabled = (this.shadowsEnabled !== false) ? false : true; alert(`Dynamic Shadows: ${this.shadowsEnabled ? 'ON' : 'OFF'}`); }
+        } else if (tool === 'screenshot_tool') {
+            if (isFirstClick) {
+                const cv = this.is3DMode ? this.canvas3D : this.canvas;
+                const link = document.createElement('a');
+                link.download = `galaxybox_snap_${Date.now()}.png`;
+                link.href = cv.toDataURL('image/png');
+                link.click();
+            }
+        } else if (tool === 'reset_view') {
+            if (isFirstClick) {
+                if (this.is3DMode && this.renderer3D) {
+                    this.renderer3D.camera.target = [this.world.width / 2, this.world.height / 2, 2.5];
+                    this.renderer3D.camera.yaw = 0.785;
+                    this.renderer3D.camera.pitch = 0.95;
+                    this.renderer3D.camera.distance = 120;
+                } else {
+                    this.renderer.camera.x = this.world.width / 2;
+                    this.renderer.camera.y = this.world.height / 2;
+                    this.renderer.camera.zoom = 2.0;
+                }
+            }
+        } else if (tool === 'seed_generator') {
+            if (isFirstClick) {
+                const newSeed = Math.floor(Math.random() * 9999999);
+                this.world.generate(newSeed);
+                alert(`Regenerated world with Universe Seed: ${newSeed}`);
+            }
+        } else if (tool === 'export_history') {
+            if (isFirstClick) {
+                const data = JSON.stringify({ tick: this.tick, entities: this.entityManager.entities.length, kingdoms: Array.from(this.entityManager.kingdoms.values()) }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.download = `galaxybox_chronicle_${Date.now()}.json`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            }
+        } else if (tool === 'fps_turbo') {
+            if (isFirstClick) {
+                this.unlockedFPS = !this.unlockedFPS;
+                alert(`Turbo Simulation: ${this.unlockedFPS ? 'UNLOCKED (120 FPS)' : 'NORMAL (60 FPS)'}`);
+            }
+        }
+
         // 5. CREATURES & CIVILIZATIONS
         else if (isFirstClick) {
             if (tool === 'control') {
@@ -1610,7 +2139,9 @@ class Game {
                 'storm_griffin', 'abyssal_angler', 'sun_falcon', 'magma_salamander', 'crystal_spider',
                 'void_stalker', 'thunder_ram', 'sand_wurm', 'elder_wyrm', 'chimera',
                 'basilisk', 'lich_king', 'cyber_mech_titan', 'cerberus', 'sea_serpent',
-                'yeti', 'djinn', 'centaur', 'mummy_pharaoh', 'alien_overlord'
+                'yeti', 'djinn', 'centaur', 'mummy_pharaoh', 'alien_overlord',
+                'solar_phoenix', 'frost_wyrm', 'iron_behemoth', 'celestial_archon', 'shadow_stalker', 'deep_leviathan', 'volcanic_drake', 'storm_valkyrie', 'mecha_colossus', 'astral_unicorn', 'chronomancer', 'spectral_knight', 'sand_reaper', 'forest_ancient', 'plague_bringer', 'crystal_scorpion', 'thunder_hawk', 'magma_elemental', 'frost_banshee', 'dune_crawler', 'void_horror', 'sun_warrior', 'abyssal_kraken_spawn', 'runic_golem', 'cyber_hound', 'blood_fiend', 'titan_dreadnought', 'steampunk_airship', 'quantum_mech', 'cosmic_dragon',
+                'solar_phoenix', 'frost_wyrm', 'iron_behemoth', 'celestial_archon', 'shadow_stalker', 'deep_leviathan', 'volcanic_drake', 'storm_valkyrie', 'mecha_colossus', 'astral_unicorn', 'chronomancer', 'spectral_knight', 'sand_reaper', 'forest_ancient', 'plague_bringer', 'crystal_scorpion', 'thunder_hawk', 'magma_elemental', 'frost_banshee', 'dune_crawler', 'void_horror', 'sun_warrior', 'abyssal_kraken_spawn', 'runic_golem', 'cyber_hound', 'blood_fiend', 'titan_dreadnought', 'steampunk_airship', 'quantum_mech', 'cosmic_dragon'
             ];
             if (validCreatures.includes(tool)) {
                 const ent = this.entityManager.spawn(tool, wx, wy);

@@ -243,11 +243,16 @@ void main() {
         }
     }
 
-    // Specular wave highlights on water / crystal / ice / coral
+    // Specular dynamic wave ripples & Fresnel highlights on water / crystal / ice / coral
     if (v_tileType == 1.0 || v_tileType == 2.0 || v_tileType == 10.0 || v_tileType == 22.0 || v_tileType == 36.0 || v_tileType == 39.0) {
-        vec3 reflectDir = reflect(-lightDir, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 30.0);
-        baseColor += vec3(0.38, 0.58, 0.82) * spec;
+        float r1 = sin(u_time * 3.4 + v_worldPos.x * 1.8 + v_worldPos.y * 1.2);
+        float r2 = cos(u_time * 2.7 - v_worldPos.x * 1.3 + v_worldPos.y * 1.9);
+        vec3 rippleNormal = normalize(normal + vec3(r1 * 0.14, r2 * 0.14, 0.0));
+        vec3 reflectDir = reflect(-lightDir, rippleNormal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 38.0);
+        float fresnel = pow(1.0 - max(dot(viewDir, normal), 0.0), 3.2);
+        baseColor = mix(baseColor, vec3(0.55, 0.85, 1.0), fresnel * 0.45);
+        baseColor += vec3(0.85, 0.95, 1.0) * (spec * 0.95);
     }
 
     // Molten Lava Glow & Caldera Veins
@@ -603,7 +608,7 @@ class Renderer3D {
         this.drawSpeciesSprite(ctx, 'default', 27 * 64 + 32, 32, 1);
 
         // 4. Draw All 63 Species into Rows 1..4 (2 frames each: Frame 0 and Frame 1)
-        const speciesList = ["crabzilla","kaiju","phoenix","kraken","hydra","frost_titan","galaxy_guardian","colossus_mech","seraph_angel","dune_leviathan","vampire_lord","void_titan","evermean","tank","warship","helicopter","starfighter","mech","wizard","human","elf","orc","dwarf","sheep","cow","wolf","bear","dragon","golem","zombie","skeleton","demon","alien","duck","crystal_golem","shadow_assassin","frog","cyber_ninja","laser_shark","frost_wolf","sand_scorpion","necromancer","valkyrie","gargoyle","mecha_rex","golden_dragon","space_worm","goblin","pirate_ship","trex","triceratops","velociraptor","pterodactyl","brachiosaurus","frost_dragon","shadow_dragon","storm_dragon","dark_matter_colossus","phoenix_knight","thunder_bird","cyber_dragon","swamp_behemoth","mammoth","astral_phoenix","frost_giant","dread_reaper","dune_scorpion_king","titan_golem","pegasus"];
+        const speciesList = ["crabzilla","kaiju","phoenix","kraken","hydra","frost_titan","galaxy_guardian","colossus_mech","seraph_angel","dune_leviathan","vampire_lord","void_titan","evermean","tank","warship","helicopter","starfighter","mech","wizard","human","elf","orc","dwarf","sheep","cow","wolf","bear","dragon","golem","zombie","skeleton","demon","alien","duck","crystal_golem","shadow_assassin","frog","cyber_ninja","laser_shark","frost_wolf","sand_scorpion","necromancer","valkyrie","gargoyle","mecha_rex","golden_dragon","space_worm","goblin","pirate_ship","trex","triceratops","velociraptor","pterodactyl","brachiosaurus","frost_dragon","shadow_dragon","storm_dragon","dark_matter_colossus","phoenix_knight","thunder_bird","cyber_dragon","swamp_behemoth","mammoth","astral_phoenix","frost_giant","dread_reaper","dune_scorpion_king","titan_golem","pegasus","solar_phoenix","frost_wyrm","iron_behemoth","celestial_archon","shadow_stalker","deep_leviathan","volcanic_drake","storm_valkyrie","mecha_colossus","astral_unicorn","chronomancer","spectral_knight","sand_reaper","forest_ancient","plague_bringer","crystal_scorpion","thunder_hawk","magma_elemental","frost_banshee","dune_crawler","void_horror","sun_warrior","abyssal_kraken_spawn","runic_golem","cyber_hound","blood_fiend","titan_dreadnought","steampunk_airship","quantum_mech","cosmic_dragon"];
         this.spriteUVs = {};
 
         for (let i = 0; i < speciesList.length; i++) {
@@ -2004,6 +2009,696 @@ class Renderer3D {
                 break;
             }
 
+            case 'solar_phoenix': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'frost_wyrm': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#e0f2fe';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'iron_behemoth': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'celestial_archon': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'shadow_stalker': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#18181b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#7e22ce';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'deep_leviathan': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#0369a1';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'volcanic_drake': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#ea580c';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'storm_valkyrie': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#67e8f9';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'mecha_colossus': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'astral_unicorn': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'chronomancer': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#818cf8';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#c084fc';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'spectral_knight': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'sand_reaper': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'forest_ancient': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#166534';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'plague_bringer': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#84cc16';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#4d7c0f';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'crystal_scorpion': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#ec4899';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'thunder_hawk': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'magma_elemental': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#ea580c';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'frost_banshee': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#a5f3fc';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'dune_crawler': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'void_horror': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#4c1d95';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#7c3aed';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'sun_warrior': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'abyssal_kraken_spawn': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'runic_golem': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'cyber_hound': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#22d3ee';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'blood_fiend': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#991b1b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'titan_dreadnought': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'steampunk_airship': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'quantum_mech': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
+            case 'cosmic_dragon': {
+                const legSwing = f === 1 ? 3 : -3;
+                const wingFlap = f === 1 ? 4 : -4;
+                // Shadow base / legs
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(cx - 7, cy + 6 + legSwing, 4, 10);
+                ctx.fillRect(cx + 3, cy + 6 - legSwing, 4, 10);
+                // Main body
+                ctx.fillStyle = '#a21caf';
+                ctx.fillRect(cx - 10, cy - 8, 20, 16);
+                // Secondary accent plates / wings
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(cx - 14, cy - 6 + wingFlap, 5, 10);
+                ctx.fillRect(cx + 9, cy - 6 + wingFlap, 5, 10);
+                // Head / Visor / Glowing Core
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(cx - 5, cy - 14, 10, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(cx - 3, cy - 11, 2, 2);
+                ctx.fillRect(cx + 1, cy - 11, 2, 2);
+                break;
+            }
+
             // --- Default Fallback ---
             default: {
                 const hash = type.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
@@ -2082,13 +2777,14 @@ class Renderer3D {
             cam.right[2] = 0.0;
             Vec3.normalize(cam.right, cam.right);
 
-            cam.up[0] = cam.right[1] * cam.forward[2] - cam.right[2] * cam.forward[1];
-            cam.up[1] = cam.right[2] * cam.forward[0] - cam.right[0] * cam.forward[2];
-            cam.up[2] = cam.right[0] * cam.forward[1] - cam.right[1] * cam.forward[0];
+            // World up is [0, 0, 1]. Orthogonal up vector: forward x right
+            cam.up[0] = cam.forward[1] * cam.right[2] - cam.forward[2] * cam.right[1];
+            cam.up[1] = cam.forward[2] * cam.right[0] - cam.forward[0] * cam.right[2];
+            cam.up[2] = cam.forward[0] * cam.right[1] - cam.forward[1] * cam.right[0];
             Vec3.normalize(cam.up, cam.up);
 
-            Mat4.perspective(cam.projMat, 70 * Math.PI / 180, aspect, 0.2, 1200.0);
-            Mat4.lookAt(cam.viewMat, cam.eye, cam.target, cam.up);
+            Mat4.perspective(cam.projMat, 75 * Math.PI / 180, aspect, 0.15, 1400.0);
+            Mat4.lookAt(cam.viewMat, cam.eye, cam.target, [0, 0, 1]);
             Mat4.multiply(cam.viewProj, cam.projMat, cam.viewMat);
             Mat4.invert(cam.invViewProj, cam.viewProj);
             return;
